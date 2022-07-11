@@ -16,9 +16,7 @@
     "ignoreTGAuthor": [777000, 1912620252, 216729606, 5347402873]
   },
   "mongodb": {
-    "username": "",
-    "password": "",
-    "host": "127.0.0.1",
+    "connection_string":  "mongodb://localhost:27017",
     "database": "discogramTickets"
   }
 }
