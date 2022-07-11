@@ -87,7 +87,7 @@ class databaseManager {
         fun findLatestTicket(): ticketDocument? {
             return databaseManager.instance.get().getTicketsCollection()
                 .find()
-                .descendingSort(ticketDocument::telegramId)
+                .descendingSort(ticketDocument::ticketId)
                 .limit(1)
                 .first()
         }
@@ -126,6 +126,13 @@ class databaseManager {
                     )
                 )
             }
+        }
+    }
+
+    inner class utils {
+        fun getLastUsedTicketId(): Int {
+            return findLatest().findLatestTicket()!!
+                .ticketId
         }
     }
 }
