@@ -7,6 +7,7 @@ import discord4j.core.`object`.entity.Message
 import it.tdlight.jni.TdApi.UpdateAuthorizationState
 import it.tdlight.jni.TdApi.UpdateNewMessage
 import me.chicchi7393.discogramRewrite.discord.DsApp
+import me.chicchi7393.discogramRewrite.mongoDB.databaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import me.chicchi7393.discogramRewrite.telegram.UpdateHandler
 import reactor.core.publisher.Mono
@@ -21,7 +22,7 @@ class Main {
     fun main() {
         tgClient.addUpdateHandler(UpdateAuthorizationState::class.java, updateHandlers::authStateUpdate)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
-
+        val db = databaseManager().createClient()
         Thread {
             tgClient.start(tgAppClass.generateAuth())
             tgClient.waitForExit()
