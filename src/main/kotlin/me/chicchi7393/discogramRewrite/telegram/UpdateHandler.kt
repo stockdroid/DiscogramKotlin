@@ -10,7 +10,6 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import java.io.FileInputStream
 import java.net.URI
-import kotlinx.coroutines.runBlocking
 
 class UpdateHandler(val tgClient: SimpleTelegramClient) {
 	private val settings = JsonReader().readJsonSettings("settings")!!
@@ -25,7 +24,7 @@ class UpdateHandler(val tgClient: SimpleTelegramClient) {
             }
         )
     }
-    fun onUpdateNewMessage(update: UpdateNewMessage) = runBlocking {
+    fun onUpdateNewMessage(update: UpdateNewMessage) {
 		val messageContent = update.message.content
 
 		val text: String
