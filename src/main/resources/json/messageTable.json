@@ -1,0 +1,30 @@
+{
+  "general": {
+    "welcome": "👋Benvenuto in assistenza!👋 \n\nScrivi qui, o aspetta il messaggio di un operatore, ti contatteremo non appena ci sarà possibile",
+    "startingMessageTemplate": "{full_name} (@{message.from_user.username}) ha detto: {message.text}",
+    "forcedTicketTemplate": "{name} ha forzato il ticket a {username} con messaggio: {content}",
+    "startingMessageTemplateMedia": "{full_name} (@{message.from_user.username}) ha detto: {message.caption}",
+    "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi /start",
+    "closedThread": " (Chiuso)",
+    "errorMessage": "Si è verificato un errore, eccolo qua: "
+  },
+  "modals": {
+    "sendMessage": {
+      "modalTitle": "Invia messaggio",
+      "UsernameLabel": "Username",
+      "UsernamePlaceholder": "@stockdroidofficial",
+      "TextLabel": "Testo del messaggio",
+      "TextPlaceholder": "Buongiorno ordissinauta, venga in DM per accertamenti sull'età",
+      "MessageSentResponse": "Messaggio inviato!"
+    },
+    "cronologia": {
+      "modalTitle": "Cronologia chat",
+      "UsernameLabel": "Username",
+      "UsernamePlaceholder": "@ordissimISSIMO",
+      "MessageTemplate": "{messlist-i}. {message.from_user.first_name} ha detto: `{message.text}`\n",
+      "MessagesPrefix": "Messaggi:\n\n",
+      "MessagesLabel": "Numero messaggi:",
+      "MessagesPlaceholder": "-1 se tutti i messaggi sennò il numero di messaggi"
+    }
+  }
+}
