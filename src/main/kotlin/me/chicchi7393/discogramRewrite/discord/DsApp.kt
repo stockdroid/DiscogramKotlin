@@ -1,10 +1,16 @@
 package me.chicchi7393.discogramRewrite.discord
+import discord4j.common.util.Snowflake
 import discord4j.core.DiscordClient
 import discord4j.core.`object`.component.ActionRow
 import discord4j.core.`object`.component.Button
 import discord4j.core.spec.EmbedCreateSpec
+import discord4j.core.spec.MessageCreateSpec
 import discord4j.rest.util.Color
+import it.tdlight.jni.TdApi.Chat
 import me.chicchi7393.discogramRewrite.JsonReader
+import java.io.File
+import java.io.FileInputStream
+import java.net.URI
 import java.time.Instant
 
 
@@ -61,6 +67,38 @@ class DsApp private constructor() {
             Button.secondary("suspend", "Sospendi"),
             Button.danger("close", "Chiudi"),
         ))
+    }
+
+    fun sendStartEmbed(chat: Chat, message: String, ticketId: Int) {
+        val embed = generateTicketEmbed(
+            chat.title,
+            "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}",
+            message,
+            false,
+            false,
+            footerStr = "${settings.discord["IDPrefix"]}$ticketId"
+        )
+        dsClient
+            .getChannelById(Snowflake.of(settings.discord["channel_id"] as Long))
+            .createMessage(
+                MessageCreateSpec.builder()
+                    .addEmbed(embed)
+                    .addComponent(
+                        generateFirstEmbedButtons("", "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}")
+                    )
+                    .addComponent(
+                        generateSecondEmbedButtons()
+                    )
+                    .addComponent(
+                        ActionRow.of(
+                            Button.primary("menu", "Apri menu")
+                        )
+                    )
+                    .addFile("pic.png", FileInputStream(File(URI("file://${chat.photo.big.local.path}"))))
+                    .build()
+                    .asRequest()
+            )
+            .subscribe()
     }
 
 }
