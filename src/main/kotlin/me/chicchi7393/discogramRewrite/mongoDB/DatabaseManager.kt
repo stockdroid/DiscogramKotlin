@@ -1,6 +1,4 @@
 package me.chicchi7393.discogramRewrite.mongoDB
-import com.mongodb.ConnectionString
-import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
@@ -8,11 +6,9 @@ import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.ticketDocument
 import org.bson.BsonValue
-import org.bson.Document
-import org.bson.conversions.Bson
 import org.litote.kmongo.*
 
-class databaseManager {
+class DatabaseManager {
     private val settings = JsonReader().readJsonSettings("settings")!!
 
     init {
@@ -20,11 +16,11 @@ class databaseManager {
     }
 
     private object GetInstance {
-        val INSTANCE = databaseManager()
+        val INSTANCE = DatabaseManager()
     }
 
     companion object {
-        val instance: databaseManager by lazy { GetInstance.INSTANCE }
+        val instance: DatabaseManager by lazy { GetInstance.INSTANCE }
     }
 
     lateinit var mongoClient: MongoClient
@@ -34,9 +30,13 @@ class databaseManager {
         return mongoClient
     }
 
-    inner class get {
+    inner class Get {
         fun getDB(): MongoDatabase {
-            return mongoClient.getDatabase(settings.mongodb["database"])
+            return if (this@DatabaseManager::mongoClient.isInitialized) {
+                mongoClient.getDatabase(settings.mongodb["database"]!!)
+            } else {
+                createClient().getDatabase(settings.mongodb["database"])
+            }
         }
 
         fun getTicketsCollection(): MongoCollection<ticketDocument> {
@@ -45,47 +45,47 @@ class databaseManager {
         }
     }
 
-    inner class create {
-        inner class tickets {
+    inner class Create {
+        inner class Tickets {
             fun createTicketDocument(
                 ticketDocument: ticketDocument
             ): BsonValue? {
-                return databaseManager.instance.get().getTicketsCollection()
+                return DatabaseManager.instance.Get().getTicketsCollection()
                     .insertOne(ticketDocument)
                     .insertedId
             }
             fun createManyTicketDocuments(
                 ticketDocuments: List<ticketDocument>
             ): MutableMap<Int, BsonValue> {
-                return databaseManager.instance.get().getTicketsCollection()
+                return DatabaseManager.instance.Get().getTicketsCollection()
                     .insertMany(ticketDocuments)
                     .insertedIds
             }
         }
     }
 
-    inner class search {
-        inner class tickets {
+    inner class Search {
+        inner class Tickets {
             fun searchTicketDocumentById(ticketId: Int): ticketDocument? {
-                return databaseManager.instance.get().getTicketsCollection()
+                return DatabaseManager.instance.Get().getTicketsCollection()
                     .findOne(ticketDocument::ticketId eq ticketId)
             }
 
             fun searchTicketDocumentByChannelId(channelId: Long): ticketDocument? {
-                return databaseManager.instance.get().getTicketsCollection()
+                return DatabaseManager.instance.Get().getTicketsCollection()
                     .findOne(ticketDocument::channelId eq channelId)
             }
 
             fun searchTicketDocumentByTelegramId(telegramId: Long): ticketDocument? {
-                return databaseManager.instance.get().getTicketsCollection()
+                return DatabaseManager.instance.Get().getTicketsCollection()
                     .findOne(ticketDocument::telegramId eq telegramId)
             }
         }
     }
 
-    inner class findLatest {
+    inner class FindLatest {
         fun findLatestTicket(): ticketDocument? {
-            return databaseManager.instance.get().getTicketsCollection()
+            return DatabaseManager.instance.Get().getTicketsCollection()
                 .find()
                 .descendingSort(ticketDocument::ticketId)
                 .limit(1)
@@ -93,10 +93,10 @@ class databaseManager {
         }
     }
 
-    inner class update {
-        inner class tickets {
+    inner class Update {
+        inner class Tickets {
             private fun editState(channelId: Long, state: Map<String, Boolean>): UpdateResult {
-                return instance.get().getTicketsCollection()
+                return instance.Get().getTicketsCollection()
                     .updateOne(
                         ticketDocument::channelId eq channelId,
                         setValue(ticketDocument::status, state)
@@ -129,10 +129,31 @@ class databaseManager {
         }
     }
 
-    inner class utils {
+    inner class Utils {
         fun getLastUsedTicketId(): Int {
-            return findLatest().findLatestTicket()!!
-                .ticketId
+            return try {
+                FindLatest().findLatestTicket()!!
+                    .ticketId
+            } catch(e: java.lang.NullPointerException) {
+                0
+            }
+        }
+        fun searchAlreadyOpen(telegram_id: Long): ticketDocument? {
+            try {
+                for (userTicket in this@DatabaseManager
+                    .Get()
+                    .getTicketsCollection()
+                    .find(ticketDocument::telegramId eq telegram_id)) {
+                    if (userTicket.status["open"] == true) {
+                        return userTicket
+                    } else {
+                        continue
+                    }
+                }
+            } catch (e: java.lang.NullPointerException) {
+                return null
+            }
+            return null
         }
     }
 }

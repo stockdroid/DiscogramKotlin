@@ -6,11 +6,16 @@
     "app_version": "v69.42.0",
     "model": "SerpeNeraPhone",
     "system_version": "Ubuntu 20.04 da qualche parte a Londra",
-    "language_code": "it"
+    "language_code": "it",
+    "userbotID": 5477227775
   },
   "discord": {
     "token": "OTY3NDE2MTc2MzQ5MTc5OTc0.G14yCD.EJP8KlSpiC64pXg6rzGts0rQ4jsQit0ThxSsx0",
-    "channel_id": 996027900186865716,
+    "guild_id": 996027899251540009,
+    "channel_id": 996367646847143956,
+    "category_id": 996343698092736512,
+    "archived_category_id": 996343737825361982,
+    "higher_roles": [996367255929626734, 996367283507167282],
     "ignoreMessagePrefix": "###",
     "IDPrefix": "TCK-",
     "ignoreTGAuthor": [777000, 1912620252, 216729606, 5347402873]
