@@ -113,9 +113,9 @@
             <version>5.6</version>
         </dependency>
         <dependency>
-            <groupId>com.discord4j</groupId>
-            <artifactId>discord4j-core</artifactId>
-            <version>3.2.2</version>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+            <version>5.0.0-alpha.13</version>
         </dependency>
         <dependency>
             <groupId>it.tdlight</groupId>
