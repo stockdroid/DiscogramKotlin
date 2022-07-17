@@ -2,18 +2,24 @@ package me.chicchi7393.discogramRewrite.discord
 
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.handlers.buttonHandlers
+import me.chicchi7393.discogramRewrite.handlers.modalHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.Modal
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 
 
-class EventHandler : ListenerAdapter() {
+class EventHandler: ListenerAdapter() {
     private val settings = JsonReader().readJsonSettings("settings")!!
     private val dbMan = DatabaseManager.instance
     private val tgClient = TgApp.instance.client
@@ -33,6 +39,22 @@ class EventHandler : ListenerAdapter() {
         return Path.of("$path/$filename")
     }
 
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
+        val buttonHandler = buttonHandlers(event)
+        when {
+            event.componentId.startsWith("close") -> buttonHandler.closeButtonTicketHandler()
+            event.componentId.startsWith("suspend") -> buttonHandler.suspendButtonTicketHandler()
+            else -> {}
+        }
+    }
+
+    override fun onModalInteraction(event: ModalInteractionEvent) {
+        val modalHandlers = modalHandlers(event)
+        when {
+            event.modalId.startsWith("closeModal") -> modalHandlers.closeTicketHandler()
+            event.modalId.startsWith("suspendModal") -> modalHandlers.suspendTicketHandler()
+        }
+    }
     override fun onMessageReceived(event: MessageReceivedEvent) {
         val tgId = dbMan.Search().Tickets().getTgIdByChannelId(event.channel.idLong)
         if (

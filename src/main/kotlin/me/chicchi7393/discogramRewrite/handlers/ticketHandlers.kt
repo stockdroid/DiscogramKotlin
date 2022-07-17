@@ -1,14 +1,17 @@
-package me.chicchi7393.discogramRewrite.ticketHandlers
+package me.chicchi7393.discogramRewrite.handlers
 
+import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.Chat
 import it.tdlight.jni.TdApi.DownloadFile
+import it.tdlight.jni.TdApi.InputMessageText
+import it.tdlight.jni.TdApi.SendMessage
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 
-class ticketHandler {
+class ticketHandlers {
     private val settings = JsonReader().readJsonSettings("settings")!!
     private val dbMan = DatabaseManager.instance
     private val dsClass = DsApp.instance
@@ -33,7 +36,7 @@ class ticketHandler {
                 chat,
                 "Immagine",
                 dbMan.Utils().getLastUsedTicketId() + 1,
-                "https://discordapp.com/channels/${dsClass.getGuild().idLong}/${it.idLong}"
+                it.idLong
             )
             if (file == null) {
                 dsClass.sendTextMessageToChannel(
@@ -70,4 +73,45 @@ class ticketHandler {
 
     fun sendTextFollowMessage(id: Long, text: String) =
         dsClass.sendTextMessageToChannel(dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text).queue()
+
+    fun closeTicket(ticket: TicketDocument, text: String) {
+        dbMan.Update().Tickets().closeTicket(
+            ticket
+        )
+        tgClient.send(SendMessage(
+            ticket.telegramId,
+            0,
+            0,
+            null,
+            null,
+            InputMessageText(TdApi.FormattedText("Ticket chiuso. ${if (text != "") "Motivazione: $text" else ""}", null), false, false)
+        )) {}
+    }
+
+    fun suspendTicket(ticket: TicketDocument, text: String) {
+        dbMan.Update().Tickets().suspendTicket(
+            ticket
+        )
+        tgClient.send(SendMessage(
+            ticket.telegramId,
+            0,
+            0,
+            null,
+            null,
+            InputMessageText(TdApi.FormattedText("Ticket sospeso. ${if (text != "") "Motivazione: $text" else ""}", null), false, false)
+        )) {}
+    }
+    fun reOpenTicket(ticket: TicketDocument) {
+        dbMan.Update().Tickets().reopenTicket(
+            ticket
+        )
+        tgClient.send(SendMessage(
+            ticket.telegramId,
+            0,
+            0,
+            null,
+            null,
+            InputMessageText(TdApi.FormattedText("Ticket riaperto.", null), false, false)
+        )) {}
+    }
 }
