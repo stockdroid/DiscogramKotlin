@@ -79,7 +79,11 @@ class DatabaseManager {
             }
 
             fun getTgIdByChannelId(channelId: Long): Long {
-                return searchTicketDocumentByChannelId(channelId)!!.telegramId
+                return try {
+                    searchTicketDocumentByChannelId(channelId)!!.telegramId
+                } catch(e: NullPointerException) {
+                    0
+                }
             }
 
             fun searchTicketDocumentByTelegramId(telegramId: Long): TicketDocument? {
@@ -117,7 +121,6 @@ class DatabaseManager {
                     )
                 )
             }
-
             fun suspendTicket(ticket: TicketDocument): UpdateResult {
                 return editState(
                     ticket.channelId,

@@ -4,6 +4,7 @@ import it.tdlight.jni.TdApi.Chat
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -41,14 +42,15 @@ class DsApp private constructor() {
         return dsClient
     }
 
-    private fun generateTicketEmbed(
+    fun generateTicketEmbed(
         authorName: String,
         authorUrl: String,
         message: String,
         isForced: Boolean,
         isAssigned: Boolean,
         assignedTo: String = "",
-        footerStr: String
+        footerStr: String,
+        state: TicketState
     ): MessageEmbed {
         return EmbedBuilder()
             .setColor(Color.blue)
@@ -57,11 +59,12 @@ class DsApp private constructor() {
             .setDescription(message)
             .addField("Forzato?", if (isForced) "Sì" else "No", true)
             .addField("Assegnato a", if (isAssigned) assignedTo else "Nessuno", true)
+            .addField("Stato", state.toString(), false)
             .setFooter(footerStr, null)
             .build()
     }
 
-    private fun generateFirstEmbedButtons(channel_link: String, tg_profile: String = "https://google.com"): ActionRow {
+    fun generateFirstEmbedButtons(channel_link: String, tg_profile: String = "https://google.com"): ActionRow {
         return ActionRow.of(
             listOf(
                 Button.link(channel_link, "Apri chat"),
@@ -70,24 +73,26 @@ class DsApp private constructor() {
         )
     }
 
-    private fun generateSecondEmbedButtons(): ActionRow {
+    private fun generateSecondEmbedButtons(channel_id: Long): ActionRow {
         return ActionRow.of(
             listOf(
-                Button.success("assign", "Assegna"),
-                Button.secondary("suspend", "Sospendi"),
-                Button.danger("close", "Chiudi"),
+                Button.success("assign-$channel_id", "Assegna"),
+                Button.secondary("suspend-$channel_id", "Sospendi"),
+                Button.danger("close-$channel_id", "Chiudi"),
             )
         )
     }
 
-    fun sendStartEmbed(chat: Chat, message: String, ticketId: Int, channel_link: String) {
+
+    fun sendStartEmbed(chat: Chat, message: String, ticketId: Int, channel_id: Long) {
         val embed = generateTicketEmbed(
             chat.title,
             "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}",
             message,
             isForced = false,
             isAssigned = false,
-            footerStr = "${settings.discord["IDPrefix"]}${ticketId - 1}"
+            footerStr = "${settings.discord["IDPrefix"]}${ticketId - 1}",
+            state = TicketState.OPEN
         )
         dsClient
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
@@ -95,8 +100,8 @@ class DsApp private constructor() {
                 embed
             )
             .setActionRows(
-                generateFirstEmbedButtons(channel_link, "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"),
-                generateSecondEmbedButtons(),
+                generateFirstEmbedButtons("https://discordapp.com/channels/${getGuild().idLong}/${channel_id}", "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"),
+                generateSecondEmbedButtons(channel_id),
                 ActionRow.of(
                     Button.primary("menu", "Apri menu")
                 )
@@ -134,7 +139,7 @@ class DsApp private constructor() {
                 chat,
                 message,
                 dbMan.Utils().getLastUsedTicketId() + 1,
-                "https://discordapp.com/channels/${getGuild().idLong}/${it.idLong}"
+                it.idLong
             )
         }.queue()
     }

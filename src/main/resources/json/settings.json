@@ -14,6 +14,7 @@
     "guild_id": 996027899251540009,
     "channel_id": 996367646847143956,
     "category_id": 996343698092736512,
+    "suspended_category_id": 998210146280931360,
     "archived_category_id": 996343737825361982,
     "higher_roles": [996367255929626734, 996367283507167282],
     "ignoreMessagePrefix": "###",
