@@ -1,5 +1,9 @@
 package me.chicchi7393.discogramRewrite.telegram
-import it.tdlight.client.*
+
+import it.tdlight.client.APIToken
+import it.tdlight.client.AuthenticationData
+import it.tdlight.client.SimpleTelegramClient
+import it.tdlight.client.TDLibSettings
 import it.tdlight.common.Init
 import me.chicchi7393.discogramRewrite.JsonReader
 import java.nio.file.Paths
@@ -23,8 +27,9 @@ class TgApp private constructor() {
 
     fun createApp(): SimpleTelegramClient {
         val tg = settings.telegram
-        val apiToken = APIToken(tg["api_id"] as Int, tg["api_hash"] as String?)
-        val tgSettings = TDLibSettings.create(apiToken)
+        val tgSettings = TDLibSettings.create(
+            APIToken(tg["api_id"] as Int, tg["api_hash"] as String?)
+        )
         val sessionPath = Paths.get("session")
 
         Init.start()
@@ -38,6 +43,7 @@ class TgApp private constructor() {
         client = SimpleTelegramClient(tgSettings)
         return client
     }
+
     fun generateAuth(): AuthenticationData {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
     }

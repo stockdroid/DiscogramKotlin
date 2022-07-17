@@ -1,17 +1,17 @@
 package me.chicchi7393.discogramRewrite.telegram
+
 import it.tdlight.client.SimpleTelegramClient
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
-import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.ticketDocument
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.TextChannel
-import java.util.*
+import me.chicchi7393.discogramRewrite.telegram.utils.FindContent
+import me.chicchi7393.discogramRewrite.ticketHandlers.ticketHandler
 
 class UpdateHandler(private val tgClient: SimpleTelegramClient) {
-	private val settings = JsonReader().readJsonSettings("settings")!!
-	fun authStateUpdate(update: UpdateAuthorizationState) {
+    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val ticketHandler = ticketHandler()
+    val dbMan = DatabaseManager.instance
+    fun authStateUpdate(update: UpdateAuthorizationState) {
         println(
             when (update.authorizationState) {
                 is AuthorizationStateReady -> "Logged in"
@@ -22,53 +22,49 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
             }
         )
     }
-    fun onUpdateNewMessage(update: UpdateNewMessage) {
-		val messageContent = update.message.content
-		val dbMan = DatabaseManager.instance
-		val text: String =
-			if (messageContent is MessageText) messageContent.text.text else String.format("(%s)", update.message)
 
-		tgClient.send(GetChat(update.message.chatId)) { chatIdResult ->
-			val dsClass = DsApp.instance
-			val message = update.message
-			val chat = chatIdResult.get()
-			if (chat.type is ChatTypePrivate && chat.id !in settings.discord["ignoreTGAuthor"] as List<Long> && (message.senderId as MessageSenderUser).userId != settings.telegram["userbotID"] as Long) {
-				if (dbMan.Utils().searchAlreadyOpen(chat.id) != null) {
-					dsClass.dsClient
-						.getChannelById(
-							TextChannel::class.java,
-							dbMan.Utils().searchAlreadyOpen(chat.id)!!.channelId
-						)!!
-						.sendMessage(text)
-						.queue()
-				} else {
-					dsClass.dsClient
-						.getCategoryById(
-							settings.discord["category_id"] as Long
-						)!!
-						.createTextChannel(
-							"${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-						)
-						.map {
-							dbMan.Create().Tickets().createTicketDocument(
-								ticketDocument(
-									chat.id,
-									it.idLong,
-									dbMan.Utils().getLastUsedTicketId() + 1,
-									mapOf("open" to true, "suspended" to false, "closed" to false),
-									System.currentTimeMillis() / 1000
-								)
-							)
-							dsClass.sendStartEmbed(
-								chat,
-								text,
-								dbMan.Utils().getLastUsedTicketId() + 1,
-								"https://discordapp.com/channels/${dsClass.getGuild().idLong}/${it.idLong}"
-							)
-						}
-						.queue()
-				}
-			}
-		}
-	}
+    private fun getChat(id: Long): Chat {
+        val value = arrayOf<Chat>()
+        tgClient.send(GetChat(id)) { value[0] = it.get() }
+        return value[0]
+    }
+
+    fun ticketIfList(chat: Chat, message: Message): Boolean {
+        return (chat.type is ChatTypePrivate
+                && chat.id !in settings.discord["ignoreTGAuthor"] as List<Long>
+                && (message.senderId as MessageSenderUser).userId != settings.telegram["userbotID"] as Long)
+    }
+
+    fun onUpdateNewMessage(update: UpdateNewMessage) {
+        val findContentClass = FindContent(update.message)
+        val text = findContentClass.findText()
+        val document = findContentClass.findData()
+        val chat = getChat(update.message.chatId)
+
+        if (update.message.content is MessageText) {
+            if (ticketIfList(chat, update.message)) {
+                if (dbMan.Utils().searchAlreadyOpen(chat.id) != null)
+                    ticketHandler.sendTextFollowMessage(chat.id, text)
+                else
+                    ticketHandler.startTicketWithText(chat, text)
+            }
+        } else {
+            val file: DownloadFile? = if (document != 0) {
+                DownloadFile(document, 1, 0, 0, true)
+            } else {
+                null
+            }
+            if (ticketIfList(chat, update.message)) {
+                if (dbMan.Utils().searchAlreadyOpen(chat.id) == null)
+                    ticketHandler.startTicketWithFile(
+                        chat.id,
+                        chat,
+                        file,
+                        text
+                    )
+                else
+                    ticketHandler.sendFileFollowMessage(chat.id, file, text)
+            }
+        }
+    }
 }

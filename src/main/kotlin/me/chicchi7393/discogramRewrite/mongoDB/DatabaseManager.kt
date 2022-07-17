@@ -1,10 +1,11 @@
 package me.chicchi7393.discogramRewrite.mongoDB
+
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.ticketDocument
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import org.bson.BsonValue
 import org.litote.kmongo.*
 
@@ -31,7 +32,7 @@ class DatabaseManager {
     }
 
     inner class Get {
-        fun getDB(): MongoDatabase {
+        private fun getDB(): MongoDatabase {
             return if (this@DatabaseManager::mongoClient.isInitialized) {
                 mongoClient.getDatabase(settings.mongodb["database"]!!)
             } else {
@@ -39,26 +40,27 @@ class DatabaseManager {
             }
         }
 
-        fun getTicketsCollection(): MongoCollection<ticketDocument> {
+        fun getTicketsCollection(): MongoCollection<TicketDocument> {
             return getDB()
-                .getCollection<ticketDocument>("tickets")
+                .getCollection<TicketDocument>("tickets")
         }
     }
 
     inner class Create {
         inner class Tickets {
             fun createTicketDocument(
-                ticketDocument: ticketDocument
+                ticketDocument: TicketDocument
             ): BsonValue? {
-                return DatabaseManager.instance.Get().getTicketsCollection()
+                return instance.Get().getTicketsCollection()
                     .insertOne(ticketDocument)
                     .insertedId
             }
+
             fun createManyTicketDocuments(
-                ticketDocuments: List<ticketDocument>
+                TicketDocuments: List<TicketDocument>
             ): MutableMap<Int, BsonValue> {
-                return DatabaseManager.instance.Get().getTicketsCollection()
-                    .insertMany(ticketDocuments)
+                return instance.Get().getTicketsCollection()
+                    .insertMany(TicketDocuments)
                     .insertedIds
             }
         }
@@ -66,28 +68,32 @@ class DatabaseManager {
 
     inner class Search {
         inner class Tickets {
-            fun searchTicketDocumentById(ticketId: Int): ticketDocument? {
-                return DatabaseManager.instance.Get().getTicketsCollection()
-                    .findOne(ticketDocument::ticketId eq ticketId)
+            fun searchTicketDocumentById(ticketId: Int): TicketDocument? {
+                return instance.Get().getTicketsCollection()
+                    .findOne(TicketDocument::ticketId eq ticketId)
             }
 
-            fun searchTicketDocumentByChannelId(channelId: Long): ticketDocument? {
-                return DatabaseManager.instance.Get().getTicketsCollection()
-                    .findOne(ticketDocument::channelId eq channelId)
+            fun searchTicketDocumentByChannelId(channelId: Long): TicketDocument? {
+                return instance.Get().getTicketsCollection()
+                    .findOne(TicketDocument::channelId eq channelId)
             }
 
-            fun searchTicketDocumentByTelegramId(telegramId: Long): ticketDocument? {
-                return DatabaseManager.instance.Get().getTicketsCollection()
-                    .findOne(ticketDocument::telegramId eq telegramId)
+            fun getTgIdByChannelId(channelId: Long): Long {
+                return searchTicketDocumentByChannelId(channelId)!!.telegramId
+            }
+
+            fun searchTicketDocumentByTelegramId(telegramId: Long): TicketDocument? {
+                return instance.Get().getTicketsCollection()
+                    .findOne(TicketDocument::telegramId eq telegramId)
             }
         }
     }
 
     inner class FindLatest {
-        fun findLatestTicket(): ticketDocument? {
-            return DatabaseManager.instance.Get().getTicketsCollection()
+        fun findLatestTicket(): TicketDocument? {
+            return instance.Get().getTicketsCollection()
                 .find()
-                .descendingSort(ticketDocument::ticketId)
+                .descendingSort(TicketDocument::ticketId)
                 .limit(1)
                 .first()
         }
@@ -98,11 +104,12 @@ class DatabaseManager {
             private fun editState(channelId: Long, state: Map<String, Boolean>): UpdateResult {
                 return instance.Get().getTicketsCollection()
                     .updateOne(
-                        ticketDocument::channelId eq channelId,
-                        setValue(ticketDocument::status, state)
+                        TicketDocument::channelId eq channelId,
+                        setValue(TicketDocument::status, state)
                     )
             }
-            fun closeTicket(ticket: ticketDocument): UpdateResult {
+
+            fun closeTicket(ticket: TicketDocument): UpdateResult {
                 return editState(
                     ticket.channelId,
                     mapOf(
@@ -110,7 +117,8 @@ class DatabaseManager {
                     )
                 )
             }
-            fun suspendTicket(ticket: ticketDocument): UpdateResult {
+
+            fun suspendTicket(ticket: TicketDocument): UpdateResult {
                 return editState(
                     ticket.channelId,
                     mapOf(
@@ -118,7 +126,8 @@ class DatabaseManager {
                     )
                 )
             }
-            fun reopenTicket(ticket: ticketDocument): UpdateResult {
+
+            fun reopenTicket(ticket: TicketDocument): UpdateResult {
                 return editState(
                     ticket.channelId,
                     mapOf(
@@ -134,16 +143,17 @@ class DatabaseManager {
             return try {
                 FindLatest().findLatestTicket()!!
                     .ticketId
-            } catch(e: java.lang.NullPointerException) {
+            } catch (e: java.lang.NullPointerException) {
                 0
             }
         }
-        fun searchAlreadyOpen(telegram_id: Long): ticketDocument? {
+
+        fun searchAlreadyOpen(telegram_id: Long): TicketDocument? {
             try {
                 for (userTicket in this@DatabaseManager
                     .Get()
                     .getTicketsCollection()
-                    .find(ticketDocument::telegramId eq telegram_id)) {
+                    .find(TicketDocument::telegramId eq telegram_id)) {
                     if (userTicket.status["open"] == true) {
                         return userTicket
                     } else {

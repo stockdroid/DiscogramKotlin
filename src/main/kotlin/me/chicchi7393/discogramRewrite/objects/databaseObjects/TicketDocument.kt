@@ -1,6 +1,6 @@
 package me.chicchi7393.discogramRewrite.objects.databaseObjects
 
-data class ticketDocument(
+data class TicketDocument(
     var telegramId: Long,
     var channelId: Long,
     var ticketId: Int,
