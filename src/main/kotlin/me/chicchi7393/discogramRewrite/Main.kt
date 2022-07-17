@@ -17,7 +17,7 @@ class Main {
     fun main() {
         tgClient.addUpdateHandler(UpdateAuthorizationState::class.java, updateHandlers::authStateUpdate)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
-        val db = DatabaseManager().createClient()
+        DatabaseManager().createClient()
         Thread {
             tgClient.start(tgAppClass.generateAuth())
             tgClient.waitForExit()
