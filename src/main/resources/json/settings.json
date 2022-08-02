@@ -19,7 +19,7 @@
     "higher_roles": [996367255929626734, 996367283507167282],
     "ignoreMessagePrefix": "###",
     "IDPrefix": "TCK-",
-    "ignoreTGAuthor": [777000, 1912620252, 216729606, 5347402873]
+    "ignoreTGAuthor": [777000, 1912620252, 216729606]
   },
   "mongodb": {
     "connection_string":  "mongodb://localhost:27017",

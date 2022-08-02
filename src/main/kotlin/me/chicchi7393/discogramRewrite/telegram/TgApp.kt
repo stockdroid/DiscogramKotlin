@@ -5,8 +5,10 @@ import it.tdlight.client.AuthenticationData
 import it.tdlight.client.SimpleTelegramClient
 import it.tdlight.client.TDLibSettings
 import it.tdlight.common.Init
+import it.tdlight.jni.TdApi.DownloadFile
 import me.chicchi7393.discogramRewrite.JsonReader
 import java.nio.file.Paths
+
 
 class TgApp private constructor() {
     private val settings = JsonReader().readJsonSettings("settings")!!
@@ -46,5 +48,22 @@ class TgApp private constructor() {
 
     fun generateAuth(): AuthenticationData {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
+    }
+
+    fun downloadFile(file_id: Int): Array<String> {
+        val value = arrayOf("")
+        client.send(DownloadFile(file_id, 32, 0, 0, true)) {
+            while (true) {
+                if (it.get().local.path == "") {
+                    Thread.sleep(100)
+                    continue
+                } else {
+                    value[0] = it.get().local.path
+                    break
+                }
+            }
+
+        }
+        return value
     }
 }
