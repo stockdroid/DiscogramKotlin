@@ -3,7 +3,6 @@ package me.chicchi7393.discogramRewrite.handlers
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -17,11 +16,12 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
     private val dbMan = DatabaseManager.instance
     private val discordClient = DsApp.instance
     private val settings = JsonReader().readJsonSettings("settings")!!
+    private val channel_id = event.componentId.split("-")[1].toLong()
 
     fun closeButtonTicketHandler() {
         event.replyModal(
             Modal
-                .create("closeModal-${event.componentId.split("-")[1]}:${event.message.id}", "Chiudi ticket")
+                .create("closeModal-${channel_id}:${event.message.id}", "Chiudi ticket")
                 .addActionRow(
                     ActionRow.of(
                         TextInput.create("reason", "Motivazione", TextInputStyle.PARAGRAPH)
@@ -35,11 +35,12 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         )
             .queue()
     }
+
     fun suspendButtonTicketHandler() {
         if (event.message.embeds[0].fields[2].value == "Aperto") {
             event.replyModal(
                 Modal
-                    .create("suspendModal-${event.componentId.split("-")[1]}:${event.message.id}", "Sospendi ticket")
+                    .create("suspendModal-${channel_id}:${event.message.id}", "Sospendi ticket")
                     .addActionRow(
                         ActionRow.of(
                             TextInput.create("reason", "Motivazione", TextInputStyle.PARAGRAPH)
@@ -67,4 +68,30 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         }
     }
 
+    fun assignButtonTicketHandler() {
+        if (dbMan.Search().Assignee().searchAssigneeDocumentById(
+                dbMan.Search().Tickets().searchTicketDocumentByChannelId(channel_id)!!.ticketId
+            )!!.modId == 0L || discordClient.isHigherRole(event.member!!)
+        ) {
+            dbMan.Update().Assignees().editAssignee(
+                dbMan.Search().Tickets().searchTicketDocumentByChannelId(channel_id)!!.ticketId,
+                event.member!!.idLong
+            )
+            event.message.editMessageEmbeds(
+                discordClient.generateTicketEmbed(
+                    event.message.embeds[0].author!!.name!!,
+                    event.message.embeds[0].author!!.url!!,
+                    event.message.embeds[0].description!!,
+                    event.message.embeds[0].fields[0].value == "Sì",
+                    true,
+                    if (event.member!!.nickname == null) event.member!!.effectiveName else event.member!!.nickname!!,
+                    event.message.embeds[0].footer!!.text!!,
+                    event.message.embeds[0].fields[2].value!!
+                )
+            ).queue()
+            event.reply("Ticket assegnato.").setEphemeral(true)
+        } else {
+            event.reply("Non puoi assegnarti questo ticket perchè è già stato assegnato.").setEphemeral(true)
+        }
+    }
 }

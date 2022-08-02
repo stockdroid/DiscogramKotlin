@@ -5,6 +5,7 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
+import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -19,7 +20,7 @@ import java.net.URI
 class DsApp private constructor() {
     private val settings = JsonReader().readJsonSettings("settings")!!
     private val dbMan = DatabaseManager.instance
-
+    private val tgApp = TgApp.instance
     init {
         println("DsApp Class Initialized")
     }
@@ -50,7 +51,7 @@ class DsApp private constructor() {
         isAssigned: Boolean,
         assignedTo: String = "",
         footerStr: String,
-        state: TicketState
+        state: Any
     ): MessageEmbed {
         return EmbedBuilder()
             .setColor(Color.blue)
@@ -84,7 +85,7 @@ class DsApp private constructor() {
     }
 
 
-    fun sendStartEmbed(chat: Chat, message: String, ticketId: Int, channel_id: Long) {
+    fun sendStartEmbed(chat: Chat, message: String, ticketId: Int, channel_id: Long, pathImage: String) {
         val embed = generateTicketEmbed(
             chat.title,
             "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}",
@@ -106,7 +107,7 @@ class DsApp private constructor() {
                     Button.primary("menu", "Apri menu")
                 )
             )
-            .addFile(File(URI("file://${chat.photo.big.local.path}")), "pic.png")
+            .addFile(File(URI("file://${pathImage}")), "pic.png")
             .queue()
     }
 
@@ -135,13 +136,33 @@ class DsApp private constructor() {
                     System.currentTimeMillis() / 1000
                 )
             )
-            sendStartEmbed(
-                chat,
-                message,
-                dbMan.Utils().getLastUsedTicketId() + 1,
-                it.idLong
-            )
+            while (true) {
+                val filePath = tgApp.downloadFile(chat.photo.small.id)
+                if (filePath[0] == "") {
+                    Thread.sleep(100)
+                    continue
+                } else {
+                    sendStartEmbed(
+                        chat,
+                        message,
+                        dbMan.Utils().getLastUsedTicketId() + 1,
+                        it.idLong,
+                        filePath[0]
+                    )
+                    break
+                }
+            }
         }.queue()
+    }
+
+    fun isHigherRole(member: Member): Boolean {
+        var isHigher = false
+        for (role in member.roles) {
+            if (role.idLong in settings.discord["higher_roles"] as List<Long>) {
+                isHigher = true
+            }
+        }
+        return isHigher
     }
 
 }

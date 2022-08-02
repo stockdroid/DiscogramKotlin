@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.AssigneeDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import org.bson.BsonValue
 import org.litote.kmongo.*
@@ -44,6 +45,11 @@ class DatabaseManager {
             return getDB()
                 .getCollection<TicketDocument>("tickets")
         }
+
+        fun getAssigneesCollection(): MongoCollection<AssigneeDocument> {
+            return getDB()
+                .getCollection<AssigneeDocument>("assignees")
+        }
     }
 
     inner class Create {
@@ -51,6 +57,14 @@ class DatabaseManager {
             fun createTicketDocument(
                 ticketDocument: TicketDocument
             ): BsonValue? {
+                instance.Get().getAssigneesCollection()
+                    .insertOne(
+                        AssigneeDocument(
+                            ticketDocument.ticketId,
+                            0,
+                            arrayListOf()
+                        )
+                    )
                 return instance.Get().getTicketsCollection()
                     .insertOne(ticketDocument)
                     .insertedId
@@ -61,6 +75,24 @@ class DatabaseManager {
             ): MutableMap<Int, BsonValue> {
                 return instance.Get().getTicketsCollection()
                     .insertMany(TicketDocuments)
+                    .insertedIds
+            }
+        }
+
+        inner class Assignee {
+            fun createAssigneeDocument(
+                assigneeDocument: AssigneeDocument
+            ): BsonValue? {
+                return instance.Get().getAssigneesCollection()
+                    .insertOne(assigneeDocument)
+                    .insertedId
+            }
+
+            fun createManyAssigneeDocuments(
+                assigneeDocuments: List<AssigneeDocument>
+            ): MutableMap<Int, BsonValue> {
+                return instance.Get().getAssigneesCollection()
+                    .insertMany(assigneeDocuments)
                     .insertedIds
             }
         }
@@ -81,7 +113,7 @@ class DatabaseManager {
             fun getTgIdByChannelId(channelId: Long): Long {
                 return try {
                     searchTicketDocumentByChannelId(channelId)!!.telegramId
-                } catch(e: NullPointerException) {
+                } catch (e: NullPointerException) {
                     0
                 }
             }
@@ -91,6 +123,20 @@ class DatabaseManager {
                     .findOne(TicketDocument::telegramId eq telegramId)
             }
         }
+
+        inner class Assignee {
+            fun searchAssigneeDocumentById(ticketId: Int): AssigneeDocument? {
+                return instance.Get().getAssigneesCollection()
+                    .findOne(AssigneeDocument::ticketId eq ticketId)
+            }
+
+            fun searchAssigneeDocumentByAssigneeId(assigneeId: Long): AssigneeDocument? {
+                return instance.Get().getAssigneesCollection()
+                    .findOne(AssigneeDocument::modId eq assigneeId)
+            }
+
+        }
+
     }
 
     inner class FindLatest {
@@ -121,6 +167,7 @@ class DatabaseManager {
                     )
                 )
             }
+
             fun suspendTicket(ticket: TicketDocument): UpdateResult {
                 return editState(
                     ticket.channelId,
@@ -136,6 +183,45 @@ class DatabaseManager {
                     mapOf(
                         "open" to true, "suspended" to false, "closed" to false
                     )
+                )
+            }
+        }
+
+        inner class Assignees {
+            fun editAssignee(ticketId: Int, assigneeId: Long): UpdateResult {
+                var assigneeDocument = instance.Get().getAssigneesCollection()
+                    .findOne(AssigneeDocument::ticketId eq ticketId)!!
+                var previousAssignees = assigneeDocument.previousAssignees.toMutableList()
+                if (assigneeDocument.modId != 0L) previousAssignees.add(
+                    assigneeDocument.modId
+                ) else null
+                instance.Get().getAssigneesCollection()
+                    .updateOne(
+                        AssigneeDocument::ticketId eq ticketId,
+                        setValue(
+                            AssigneeDocument::previousAssignees,
+                            previousAssignees.toList()
+                        )
+                    )
+                return instance.Get().getAssigneesCollection()
+                    .updateOne(
+                        AssigneeDocument::ticketId eq ticketId,
+                        setValue(AssigneeDocument::modId, assigneeId)
+                    )
+            }
+
+            fun editAssigneewithoutTrack(ticketId: Int, assigneeId: Long): UpdateResult {
+                return instance.Get().getAssigneesCollection()
+                    .updateOne(
+                        AssigneeDocument::ticketId eq ticketId,
+                        setValue(AssigneeDocument::modId, assigneeId)
+                    )
+            }
+
+            fun cleanAssignee(ticket: AssigneeDocument): UpdateResult {
+                return editAssigneewithoutTrack(
+                    ticket.ticketId,
+                    0
                 )
             }
         }

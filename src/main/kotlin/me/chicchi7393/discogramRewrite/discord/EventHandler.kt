@@ -11,8 +11,6 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Modal
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
@@ -44,6 +42,7 @@ class EventHandler: ListenerAdapter() {
         when {
             event.componentId.startsWith("close") -> buttonHandler.closeButtonTicketHandler()
             event.componentId.startsWith("suspend") -> buttonHandler.suspendButtonTicketHandler()
+            event.componentId.startsWith("assign") -> buttonHandler.assignButtonTicketHandler()
             else -> {}
         }
     }
@@ -60,7 +59,8 @@ class EventHandler: ListenerAdapter() {
         if (
             !event.isFromType(ChannelType.PRIVATE) &&
             event.channel.name.startsWith(settings.discord["IDPrefix"] as String, true) &&
-            !event.author.isBot
+            !event.author.isBot &&
+                    event.author.idLong == dbMan.Search().Assignee().searchAssigneeDocumentById(event.channel.name.split("tck-")[1].toInt())!!.modId
         ) {
             if (event.message.attachments.isEmpty()) {
                 sendContent(tgId, InputMessageText(FormattedText(event.message.contentRaw, null), false, true))
@@ -80,6 +80,8 @@ class EventHandler: ListenerAdapter() {
                     )
                 }
             }
+        } else if (event.author.idLong != dbMan.Search().Assignee().searchAssigneeDocumentById(event.channel.name.split("tck-")[1].toInt())!!.modId) {
+            event.message.delete().queue()
         }
     }
 }
