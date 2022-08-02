@@ -1,10 +1,6 @@
 package me.chicchi7393.discogramRewrite.handlers
 
-import it.tdlight.jni.TdApi
-import it.tdlight.jni.TdApi.Chat
-import it.tdlight.jni.TdApi.DownloadFile
-import it.tdlight.jni.TdApi.InputMessageText
-import it.tdlight.jni.TdApi.SendMessage
+import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
@@ -87,40 +83,57 @@ class ticketHandlers {
         dbMan.Update().Tickets().closeTicket(
             ticket
         )
-        tgClient.client.send(SendMessage(
-            ticket.telegramId,
-            0,
-            0,
-            null,
-            null,
-            InputMessageText(TdApi.FormattedText("Ticket chiuso. ${if (text != "") "Motivazione: $text" else ""}", null), false, false)
-        )) {}
+        tgClient.client.send(
+            SendMessage(
+                ticket.telegramId,
+                0,
+                0,
+                null,
+                null,
+                InputMessageText(
+                    FormattedText(
+                        "Ticket chiuso. ${if (text != "") "Motivazione: $text" else ""}",
+                        null
+                    ), false, false
+                )
+            )
+        ) {}
     }
 
     fun suspendTicket(ticket: TicketDocument, text: String) {
         dbMan.Update().Tickets().suspendTicket(
             ticket
         )
-        tgClient.client.send(SendMessage(
-            ticket.telegramId,
-            0,
-            0,
-            null,
-            null,
-            InputMessageText(TdApi.FormattedText("Ticket sospeso. ${if (text != "") "Motivazione: $text" else ""}", null), false, false)
-        )) {}
+        tgClient.client.send(
+            SendMessage(
+                ticket.telegramId,
+                0,
+                0,
+                null,
+                null,
+                InputMessageText(
+                    FormattedText(
+                        "Ticket sospeso. ${if (text != "") "Motivazione: $text" else ""}",
+                        null
+                    ), false, false
+                )
+            )
+        ) {}
     }
+
     fun reOpenTicket(ticket: TicketDocument) {
         dbMan.Update().Tickets().reopenTicket(
             ticket
         )
-        tgClient.client.send(SendMessage(
-            ticket.telegramId,
-            0,
-            0,
-            null,
-            null,
-            InputMessageText(TdApi.FormattedText("Ticket riaperto.", null), false, false)
-        )) {}
+        tgClient.client.send(
+            SendMessage(
+                ticket.telegramId,
+                0,
+                0,
+                null,
+                null,
+                InputMessageText(FormattedText("Ticket riaperto.", null), false, false)
+            )
+        ) {}
     }
 }

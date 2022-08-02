@@ -21,6 +21,7 @@ class DsApp private constructor() {
     private val settings = JsonReader().readJsonSettings("settings")!!
     private val dbMan = DatabaseManager.instance
     private val tgApp = TgApp.instance
+
     init {
         println("DsApp Class Initialized")
     }
@@ -101,10 +102,13 @@ class DsApp private constructor() {
                 embed
             )
             .setActionRows(
-                generateFirstEmbedButtons("https://discordapp.com/channels/${getGuild().idLong}/${channel_id}", "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"),
+                generateFirstEmbedButtons(
+                    "https://discordapp.com/channels/${getGuild().idLong}/${channel_id}",
+                    "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"
+                ),
                 generateSecondEmbedButtons(channel_id),
                 ActionRow.of(
-                    Button.primary("menu", "Apri menu")
+                    Button.primary("menu-$channel_id", "Apri menu")
                 )
             )
             .addFile(File(URI("file://${pathImage}")), "pic.png")
