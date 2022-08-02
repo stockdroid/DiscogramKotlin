@@ -192,7 +192,7 @@ class DatabaseManager {
                 var assigneeDocument = instance.Get().getAssigneesCollection()
                     .findOne(AssigneeDocument::ticketId eq ticketId)!!
                 var previousAssignees = assigneeDocument.previousAssignees.toMutableList()
-                if (assigneeDocument.modId != 0L) previousAssignees.add(
+                if (!assigneeDocument.previousAssignees.isEmpty()) previousAssignees.add(
                     assigneeDocument.modId
                 ) else null
                 instance.Get().getAssigneesCollection()
