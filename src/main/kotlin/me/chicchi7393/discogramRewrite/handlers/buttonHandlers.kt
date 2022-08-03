@@ -98,7 +98,8 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
             event.reply("Ticket assegnato.").setEphemeral(true).queue()
         } else if (dbMan.Search().Assignee().searchAssigneeDocumentById(
                 dbMan.Search().Tickets().searchTicketDocumentByChannelId(channel_id)!!.ticketId
-            )!!.modId == event.member!!.idLong) {
+            )!!.modId == event.member!!.idLong
+        ) {
             event.reply("Hai già te questo ticket.").setEphemeral(true).queue()
         } else {
             event.reply("Non puoi assegnarti questo ticket perchè è già stato assegnato.").setEphemeral(true).queue()
@@ -130,12 +131,12 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         val NO_MENU = """Nessun menù per te :)"""
 
         val ASSIGNEE_ROW = ActionRow.of(
-            Button.primary("MenuButton-ticket-moveTicket:$channel_id", "Sposta ticket"),
-            Button.secondary("MenuButton-ticket-removeTicket:$channel_id", "Togliti ticket")
+            Button.primary("MenuButton-ticket-moveTicket:$channel_id/${event.message.id}", "Sposta ticket"),
+            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", "Togliti ticket")
         )
         val CAPOMOD_ROW = ActionRow.of(
-            Button.primary("MenuButton-ticket-moveTicket:$channel_id", "Sposta ticket"),
-            Button.secondary("MenuButton-ticket-marisaTicket:$channel_id", "Prenditi ticket")
+            Button.primary("MenuButton-ticket-moveTicket:$channel_id/${event.message.id}", "Sposta ticket"),
+            Button.secondary("MenuButton-ticket-marisaTicket:$channel_id/${event.message.id}", "Prenditi ticket")
         )
         val NO_MENU_ROW = "kakone"
 

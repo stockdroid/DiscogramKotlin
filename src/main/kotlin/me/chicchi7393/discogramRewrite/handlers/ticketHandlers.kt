@@ -28,31 +28,26 @@ class ticketHandlers {
                     System.currentTimeMillis() / 1000
                 )
             )
-            while (true) {
-                val filePath = tgClient.downloadFile(chat.photo.small.id)
-                if (filePath[0] == "") {
-                    Thread.sleep(100)
-                    continue
-                } else {
-                    dsClass.sendStartEmbed(
-                        chat,
-                        "File",
-                        dbMan.Utils().getLastUsedTicketId() + 1,
-                        it.idLong,
-                        filePath[0]
+            tgClient.downloadFile(chat.photo.small.id)
+            Thread.sleep(500)
+            val filePath = dsClass.getLastModified("session/database/profile_photos")!!.absolutePath
+            dsClass.sendStartEmbed(
+                chat,
+                "File",
+                dbMan.Utils().getLastUsedTicketId() + 1,
+                it.idLong,
+                filePath
+            )
+            if (file == null) {
+                dsClass.sendTextMessageToChannel(
+                    dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text
+                ).queue()
+            } else {
+                tgClient.client.send(file) {
+                    dsClass.sendTextMessageToChannel(
+                        dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text
                     )
-                    if (file == null) {
-                        dsClass.sendTextMessageToChannel(
-                            dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text
-                        ).queue()
-                    } else {
-                        tgClient.client.send(file) {
-                            dsClass.sendTextMessageToChannel(
-                                dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text
-                            )
-                                .addFile(java.io.File(it.get().local.path)).queue()
-                        }
-                    }
+                        .addFile(java.io.File(it.get().local.path)).queue()
                 }
             }
         }.queue()
