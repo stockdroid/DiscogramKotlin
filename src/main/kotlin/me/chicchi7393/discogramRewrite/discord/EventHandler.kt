@@ -66,10 +66,11 @@ class EventHandler : ListenerAdapter() {
         if (
             !event.isFromType(ChannelType.PRIVATE) &&
             event.channel.name.startsWith(settings.discord["IDPrefix"] as String, true) &&
-            !event.author.isBot
+            !event.author.isBot &&
+            !event.message.contentRaw.startsWith("###")
         ) {
             if (event.author.idLong == dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split("tck-")[1].toInt())!!.modId
+                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].toInt())!!.modId
             ) {
                 if (event.message.attachments.isEmpty()) {
                     sendContent(tgId, InputMessageText(FormattedText(event.message.contentRaw, null), false, true))
@@ -90,7 +91,8 @@ class EventHandler : ListenerAdapter() {
                     }
                 }
             } else if (event.author.idLong != dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split("tck-")[1].toInt())!!.modId
+                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].toInt())!!.modId &&
+                !event.message.contentRaw.startsWith("###")
             ) {
                 event.message.delete().queue()
             }
