@@ -15,7 +15,12 @@
     "channel_id": 967408670168195122,
     "ignoreMessagePrefix": "###",
     "IDPrefix": "TCK-",
-    "ignoreTGAuthor": [777000, 1912620252, 216729606, 5347402873]
+    "ignoreTGAuthor": [
+      777000,
+      1912620252,
+      216729606,
+      5347402873
+    ]
   },
   "mongodb": {
     "username": "root",

@@ -85,6 +85,21 @@ class DsApp private constructor() {
         )
     }
 
+    fun getLastModified(directoryFilePath: String): File? {
+        val directory = File(directoryFilePath)
+        val files = directory.listFiles { obj: File -> obj.isFile }
+        var lastModifiedTime = Long.MIN_VALUE
+        var chosenFile: File? = null
+        if (files != null) {
+            for (file in files) {
+                if (file.lastModified() > lastModifiedTime) {
+                    chosenFile = file
+                    lastModifiedTime = file.lastModified()
+                }
+            }
+        }
+        return chosenFile
+    }
 
     fun sendStartEmbed(chat: Chat, message: String, ticketId: Int, channel_id: Long, pathImage: String) {
         val embed = generateTicketEmbed(
@@ -140,22 +155,16 @@ class DsApp private constructor() {
                     System.currentTimeMillis() / 1000
                 )
             )
-            while (true) {
-                val filePath = tgApp.downloadFile(chat.photo.small.id)
-                if (filePath[0] == "") {
-                    Thread.sleep(100)
-                    continue
-                } else {
-                    sendStartEmbed(
-                        chat,
-                        message,
-                        dbMan.Utils().getLastUsedTicketId() + 1,
-                        it.idLong,
-                        filePath[0]
-                    )
-                    break
-                }
-            }
+            tgApp.downloadFile(chat.photo.small.id)
+            Thread.sleep(500)
+            val filePath = getLastModified("session/database/profile_photos")!!.absolutePath
+            sendStartEmbed(
+                chat,
+                message,
+                dbMan.Utils().getLastUsedTicketId() + 1,
+                it.idLong,
+                filePath
+            )
         }.queue()
     }
 

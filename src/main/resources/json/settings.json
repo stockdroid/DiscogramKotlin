@@ -16,13 +16,20 @@
     "category_id": 996343698092736512,
     "suspended_category_id": 998210146280931360,
     "archived_category_id": 996343737825361982,
-    "higher_roles": [996367255929626734, 996367283507167282],
+    "higher_roles": [
+      996367255929626734,
+      996367283507167282
+    ],
     "ignoreMessagePrefix": "###",
     "IDPrefix": "TCK-",
-    "ignoreTGAuthor": [777000, 1912620252, 216729606]
+    "ignoreTGAuthor": [
+      777000,
+      1912620252,
+      216729606
+    ]
   },
   "mongodb": {
-    "connection_string":  "mongodb://localhost:27017",
+    "connection_string": "mongodb://localhost:27017",
     "database": "discogramTickets"
   }
 }

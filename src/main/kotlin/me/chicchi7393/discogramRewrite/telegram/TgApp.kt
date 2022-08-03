@@ -50,20 +50,8 @@ class TgApp private constructor() {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
     }
 
-    fun downloadFile(file_id: Int): Array<String> {
-        val value = arrayOf("")
-        client.send(DownloadFile(file_id, 32, 0, 0, true)) {
-            while (true) {
-                if (it.get().local.path == "") {
-                    Thread.sleep(100)
-                    continue
-                } else {
-                    value[0] = it.get().local.path
-                    break
-                }
-            }
-
-        }
-        return value
+    fun downloadFile(file_id: Int) {
+        client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
+        Thread.sleep(1000)
     }
 }
