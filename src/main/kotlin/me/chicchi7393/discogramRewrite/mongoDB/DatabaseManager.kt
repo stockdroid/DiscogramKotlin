@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.AssigneeDocument
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinksDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import org.bson.BsonValue
 import org.litote.kmongo.*
@@ -50,6 +51,11 @@ class DatabaseManager {
             return getDB()
                 .getCollection<AssigneeDocument>("assignees")
         }
+
+        fun getMessageLinkCollection(): MongoCollection<MessageLinksDocument> {
+            return getDB()
+                .getCollection<MessageLinksDocument>("messageLinks")
+        }
     }
 
     inner class Create {
@@ -69,14 +75,6 @@ class DatabaseManager {
                     .insertOne(ticketDocument)
                     .insertedId
             }
-
-            fun createManyTicketDocuments(
-                TicketDocuments: List<TicketDocument>
-            ): MutableMap<Int, BsonValue> {
-                return instance.Get().getTicketsCollection()
-                    .insertMany(TicketDocuments)
-                    .insertedIds
-            }
         }
 
         inner class Assignee {
@@ -87,13 +85,15 @@ class DatabaseManager {
                     .insertOne(assigneeDocument)
                     .insertedId
             }
+        }
 
-            fun createManyAssigneeDocuments(
-                assigneeDocuments: List<AssigneeDocument>
-            ): MutableMap<Int, BsonValue> {
-                return instance.Get().getAssigneesCollection()
-                    .insertMany(assigneeDocuments)
-                    .insertedIds
+        inner class MessageLink {
+            fun createMessageLinkDocument(
+                messageLinkDocument: MessageLinksDocument
+            ): BsonValue? {
+                return instance.Get().getMessageLinkCollection()
+                    .insertOne(messageLinkDocument)
+                    .insertedId
             }
         }
     }
@@ -120,7 +120,9 @@ class DatabaseManager {
 
             fun searchTicketDocumentByTelegramId(telegramId: Long): TicketDocument? {
                 return instance.Get().getTicketsCollection()
-                    .findOne(TicketDocument::telegramId eq telegramId)
+                    .find(TicketDocument::telegramId eq telegramId)
+                    .descendingSort(TicketDocument::unixSeconds)
+                    .first()
             }
         }
 
@@ -137,6 +139,20 @@ class DatabaseManager {
 
         }
 
+        inner class MessageLinks {
+            fun searchMessageLinkById(ticketId: Int): MessageLinksDocument? {
+                return instance.Get().getMessageLinkCollection()
+                    .findOne(MessageLinksDocument::ticket_id eq ticketId)
+            }
+
+            fun searchTgMessageByDiscordMessage(tgMessageId: Long): Long {
+                TODO()
+            }
+
+            fun searchDsMessageByTelegramMessage(tgMessageId: Long): Long {
+                TODO()
+            }
+        }
     }
 
     inner class FindLatest {
@@ -189,10 +205,10 @@ class DatabaseManager {
 
         inner class Assignees {
             fun editAssignee(ticketId: Int, assigneeId: Long): UpdateResult {
-                var assigneeDocument = instance.Get().getAssigneesCollection()
+                val assigneeDocument = instance.Get().getAssigneesCollection()
                     .findOne(AssigneeDocument::ticketId eq ticketId)!!
-                var previousAssignees = assigneeDocument.previousAssignees.toMutableList()
-                if (!assigneeDocument.previousAssignees.isEmpty()) previousAssignees.add(
+                val previousAssignees = assigneeDocument.previousAssignees.toMutableList()
+                if (assigneeDocument.previousAssignees.isNotEmpty()) previousAssignees.add(
                     assigneeDocument.modId
                 ) else null
                 instance.Get().getAssigneesCollection()
@@ -210,7 +226,7 @@ class DatabaseManager {
                     )
             }
 
-            fun editAssigneewithoutTrack(ticketId: Int, assigneeId: Long): UpdateResult {
+            private fun editAssigneewithoutTrack(ticketId: Int, assigneeId: Long): UpdateResult {
                 return instance.Get().getAssigneesCollection()
                     .updateOne(
                         AssigneeDocument::ticketId eq ticketId,
@@ -244,6 +260,24 @@ class DatabaseManager {
                     .getTicketsCollection()
                     .find(TicketDocument::telegramId eq telegram_id)) {
                     if (userTicket.status["open"] == true) {
+                        return userTicket
+                    } else {
+                        continue
+                    }
+                }
+            } catch (e: java.lang.NullPointerException) {
+                return null
+            }
+            return null
+        }
+
+        fun searchAlreadySuspended(telegram_id: Long): TicketDocument? {
+            try {
+                for (userTicket in this@DatabaseManager
+                    .Get()
+                    .getTicketsCollection()
+                    .find(TicketDocument::telegramId eq telegram_id)) {
+                    if (userTicket.status["suspended"] == true) {
                         return userTicket
                     } else {
                         continue

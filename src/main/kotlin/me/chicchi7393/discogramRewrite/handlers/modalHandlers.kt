@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class modalHandlers(val event: ModalInteractionEvent) {
+class modalHandlers(private val event: ModalInteractionEvent) {
     private val ticketHandler = ticketHandlers()
     private val dbMan = DatabaseManager.instance
     private val discordClient = DsApp.instance

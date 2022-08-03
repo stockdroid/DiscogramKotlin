@@ -2,9 +2,9 @@ package me.chicchi7393.discogramRewrite.handlers
 
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
+import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Modal
@@ -59,18 +59,7 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
                     .build()
             ).queue()
         } else {
-            ticketHandler.reOpenTicket(
-                dbMan.Search().Tickets().searchTicketDocumentByChannelId(
-                    event.componentId.split("-")[1].toLong()
-                )!!
-            )
-            event.reply("Ticket riaperto.")
-            discordClient.dsClient
-                .getChannelById(TextChannel::class.java, event.componentId.split("-")[1].toLong())!!
-                .manager
-                .setParent(discordClient.dsClient.getCategoryById(settings.discord["category_id"] as Long))
-                .queue()
-
+            reopenTicket().reopenTicket(dbMan.Search().Tickets().getTgIdByChannelId(channel_id))
         }
     }
 
@@ -131,11 +120,10 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         val NO_MENU = """Nessun menù per te :)"""
 
         val ASSIGNEE_ROW = ActionRow.of(
-            Button.primary("MenuButton-ticket-moveTicket:$channel_id/${event.message.id}", "Sposta ticket"),
             Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", "Togliti ticket")
         )
         val CAPOMOD_ROW = ActionRow.of(
-            Button.primary("MenuButton-ticket-moveTicket:$channel_id/${event.message.id}", "Sposta ticket"),
+            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", "Disassegna ticket"),
             Button.secondary("MenuButton-ticket-marisaTicket:$channel_id/${event.message.id}", "Prenditi ticket")
         )
         val NO_MENU_ROW = "kakone"

@@ -6,16 +6,14 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 
-class ticketMenu(val event: ButtonInteractionEvent) {
+class ticketMenu(private val event: ButtonInteractionEvent) {
     private val dbMan = DatabaseManager.instance
     private val channel_id =
         if (event.componentId.contains(":")) event.componentId.split(":")[1].split("/")[0].toLong() else 0
     private val message_id = if (event.componentId.contains("/")) event.componentId.split("/")[1].toLong() else 0
     private val discordClient = DsApp.instance
     private val settings = JsonReader().readJsonSettings("settings")!!
-    fun moveTicket() {
-        ////dopo
-    }
+
 
     fun removeTicket() {
         dbMan.Update().Assignees().editAssignee(

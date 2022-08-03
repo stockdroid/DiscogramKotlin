@@ -3,6 +3,7 @@ package me.chicchi7393.discogramRewrite.handlers
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
+import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
@@ -10,7 +11,6 @@ import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import java.lang.NullPointerException
 import java.net.URI
 
 class ticketHandlers {
@@ -19,7 +19,7 @@ class ticketHandlers {
     private val dsClass = DsApp.instance
     private val tgClient = TgApp.instance
 
-    fun startTicketWithFile(id: Long, chat: Chat, file: DownloadFile?, text: String) {
+    fun startTicketWithFile(chat: Chat, file: DownloadFile?, text: String) {
         val pfpId = try {
             chat.photo.small.id
         } catch (_: NullPointerException) {
@@ -41,7 +41,7 @@ class ticketHandlers {
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
             .sendMessageEmbeds(
                 embed
-            ).map {
+            ).map { it ->
                 it.editMessageEmbeds(
                     embed
                 ).setActionRows(
@@ -60,7 +60,7 @@ class ticketHandlers {
                         TicketDocument(
                             chat.id,
                             tIt.idLong,
-                            dbMan.Utils().getLastUsedTicketId()+1,
+                            dbMan.Utils().getLastUsedTicketId() + 1,
                             mapOf("open" to true, "suspended" to false, "closed" to false),
                             System.currentTimeMillis() / 1000
                         )
@@ -72,13 +72,26 @@ class ticketHandlers {
                             tIt.sendMessage(text)
                                 .addFile(java.io.File(it.get().local.path)).queue()
                         }
+                    }
                 }
-            }
-        }.queue()
+            }.queue()
     }
 
     fun startTicketWithText(chat: Chat, text: String) = dsClass.createTicket(chat, text)
-    fun sendFileFollowMessage(id: Long, file: DownloadFile?, text: String) {
+    fun sendFileFollowMessage(id: Long, file: DownloadFile?, text: String, wasSuspended: Boolean) {
+        if (wasSuspended) {
+            tgClient.client.send(
+                SendMessage(
+                    id,
+                    0,
+                    0,
+                    null,
+                    null,
+                    InputMessageText(FormattedText("Ticket riaperto.", null), false, false)
+                )
+            ) {}
+            reopenTicket().reopenTicket(id)
+        }
         if (file == null) {
             dsClass.sendTextMessageToChannel(
                 dbMan.Utils().searchAlreadyOpen(id)!!.channelId,
@@ -95,8 +108,23 @@ class ticketHandlers {
         }
     }
 
-    fun sendTextFollowMessage(id: Long, text: String) =
+    fun sendTextFollowMessage(id: Long, text: String, wasSuspended: Boolean) {
+        if (wasSuspended) {
+            tgClient.client.send(
+                SendMessage(
+                    id,
+                    0,
+                    0,
+                    null,
+                    null,
+                    InputMessageText(FormattedText("Ticket riaperto.", null), false, false)
+                )
+            ) {}
+            reopenTicket().reopenTicket(id)
+        }
         dsClass.sendTextMessageToChannel(dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text).queue()
+    }
+
 
     fun closeTicket(ticket: TicketDocument, text: String) {
         dbMan.Update().Tickets().closeTicket(
