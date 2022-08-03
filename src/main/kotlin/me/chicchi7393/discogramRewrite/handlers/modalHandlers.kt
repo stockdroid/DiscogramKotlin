@@ -21,17 +21,18 @@ class modalHandlers(val event: ModalInteractionEvent) {
         )!!
         ticketHandler.closeTicket(ticket, event.values[0].asString)
 
-        discordClient.dsClient
-            .getChannelById(TextChannel::class.java, channelId)!!
-            .manager
-            .setParent(discordClient.dsClient.getCategoryById(settings.discord["archived_category_id"] as Long))
+        val thread = discordClient.dsClient
+            .getThreadChannelById(channelId)!!
+        thread.manager
+            .setName(thread.name + " (Chiuso)")
+            .setArchived(true)
             .queue()
+
         val message =
             discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .retrieveMessageById(event.modalId.split(":")[1].toLong()).complete(true)
         message.editMessageComponents(
             discordClient.generateFirstEmbedButtons(
-                "https://discordapp.com/channels/${discordClient.getGuild().idLong}/${channelId}",
                 "https://chicchi7393.xyz/redirectTg.html?id=${ticket.telegramId}"
             ),
             ActionRow.of(
@@ -65,11 +66,13 @@ class modalHandlers(val event: ModalInteractionEvent) {
         )!!
         ticketHandler.suspendTicket(ticket, event.values[0].asString)
 
-        discordClient.dsClient
-            .getChannelById(TextChannel::class.java, channelId)!!
-            .manager
-            .setParent(discordClient.dsClient.getCategoryById(settings.discord["suspended_category_id"] as Long))
+        val thread = discordClient.dsClient
+            .getThreadChannelById(channelId)!!
+        thread.manager
+            .setName(thread.name + " (Sospeso)")
+            .setLocked(true)
             .queue()
+
         val message =
             discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .retrieveMessageById(event.modalId.split(":")[1].toLong()).complete(true)

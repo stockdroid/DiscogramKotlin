@@ -7,7 +7,11 @@ import it.tdlight.client.TDLibSettings
 import it.tdlight.common.Init
 import it.tdlight.jni.TdApi.DownloadFile
 import me.chicchi7393.discogramRewrite.JsonReader
+import java.io.BufferedInputStream
+import java.io.FileOutputStream
+import java.net.URL
 import java.nio.file.Paths
+import java.util.*
 
 
 class TgApp private constructor() {
@@ -50,8 +54,30 @@ class TgApp private constructor() {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
     }
 
+    private fun remoteDownloadFile(url: URL, fileName: String) {
+        url.openStream().use { inp ->
+            BufferedInputStream(inp).use { bis ->
+                FileOutputStream(fileName).use { fos ->
+                    val data = ByteArray(1024)
+                    var count: Int
+                    while (bis.read(data, 0, 1024).also { count = it } != -1) {
+                        fos.write(data, 0, count)
+                    }
+                }
+            }
+        }
+    }
+
+    fun randomNum(): Long {
+        return Random().nextLong(9000000000000000000) + 1000000000000000000
+    }
+
     fun downloadFile(file_id: Int) {
-        client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
+        if (file_id == 69420) {
+            remoteDownloadFile(URL("https://secure.gravatar.com/avatar/332e21525f60fc83790eb080845905e3?default=mm&rating=G&size=160"), "./session/database/profile_photos/${randomNum()}.jpg")
+        } else {
+            client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
+        }
         Thread.sleep(1000)
     }
 }

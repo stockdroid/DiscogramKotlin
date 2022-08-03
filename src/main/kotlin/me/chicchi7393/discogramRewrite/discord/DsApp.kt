@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import java.awt.Color
 import java.io.File
+import java.lang.NullPointerException
 import java.net.URI
 
 class DsApp private constructor() {
@@ -66,16 +67,15 @@ class DsApp private constructor() {
             .build()
     }
 
-    fun generateFirstEmbedButtons(channel_link: String, tg_profile: String = "https://google.com"): ActionRow {
+    fun generateFirstEmbedButtons(tg_profile: String = "https://google.com"): ActionRow {
         return ActionRow.of(
             listOf(
-                Button.link(channel_link, "Apri chat"),
                 Button.link(tg_profile, "Apri profilo Telegram")
             )
         )
     }
 
-    private fun generateSecondEmbedButtons(channel_id: Long): ActionRow {
+    fun generateSecondEmbedButtons(channel_id: Long): ActionRow {
         return ActionRow.of(
             listOf(
                 Button.success("assign-$channel_id", "Assegna"),
@@ -101,71 +101,65 @@ class DsApp private constructor() {
         return chosenFile
     }
 
-    fun sendStartEmbed(chat: Chat, message: String, ticketId: Int, channel_id: Long, pathImage: String) {
+    fun getGuild(): Guild {
+        return dsClient.getGuildById(settings.discord["guild_id"] as Long)!!
+    }
+
+    fun sendTextMessageToChannel(channel: Long, text: String): MessageAction {
+        return dsClient.getThreadChannelById(
+            channel
+        )!!.sendMessage(text)
+    }
+
+    fun createTicket(chat: Chat, message: String) {
+        val pfpId = try {
+            chat.photo.small.id
+        } catch (_: NullPointerException) {
+            69420
+        }
+        tgApp.downloadFile(pfpId)
+        Thread.sleep(500)
+        val filePath = getLastModified("session/database/profile_photos")!!.absolutePath
         val embed = generateTicketEmbed(
             chat.title,
             "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}",
             message,
             isForced = false,
             isAssigned = false,
-            footerStr = "${settings.discord["IDPrefix"]}${ticketId - 1}",
+            footerStr = "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId()+1}",
             state = TicketState.OPEN
         )
         dsClient
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
             .sendMessageEmbeds(
                 embed
-            )
-            .setActionRows(
-                generateFirstEmbedButtons(
-                    "https://discordapp.com/channels/${getGuild().idLong}/${channel_id}",
-                    "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"
-                ),
-                generateSecondEmbedButtons(channel_id),
-                ActionRow.of(
-                    Button.primary("menu-$channel_id", "Apri menu")
-                )
-            )
-            .addFile(File(URI("file://${pathImage}")), "pic.png")
+            ).map {
+                it.editMessageEmbeds(
+                    embed
+                ).setActionRows(
+                    generateFirstEmbedButtons(
+                        "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"
+                    ),
+                    generateSecondEmbedButtons(it.idLong),
+                    ActionRow.of(
+                        Button.primary("menu-${it.id}", "Apri menu")
+                    )
+                ).addFile(File(URI("file://${filePath}")), "pic.png").queue()
+                it.createThreadChannel(
+                    "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId()+1}"
+                ).map { tIt ->
+                    dbMan.Create().Tickets().createTicketDocument(
+                        TicketDocument(
+                            chat.id,
+                            tIt.idLong,
+                            dbMan.Utils().getLastUsedTicketId()+1,
+                            mapOf("open" to true, "suspended" to false, "closed" to false),
+                            System.currentTimeMillis() / 1000
+                        )
+                    )
+                }.queue()
+            }
             .queue()
-    }
-
-    fun getGuild(): Guild {
-        return dsClient.getGuildById(settings.discord["guild_id"] as Long)!!
-    }
-
-    fun sendTextMessageToChannel(channel: Long, text: String): MessageAction {
-        return dsClient.getChannelById(
-            TextChannel::class.java, channel
-        )!!.sendMessage(text)
-    }
-
-    fun createTicket(chat: Chat, message: String) {
-        dsClient.getCategoryById(
-            settings.discord["category_id"] as Long
-        )!!.createTextChannel(
-            "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-        ).map {
-            dbMan.Create().Tickets().createTicketDocument(
-                TicketDocument(
-                    chat.id,
-                    it.idLong,
-                    dbMan.Utils().getLastUsedTicketId() + 1,
-                    mapOf("open" to true, "suspended" to false, "closed" to false),
-                    System.currentTimeMillis() / 1000
-                )
-            )
-            tgApp.downloadFile(chat.photo.small.id)
-            Thread.sleep(500)
-            val filePath = getLastModified("session/database/profile_photos")!!.absolutePath
-            sendStartEmbed(
-                chat,
-                message,
-                dbMan.Utils().getLastUsedTicketId() + 1,
-                it.idLong,
-                filePath
-            )
-        }.queue()
     }
 
     fun isHigherRole(member: Member): Boolean {
