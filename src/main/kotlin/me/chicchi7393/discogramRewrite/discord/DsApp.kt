@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import java.awt.Color
 import java.io.File
-import java.lang.NullPointerException
 import java.net.URI
 
 class DsApp private constructor() {
@@ -119,21 +118,22 @@ class DsApp private constructor() {
         }
         tgApp.downloadFile(pfpId)
         Thread.sleep(500)
-        val filePath = getLastModified("session/database/profile_photos")!!.absolutePath
+        val filePath =
+            if (pfpId != 69420) getLastModified("session/database/profile_photos")!!.absolutePath else File("./session/database/profile_photos/5900.jpg").absolutePath
         val embed = generateTicketEmbed(
             chat.title,
             "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}",
             message,
             isForced = false,
             isAssigned = false,
-            footerStr = "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId()+1}",
+            footerStr = "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}",
             state = TicketState.OPEN
         )
         dsClient
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
             .sendMessageEmbeds(
                 embed
-            ).map {
+            ).addFile(File(URI("file://${filePath}")), "pic.png").map {
                 it.editMessageEmbeds(
                     embed
                 ).setActionRows(
@@ -144,15 +144,15 @@ class DsApp private constructor() {
                     ActionRow.of(
                         Button.primary("menu-${it.id}", "Apri menu")
                     )
-                ).addFile(File(URI("file://${filePath}")), "pic.png").queue()
+                ).queue()
                 it.createThreadChannel(
-                    "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId()+1}"
+                    "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                 ).map { tIt ->
                     dbMan.Create().Tickets().createTicketDocument(
                         TicketDocument(
                             chat.id,
                             tIt.idLong,
-                            dbMan.Utils().getLastUsedTicketId()+1,
+                            dbMan.Utils().getLastUsedTicketId() + 1,
                             mapOf("open" to true, "suspended" to false, "closed" to false),
                             System.currentTimeMillis() / 1000
                         )

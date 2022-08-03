@@ -2,6 +2,7 @@ package me.chicchi7393.discogramRewrite.discord
 
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
 import me.chicchi7393.discogramRewrite.handlers.buttonHandlers
 import me.chicchi7393.discogramRewrite.handlers.messageMenu.ticketMenu
 import me.chicchi7393.discogramRewrite.handlers.modalHandlers
@@ -46,7 +47,6 @@ class EventHandler : ListenerAdapter() {
             event.componentId.startsWith("suspend") -> buttonHandler.suspendButtonTicketHandler()
             event.componentId.startsWith("assign") -> buttonHandler.assignButtonTicketHandler()
             event.componentId.startsWith("menu") -> buttonHandler.menuButtonHandler()
-            event.componentId.startsWith("MenuButton-ticket-moveTicket") -> ticketMenu.moveTicket()
             event.componentId.startsWith("MenuButton-ticket-removeTicket") -> ticketMenu.removeTicket()
             event.componentId.startsWith("MenuButton-ticket-marisaTicket") -> ticketMenu.marisaTicket()
             else -> {}
@@ -70,8 +70,13 @@ class EventHandler : ListenerAdapter() {
             !event.message.contentRaw.startsWith("###")
         ) {
             if (event.author.idLong == dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].toInt())!!.modId
+                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].split(" ")[0].toInt())!!.modId
             ) {
+                if (dbMan.Search().Tickets()
+                        .searchTicketDocumentByChannelId(event.channel.idLong)!!.status["suspended"] == true
+                ) {
+                    reopenTicket().reopenTicket(tgId)
+                }
                 if (event.message.attachments.isEmpty()) {
                     sendContent(tgId, InputMessageText(FormattedText(event.message.contentRaw, null), false, true))
                 } else if (event.message.attachments.isNotEmpty()) {
@@ -91,7 +96,7 @@ class EventHandler : ListenerAdapter() {
                     }
                 }
             } else if (event.author.idLong != dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].toInt())!!.modId &&
+                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].split(" ")[0].toInt())!!.modId &&
                 !event.message.contentRaw.startsWith("###")
             ) {
                 event.message.delete().queue()

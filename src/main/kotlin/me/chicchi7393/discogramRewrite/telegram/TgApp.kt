@@ -54,10 +54,10 @@ class TgApp private constructor() {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
     }
 
-    private fun remoteDownloadFile(url: URL, fileName: String) {
+    private fun remoteDownloadFile(url: URL) {
         url.openStream().use { inp ->
             BufferedInputStream(inp).use { bis ->
-                FileOutputStream(fileName).use { fos ->
+                FileOutputStream("./session/database/profile_photos/5900.jpg").use { fos ->
                     val data = ByteArray(1024)
                     var count: Int
                     while (bis.read(data, 0, 1024).also { count = it } != -1) {
@@ -74,7 +74,9 @@ class TgApp private constructor() {
 
     fun downloadFile(file_id: Int) {
         if (file_id == 69420) {
-            remoteDownloadFile(URL("https://secure.gravatar.com/avatar/332e21525f60fc83790eb080845905e3?default=mm&rating=G&size=160"), "./session/database/profile_photos/${randomNum()}.jpg")
+            remoteDownloadFile(
+                URL("https://secure.gravatar.com/avatar/332e21525f60fc83790eb080845905e3?default=mm&rating=G&size=160")
+            )
         } else {
             client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
         }
