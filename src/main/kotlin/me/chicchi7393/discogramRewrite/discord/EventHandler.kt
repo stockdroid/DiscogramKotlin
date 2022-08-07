@@ -7,12 +7,17 @@ import me.chicchi7393.discogramRewrite.handlers.buttonHandlers
 import me.chicchi7393.discogramRewrite.handlers.messageMenu.ticketMenu
 import me.chicchi7393.discogramRewrite.handlers.modalHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinksDocument
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import org.bson.BsonTimestamp
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
@@ -23,9 +28,18 @@ class EventHandler : ListenerAdapter() {
     private val settings = JsonReader().readJsonSettings("settings")!!
     private val dbMan = DatabaseManager.instance
     private val tgClient = TgApp.instance.client
-    private fun sendContent(tgId: Long, content: InputMessageContent) = tgClient.send(
-        SendMessage(tgId, 0, 0, null, null, content)
-    ) {}
+    private fun sendContent(tgId: Long, dsId: Long, content: InputMessageContent, ticket_id: Int, reply_id: Long) {
+        var tg_reply = 0L
+        if (reply_id != 0L) {
+            tg_reply = dbMan.Search().MessageLinks().searchTgMessageByDiscordMessage(ticket_id, reply_id)
+        }
+        tgClient.send(
+            SendMessage(tgId, 0, tg_reply, null, null, content)
+        ) {
+            dbMan.Update().MessageLinks().addMessageToMessageLinks(ticket_id, MessageLinkType(it.get().id, dsId, BsonTimestamp(System.currentTimeMillis()/1000)))
+        }
+    }
+
 
     private fun downloadFile(url: URL, filename: String): Path {
         val path = Files.createDirectory(
@@ -62,7 +76,13 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        val tgId = dbMan.Search().Tickets().getTgIdByChannelId(event.channel.idLong)
+        val ticket = try {dbMan.Search().Tickets()
+            .searchTicketDocumentByChannelId(event.channel.idLong)!!
+        } catch(e: Exception) {
+            TicketDocument(0L, 0L, 0, mapOf("open" to false, "suspended" to false, "closed" to true), 0L)
+        }
+        val tgId = ticket.telegramId
+
         if (
             !event.isFromType(ChannelType.PRIVATE) &&
             event.channel.name.startsWith(settings.discord["IDPrefix"] as String, true) &&
@@ -72,13 +92,12 @@ class EventHandler : ListenerAdapter() {
             if (event.author.idLong == dbMan.Search().Assignee()
                     .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].split(" ")[0].toInt())!!.modId
             ) {
-                if (dbMan.Search().Tickets()
-                        .searchTicketDocumentByChannelId(event.channel.idLong)!!.status["suspended"] == true
+                if (ticket.status["suspended"] == true
                 ) {
                     reopenTicket().reopenTicket(tgId)
                 }
                 if (event.message.attachments.isEmpty()) {
-                    sendContent(tgId, InputMessageText(FormattedText(event.message.contentRaw, null), false, true))
+                    sendContent(tgId, event.messageIdLong, InputMessageText(FormattedText(event.message.contentRaw, null), false, true), ticket.ticketId, if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L)
                 } else if (event.message.attachments.isNotEmpty()) {
                     var i = 0
                     for (attach in event.message.attachments) {
@@ -86,12 +105,15 @@ class EventHandler : ListenerAdapter() {
                         i++
                         sendContent(
                             tgId,
+                            event.messageIdLong,
                             InputMessageDocument(
                                 InputFileLocal(path),
                                 null,
                                 false,
                                 FormattedText(if (i == 1) event.message.contentRaw else "", null)
-                            )
+                            ),
+                            ticket.ticketId,
+                            if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L
                         )
                     }
                 }
@@ -102,5 +124,9 @@ class EventHandler : ListenerAdapter() {
                 event.message.delete().queue()
             }
         }
+    }
+
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
+
     }
 }

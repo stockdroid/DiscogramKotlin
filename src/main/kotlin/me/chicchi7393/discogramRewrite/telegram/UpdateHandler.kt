@@ -24,7 +24,6 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
         )
     }
 
-
     private fun ticketIfList(chat: Chat, message: Message): Boolean {
         return (chat.type is ChatTypePrivate
                 && chat.id !in settings.discord["ignoreTGAuthor"] as List<Long>
@@ -46,7 +45,10 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                         ticketHandlers.sendTextFollowMessage(
                             chat.id,
                             text,
-                            dbMan.Utils().searchAlreadySuspended(chat.id) != null
+                            dbMan.Utils().searchAlreadySuspended(chat.id) != null,
+                            dbMan.Search().Tickets().searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
+                            update.message.id,
+                            update.message.replyToMessageId
                         )
                     else
                         ticketHandlers.startTicketWithText(chat, text)
@@ -71,10 +73,16 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                             chat.id,
                             file,
                             text,
-                            dbMan.Utils().searchAlreadySuspended(chat.id) != null
+                            dbMan.Utils().searchAlreadySuspended(chat.id) != null,
+                            dbMan.Search().Tickets().searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
+                            update.message.id,
+                            update.message.replyToMessageId
                         )
                 }
             }
         }
+    }
+    fun onUpdateMessageSendSucceeded(update: UpdateMessageSendSucceeded) {
+        dbMan.Update().MessageLinks().updateMessageId(dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.message.chatId)!!.ticketId, update.oldMessageId, update.message.id)
     }
 }

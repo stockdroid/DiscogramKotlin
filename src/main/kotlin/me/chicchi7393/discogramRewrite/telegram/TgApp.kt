@@ -7,6 +7,7 @@ import it.tdlight.client.TDLibSettings
 import it.tdlight.common.Init
 import it.tdlight.jni.TdApi.DownloadFile
 import me.chicchi7393.discogramRewrite.JsonReader
+import net.dv8tion.jda.api.JDA
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
 import java.net.URL
