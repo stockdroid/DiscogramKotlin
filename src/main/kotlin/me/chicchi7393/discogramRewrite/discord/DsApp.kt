@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.requests.restaction.MessageAction
@@ -104,10 +106,14 @@ class DsApp private constructor() {
         return dsClient.getGuildById(settings.discord["guild_id"] as Long)!!
     }
 
-    fun sendTextMessageToChannel(channel: Long, text: String): MessageAction {
+    fun sendTextMessageToChannel(channel: Long, text: String, reply_id: Long, ticket_id: Int): MessageAction {
+        var ds_reply = 0L
+        if (reply_id != 0L) {
+            ds_reply = dbMan.Search().MessageLinks().searchDsMessageByTelegramMessage(ticket_id, reply_id)
+        }
         return dsClient.getThreadChannelById(
             channel
-        )!!.sendMessage(text)
+        )!!.sendMessage(text).referenceById(ds_reply)
     }
 
     fun createTicket(chat: Chat, message: String) {
@@ -170,6 +176,21 @@ class DsApp private constructor() {
             }
         }
         return isHigher
+    }
+
+    fun createCommands() {
+        dsClient.updateCommands().addCommands(
+            Commands.slash("tickets", "Ti da una lista di vecchi ticket di un utente")
+                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente a cui controllare i ticket"),
+            Commands.slash("del", "Elimina un messaggio"),
+            Commands.slash("cronologia", "Leggi la cronologia dei messaggi")
+                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente a cui controllare i ticket")
+                .addOption(OptionType.INTEGER, "messaggi", "Numero messaggi (10 se non messo)", false),
+            Commands.slash("block", "Blocca utente")
+                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente da bloccare (utente nel thread se non specificato)", false),
+            Commands.slash("block", "Blocca utente")
+                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente da bloccare (utente nel thread se non specificato)", false)
+        ).queue()
     }
 
 }

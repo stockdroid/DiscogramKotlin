@@ -1,6 +1,7 @@
 package me.chicchi7393.discogramRewrite
 
 import it.tdlight.jni.TdApi.UpdateAuthorizationState
+import it.tdlight.jni.TdApi.UpdateMessageSendSucceeded
 import it.tdlight.jni.TdApi.UpdateNewMessage
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
@@ -17,6 +18,7 @@ class Main {
     fun main() {
         tgClient.addUpdateHandler(UpdateAuthorizationState::class.java, updateHandlers::authStateUpdate)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
+        tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
         DatabaseManager().createClient()
         Thread {
             tgClient.start(tgAppClass.generateAuth())
@@ -25,6 +27,7 @@ class Main {
 
         Thread {
             dsAppClass.createApp()
+            dsAppClass.createCommands()
         }.start()
     }
 }

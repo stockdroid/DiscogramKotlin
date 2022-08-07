@@ -3,13 +3,18 @@ package me.chicchi7393.discogramRewrite.mongoDB
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.AssigneeDocument
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinksDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import org.bson.BsonValue
+import org.bson.conversions.Bson
 import org.litote.kmongo.*
+import org.litote.kmongo.util.idValue
+
 
 class DatabaseManager {
     private val settings = JsonReader().readJsonSettings("settings")!!
@@ -71,6 +76,12 @@ class DatabaseManager {
                             arrayListOf()
                         )
                     )
+                instance.Create().MessageLink().createMessageLinkDocument(
+                    MessageLinksDocument(
+                        ticketDocument.ticketId,
+                        listOf<MessageLinkType>()
+                    )
+                )
                 return instance.Get().getTicketsCollection()
                     .insertOne(ticketDocument)
                     .insertedId
@@ -145,12 +156,24 @@ class DatabaseManager {
                     .findOne(MessageLinksDocument::ticket_id eq ticketId)
             }
 
-            fun searchTgMessageByDiscordMessage(tgMessageId: Long): Long {
-                TODO()
+            fun searchTgMessageByDiscordMessage(ticketId: Int, dsMessageId: Long): Long {
+                for (mess in instance.Get().getMessageLinkCollection()
+                    .findOne(MessageLinksDocument::ticket_id eq ticketId)!!.messages) {
+                    if (mess.ds_message_id == dsMessageId) {
+                        return mess.tg_message_id
+                    }
+                }
+                return 0L
             }
 
-            fun searchDsMessageByTelegramMessage(tgMessageId: Long): Long {
-                TODO()
+            fun searchDsMessageByTelegramMessage(ticketId: Int, tgMessageId: Long): Long {
+                for (mess in instance.Get().getMessageLinkCollection()
+                    .findOne(MessageLinksDocument::ticket_id eq ticketId)!!.messages) {
+                    if (mess.tg_message_id == tgMessageId) {
+                        return mess.ds_message_id
+                    }
+                }
+                return 0L
             }
         }
     }
@@ -239,6 +262,26 @@ class DatabaseManager {
                     ticket.ticketId,
                     0
                 )
+            }
+        }
+
+        inner class MessageLinks {
+            fun addMessageToMessageLinks(ticketId: Int, messageLinkType: MessageLinkType) {
+                val messages = Search().MessageLinks().searchMessageLinkById(ticketId)!!.messages.toMutableList()
+                messages.add(messageLinkType)
+                instance.Get().getMessageLinkCollection()
+                    .updateOne(
+                        MessageLinksDocument::ticket_id eq ticketId,
+                        setValue(
+                            MessageLinksDocument::messages,
+                            messages.toList()
+                        )
+                    )
+            }
+            fun updateMessageId(ticketId: Int, old_id: Long, new_id: Long) {
+                instance.Get().getMessageLinkCollection()
+                    .updateOne("{ticket_id: $ticketId, \"messages.tg_message_id\": $old_id}", "{\$set: {\"messages.\$.tg_message_id\": $new_id}}")
+
             }
         }
     }
