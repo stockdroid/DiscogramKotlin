@@ -9,7 +9,6 @@ import me.chicchi7393.discogramRewrite.handlers.modalHandlers
 import me.chicchi7393.discogramRewrite.handlers.slashCommandHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinksDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.entities.ChannelType
@@ -37,7 +36,10 @@ class EventHandler : ListenerAdapter() {
         tgClient.send(
             SendMessage(tgId, 0, tg_reply, null, null, content)
         ) {
-            dbMan.Update().MessageLinks().addMessageToMessageLinks(ticket_id, MessageLinkType(it.get().id, dsId, BsonTimestamp(System.currentTimeMillis()/1000)))
+            dbMan.Update().MessageLinks().addMessageToMessageLinks(
+                ticket_id,
+                MessageLinkType(it.get().id, dsId, BsonTimestamp(System.currentTimeMillis() / 1000))
+            )
         }
     }
 
@@ -77,9 +79,10 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        val ticket = try {dbMan.Search().Tickets()
-            .searchTicketDocumentByChannelId(event.channel.idLong)!!
-        } catch(e: Exception) {
+        val ticket = try {
+            dbMan.Search().Tickets()
+                .searchTicketDocumentByChannelId(event.channel.idLong)!!
+        } catch (e: Exception) {
             TicketDocument(0L, 0L, 0, mapOf("open" to false, "suspended" to false, "closed" to true), 0L)
         }
         val tgId = ticket.telegramId
@@ -98,7 +101,13 @@ class EventHandler : ListenerAdapter() {
                     reopenTicket().reopenTicket(tgId)
                 }
                 if (event.message.attachments.isEmpty()) {
-                    sendContent(tgId, event.messageIdLong, InputMessageText(FormattedText(event.message.contentRaw, null), false, true), ticket.ticketId, if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L)
+                    sendContent(
+                        tgId,
+                        event.messageIdLong,
+                        InputMessageText(FormattedText(event.message.contentRaw, null), false, true),
+                        ticket.ticketId,
+                        if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L
+                    )
                 } else if (event.message.attachments.isNotEmpty()) {
                     var i = 0
                     for (attach in event.message.attachments) {

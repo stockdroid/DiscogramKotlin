@@ -7,22 +7,24 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.util.concurrent.atomic.AtomicReference
 
 
-
-
 class blockCommands(val event: SlashCommandInteractionEvent) {
     private val tgClient = TgApp.instance
     private val dbMan = DatabaseManager.instance
 
     private fun getId(): Long {
         val value = AtomicReference(0L)
-        if (event!!.options.isEmpty()) {
+        if (event.options.isEmpty()) {
             try {
-                value.set(dbMan.Search().Tickets().searchTicketDocumentById(event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt())!!.telegramId )
+                value.set(
+                    dbMan.Search().Tickets().searchTicketDocumentById(
+                        event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt()
+                    )!!.telegramId
+                )
             } catch (_: Exception) {
                 value.set(0L)
             }
         } else {
-            val username = event!!.options[0].asString
+            val username = event.options[0].asString
             try {
                 value.set(username.toLong())
             } catch (_: Exception) {

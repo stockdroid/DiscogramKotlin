@@ -80,7 +80,15 @@ class ticketHandlers {
     }
 
     fun startTicketWithText(chat: Chat, text: String) = dsClass.createTicket(chat, text)
-    fun sendFileFollowMessage(id: Long, file: DownloadFile?, text: String, wasSuspended: Boolean, ticket_id: Int, tg_id: Long, reply_id: Long) {
+    fun sendFileFollowMessage(
+        id: Long,
+        file: DownloadFile?,
+        text: String,
+        wasSuspended: Boolean,
+        ticket_id: Int,
+        tg_id: Long,
+        reply_id: Long
+    ) {
         if (wasSuspended) {
             tgClient.client.send(
                 SendMessage(
@@ -101,7 +109,10 @@ class ticketHandlers {
                 reply_id,
                 ticket_id
             ).queue {
-                dbMan.Update().MessageLinks().addMessageToMessageLinks(ticket_id, MessageLinkType(tg_id, it.idLong, BsonTimestamp(System.currentTimeMillis()/1000)))
+                dbMan.Update().MessageLinks().addMessageToMessageLinks(
+                    ticket_id,
+                    MessageLinkType(tg_id, it.idLong, BsonTimestamp(System.currentTimeMillis() / 1000))
+                )
             }
         } else {
             tgClient.client.send(file) {
@@ -112,13 +123,23 @@ class ticketHandlers {
                     ticket_id
                 )
                     .addFile(java.io.File(it.get().local.path)).queue {
-                        dbMan.Update().MessageLinks().addMessageToMessageLinks(ticket_id, MessageLinkType(tg_id, it.idLong, BsonTimestamp(System.currentTimeMillis()/1000)))
+                        dbMan.Update().MessageLinks().addMessageToMessageLinks(
+                            ticket_id,
+                            MessageLinkType(tg_id, it.idLong, BsonTimestamp(System.currentTimeMillis() / 1000))
+                        )
                     }
             }
         }
     }
 
-    fun sendTextFollowMessage(id: Long, text: String, wasSuspended: Boolean, ticket_id: Int, tg_id: Long, reply_id: Long) {
+    fun sendTextFollowMessage(
+        id: Long,
+        text: String,
+        wasSuspended: Boolean,
+        ticket_id: Int,
+        tg_id: Long,
+        reply_id: Long
+    ) {
         if (wasSuspended) {
             tgClient.client.send(
                 SendMessage(
@@ -133,9 +154,13 @@ class ticketHandlers {
             reopenTicket().reopenTicket(id)
         }
 
-        dsClass.sendTextMessageToChannel(dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text, reply_id, ticket_id).queue {
-            dbMan.Update().MessageLinks().addMessageToMessageLinks(ticket_id, MessageLinkType(tg_id, it.idLong, BsonTimestamp(System.currentTimeMillis()/1000)))
-        }
+        dsClass.sendTextMessageToChannel(dbMan.Utils().searchAlreadyOpen(id)!!.channelId, text, reply_id, ticket_id)
+            .queue {
+                dbMan.Update().MessageLinks().addMessageToMessageLinks(
+                    ticket_id,
+                    MessageLinkType(tg_id, it.idLong, BsonTimestamp(System.currentTimeMillis() / 1000))
+                )
+            }
     }
 
 

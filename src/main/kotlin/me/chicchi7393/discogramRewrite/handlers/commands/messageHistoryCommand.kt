@@ -14,14 +14,18 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
 
     private fun getId(): Long {
         var res = mutableListOf<Long>()
-        if (event!!.options.isEmpty()) {
+        if (event.options.isEmpty()) {
             try {
-                res.add(dbMan.Search().Tickets().searchTicketDocumentById(event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt())!!.telegramId )
+                res.add(
+                    dbMan.Search().Tickets().searchTicketDocumentById(
+                        event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt()
+                    )!!.telegramId
+                )
             } catch (_: Exception) {
                 res.add(0L)
             }
         } else {
-            val username = event!!.options[0].asString
+            val username = event.options[0].asString
             try {
                 res.add(username.toLong())
             } catch (_: Exception) {
@@ -38,7 +42,15 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
         if (userId == 0L) {
             event.reply("Non dovrebbe accadere, ma l'userid è risultato 0").queue()
         } else {
-            tgClient.client.send(GetChatHistory(userId, 1L, 0, try {event!!.options[1].asInt} catch(_:Exception) {999}, false)) {
+            tgClient.client.send(
+                GetChatHistory(
+                    userId, 1L, 0, try {
+                        event.options[1].asInt
+                    } catch (_: Exception) {
+                        999
+                    }, false
+                )
+            ) {
                 var message = """Cronologia messaggi:
                 |
                 """.trimMargin()
