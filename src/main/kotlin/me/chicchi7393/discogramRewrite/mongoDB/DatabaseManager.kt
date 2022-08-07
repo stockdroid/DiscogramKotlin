@@ -3,7 +3,6 @@ package me.chicchi7393.discogramRewrite.mongoDB
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.AssigneeDocument
@@ -11,9 +10,7 @@ import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinksDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import org.bson.BsonValue
-import org.bson.conversions.Bson
 import org.litote.kmongo.*
-import org.litote.kmongo.util.idValue
 
 
 class DatabaseManager {
@@ -135,6 +132,7 @@ class DatabaseManager {
                     .descendingSort(TicketDocument::unixSeconds)
                     .first()
             }
+
             fun searchTicketDocumentsByTelegramId(telegramId: Long): List<TicketDocument?> {
                 return instance.Get().getTicketsCollection()
                     .find(TicketDocument::telegramId eq telegramId)
@@ -284,9 +282,13 @@ class DatabaseManager {
                         )
                     )
             }
+
             fun updateMessageId(ticketId: Int, old_id: Long, new_id: Long) {
                 instance.Get().getMessageLinkCollection()
-                    .updateOne("{ticket_id: $ticketId, \"messages.tg_message_id\": $old_id}", "{\$set: {\"messages.\$.tg_message_id\": $new_id}}")
+                    .updateOne(
+                        "{ticket_id: $ticketId, \"messages.tg_message_id\": $old_id}",
+                        "{\$set: {\"messages.\$.tg_message_id\": $new_id}}"
+                    )
 
             }
         }

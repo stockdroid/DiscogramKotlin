@@ -1,8 +1,6 @@
 package me.chicchi7393.discogramRewrite
 
-import it.tdlight.jni.TdApi.UpdateAuthorizationState
-import it.tdlight.jni.TdApi.UpdateMessageSendSucceeded
-import it.tdlight.jni.TdApi.UpdateNewMessage
+import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp

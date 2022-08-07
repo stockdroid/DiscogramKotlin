@@ -11,14 +11,18 @@ class ticketListCommand(val event: SlashCommandInteractionEvent) {
 
     private fun getId(): Long {
         var res = mutableListOf<Long>()
-        if (event!!.options.isEmpty()) {
+        if (event.options.isEmpty()) {
             try {
-                res.add(dbMan.Search().Tickets().searchTicketDocumentById(event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt())!!.telegramId )
+                res.add(
+                    dbMan.Search().Tickets().searchTicketDocumentById(
+                        event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt()
+                    )!!.telegramId
+                )
             } catch (_: Exception) {
                 res.add(0L)
             }
         } else {
-            val username = event!!.options[0].asString
+            val username = event.options[0].asString
             try {
                 res.add(username.toLong())
             } catch (_: Exception) {

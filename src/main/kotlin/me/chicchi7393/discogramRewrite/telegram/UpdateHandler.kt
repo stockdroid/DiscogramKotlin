@@ -46,7 +46,8 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                             chat.id,
                             text,
                             dbMan.Utils().searchAlreadySuspended(chat.id) != null,
-                            dbMan.Search().Tickets().searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
+                            dbMan.Search().Tickets()
+                                .searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
                             update.message.id,
                             update.message.replyToMessageId
                         )
@@ -74,7 +75,8 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                             file,
                             text,
                             dbMan.Utils().searchAlreadySuspended(chat.id) != null,
-                            dbMan.Search().Tickets().searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
+                            dbMan.Search().Tickets()
+                                .searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
                             update.message.id,
                             update.message.replyToMessageId
                         )
@@ -82,7 +84,12 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
             }
         }
     }
+
     fun onUpdateMessageSendSucceeded(update: UpdateMessageSendSucceeded) {
-        dbMan.Update().MessageLinks().updateMessageId(dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.message.chatId)!!.ticketId, update.oldMessageId, update.message.id)
+        dbMan.Update().MessageLinks().updateMessageId(
+            dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.message.chatId)!!.ticketId,
+            update.oldMessageId,
+            update.message.id
+        )
     }
 }
