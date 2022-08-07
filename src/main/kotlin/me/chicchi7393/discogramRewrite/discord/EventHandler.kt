@@ -6,6 +6,7 @@ import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
 import me.chicchi7393.discogramRewrite.handlers.buttonHandlers
 import me.chicchi7393.discogramRewrite.handlers.messageMenu.ticketMenu
 import me.chicchi7393.discogramRewrite.handlers.modalHandlers
+import me.chicchi7393.discogramRewrite.handlers.slashCommandHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinksDocument
@@ -127,6 +128,6 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-
+        slashCommandHandlers(event).onSlashCommand()
     }
 }

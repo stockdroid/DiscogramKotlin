@@ -135,6 +135,12 @@ class DatabaseManager {
                     .descendingSort(TicketDocument::unixSeconds)
                     .first()
             }
+            fun searchTicketDocumentsByTelegramId(telegramId: Long): List<TicketDocument?> {
+                return instance.Get().getTicketsCollection()
+                    .find(TicketDocument::telegramId eq telegramId)
+                    .descendingSort(TicketDocument::unixSeconds)
+                    .toList()
+            }
         }
 
         inner class Assignee {

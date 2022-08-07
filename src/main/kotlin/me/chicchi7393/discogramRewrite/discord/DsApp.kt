@@ -181,15 +181,15 @@ class DsApp private constructor() {
     fun createCommands() {
         dsClient.updateCommands().addCommands(
             Commands.slash("tickets", "Ti da una lista di vecchi ticket di un utente")
-                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente a cui controllare i ticket"),
-            Commands.slash("del", "Elimina un messaggio"),
+                .addOption(OptionType.STRING, "username", "L'username/ID dell'utente a cui controllare i ticket"),
             Commands.slash("cronologia", "Leggi la cronologia dei messaggi")
-                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente a cui controllare i ticket")
+                .addOption(OptionType.STRING, "username", "L'username/ID dell'utente a cui controllare i ticket")
                 .addOption(OptionType.INTEGER, "messaggi", "Numero messaggi (10 se non messo)", false),
             Commands.slash("block", "Blocca utente")
-                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente da bloccare (utente nel thread se non specificato)", false),
-            Commands.slash("block", "Blocca utente")
-                .addOption(OptionType.UNKNOWN, "username", "L'username/ID dell'utente da bloccare (utente nel thread se non specificato)", false)
+                .addOption(OptionType.STRING, "username", "L'username/ID dell'utente da bloccare (utente nel thread se non specificato)", false),
+            Commands.slash("unblock", "Sblocca utente")
+                .addOption(OptionType.STRING, "username", "L'username/ID dell'utente da sbloccare (utente nel thread se non specificato)", false)
+
         ).queue()
     }
 
