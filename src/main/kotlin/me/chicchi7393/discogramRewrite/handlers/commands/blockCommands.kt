@@ -4,36 +4,36 @@ import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import java.util.concurrent.atomic.AtomicReference
 
+object idTransporter {
+    var value = 0L
+}
 
 class blockCommands(val event: SlashCommandInteractionEvent) {
     private val tgClient = TgApp.instance
     private val dbMan = DatabaseManager.instance
 
     private fun getId(): Long {
-        val value = AtomicReference(0L)
         if (event.options.isEmpty()) {
             try {
-                value.set(
+                idTransporter.value =
                     dbMan.Search().Tickets().searchTicketDocumentById(
                         event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt()
                     )!!.telegramId
-                )
             } catch (_: Exception) {
-                value.set(0L)
+                idTransporter.value = 0L
             }
         } else {
             val username = event.options[0].asString
             try {
-                value.set(username.toLong())
+                idTransporter.value = username.toLong()
             } catch (_: Exception) {
                 tgClient.client.send(SearchPublicChat(username)) {
-                    value.set(it.get().id)
+                    idTransporter.value = it.get().id
                 }
             }
         }
-        return value.get()
+        return idTransporter.value
     }
 
     fun block() {
