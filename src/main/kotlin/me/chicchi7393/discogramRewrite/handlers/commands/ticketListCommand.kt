@@ -10,28 +10,26 @@ class ticketListCommand(val event: SlashCommandInteractionEvent) {
     private val dbMan = DatabaseManager.instance
 
     private fun getId(): Long {
-        var res = mutableListOf<Long>()
         if (event.options.isEmpty()) {
             try {
-                res.add(
+                idTransporter.value =
                     dbMan.Search().Tickets().searchTicketDocumentById(
                         event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt()
                     )!!.telegramId
-                )
             } catch (_: Exception) {
-                res.add(0L)
+                idTransporter.value = 0L
             }
         } else {
             val username = event.options[0].asString
             try {
-                res.add(username.toLong())
+                idTransporter.value = username.toLong()
             } catch (_: Exception) {
                 tgClient.client.send(TdApi.SearchPublicChat(username)) {
-                    res.add(it.get().id)
+                    idTransporter.value = it.get().id
                 }
             }
         }
-        return res[0]
+        return idTransporter.value
     }
 
     fun ticketList() {

@@ -13,6 +13,7 @@ import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -138,5 +139,9 @@ class EventHandler : ListenerAdapter() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         slashCommandHandlers(event).onSlashCommand()
+    }
+
+    override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
+        super.onMessageContextInteraction(event)
     }
 }

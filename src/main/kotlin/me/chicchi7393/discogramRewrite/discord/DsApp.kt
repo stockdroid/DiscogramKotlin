@@ -184,7 +184,7 @@ class DsApp private constructor() {
                 .addOption(OptionType.STRING, "username", "L'username/ID dell'utente a cui controllare i ticket", true),
             Commands.slash("cronologia", "Leggi la cronologia dei messaggi")
                 .addOption(OptionType.STRING, "username", "L'username/ID dell'utente a cui controllare i ticket", true)
-                .addOption(OptionType.INTEGER, "messaggi", "Numero messaggi (10 se non messo)", false),
+                .addOption(OptionType.INTEGER, "messaggi", "Numero messaggi (10 se non messo, massimo 100)", false),
             Commands.slash("block", "Blocca utente")
                 .addOption(
                     OptionType.STRING,
@@ -198,8 +198,8 @@ class DsApp private constructor() {
                     "username",
                     "L'username/ID dell'utente da sbloccare (utente nel thread se non specificato)",
                     false
-                )
-
+                ),
+            Commands.message("Elimina messaggio")
         ).queue()
     }
 
