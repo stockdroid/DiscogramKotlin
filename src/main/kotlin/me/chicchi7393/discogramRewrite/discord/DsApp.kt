@@ -123,7 +123,7 @@ class DsApp private constructor() {
 
     fun createTicket(chat: Chat, message: String) {
         TgApp.instance.client.send(
-            TdApi.SendMessage(chat.id, 0, 0, null, null, InputMessageText(TdApi.FormattedText(messTable.generalStrings["welcome"], null), false, false))
+            TdApi.SendMessage(chat.id, 0, 0, null, null, InputMessageText(TdApi.FormattedText(messTable.generalStrings["welcome"] as String, null), false, false))
         ) {}
         val pfpId = try {
             chat.photo.small.id

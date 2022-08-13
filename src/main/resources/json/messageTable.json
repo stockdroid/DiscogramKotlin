@@ -104,7 +104,7 @@
     "button_close": "Chiudi",
     "tgRedirectPrefixLink": "https://chicchi7393.xyz/redirectTg.html?id="
   },
-  "error": {
+  "errors": {
     "noUserOrThread": "Non hai fornito l'username e non sei in un thread",
     "user0": "Non dovrebbe accadere, ma l'userid è risultato 0"
   }
