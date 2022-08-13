@@ -1,6 +1,8 @@
 package me.chicchi7393.discogramRewrite.discord
 
+import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.Chat
+import it.tdlight.jni.TdApi.InputMessageText
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
@@ -21,6 +23,9 @@ import java.net.URI
 
 class DsApp private constructor() {
     private val settings = JsonReader().readJsonSettings("settings")!!
+    private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
+    private val embedStrs = messTable.embed
+    private val commStrs = messTable.commands
     private val dbMan = DatabaseManager.instance
     private val tgApp = TgApp.instance
 
@@ -40,7 +45,7 @@ class DsApp private constructor() {
 
     fun createApp(): JDA {
         dsClient = JDABuilder.createDefault(settings.discord["token"] as String)
-            .setActivity(Activity.watching("i ban degli underage"))
+            .setActivity(Activity.watching(messTable.generalStrings["bot_activity"]!!))
             .addEventListeners(EventHandler())
             .build()
         return dsClient
@@ -58,12 +63,12 @@ class DsApp private constructor() {
     ): MessageEmbed {
         return EmbedBuilder()
             .setColor(Color.blue)
-            .setTitle("Nuovo ticket!")
+            .setTitle(embedStrs["embed_newTicketTitle"]!!)
             .setAuthor(authorName, authorUrl, "attachment://pic.png")
             .setDescription(message)
-            .addField("Forzato?", if (isForced) "Sì" else "No", true)
-            .addField("Assegnato a", if (isAssigned) assignedTo else "Nessuno", true)
-            .addField("Stato", state.toString(), false)
+            .addField(embedStrs["embed_forced"]!!, if (isForced) embedStrs["embed_yes"]!! else embedStrs["embed_no"]!!, true)
+            .addField(embedStrs["embed_assignedTo"]!!, if (isAssigned) assignedTo else embedStrs["embed_noOne"]!!, true)
+            .addField(embedStrs["embed_state"]!!, state.toString(), false)
             .setFooter(footerStr, null)
             .build()
     }
@@ -71,7 +76,7 @@ class DsApp private constructor() {
     fun generateFirstEmbedButtons(tg_profile: String = "https://google.com"): ActionRow {
         return ActionRow.of(
             listOf(
-                Button.link(tg_profile, "Apri profilo Telegram")
+                Button.link(tg_profile, embedStrs["button_openTg"]!!)
             )
         )
     }
@@ -79,9 +84,9 @@ class DsApp private constructor() {
     fun generateSecondEmbedButtons(channel_id: Long): ActionRow {
         return ActionRow.of(
             listOf(
-                Button.success("assign-$channel_id", "Assegna"),
-                Button.secondary("suspend-$channel_id", "Sospendi"),
-                Button.danger("close-$channel_id", "Chiudi"),
+                Button.success("assign-$channel_id", embedStrs["button_assign"]!!),
+                Button.secondary("suspend-$channel_id", embedStrs["button_suspend"]!!),
+                Button.danger("close-$channel_id", embedStrs["button_close"]!!),
             )
         )
     }
@@ -117,18 +122,20 @@ class DsApp private constructor() {
     }
 
     fun createTicket(chat: Chat, message: String) {
+        TgApp.instance.client.send(
+            TdApi.SendMessage(chat.id, 0, 0, null, null, InputMessageText(TdApi.FormattedText(messTable.generalStrings["welcome"], null), false, false))
+        ) {}
         val pfpId = try {
             chat.photo.small.id
         } catch (_: NullPointerException) {
             69420
         }
         tgApp.downloadFile(pfpId)
-        Thread.sleep(500)
         val filePath =
             if (pfpId != 69420) getLastModified("session/database/profile_photos")!!.absolutePath else File("./session/database/profile_photos/5900.jpg").absolutePath
         val embed = generateTicketEmbed(
             chat.title,
-            "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}",
+            embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString(),
             message,
             isForced = false,
             isAssigned = false,
@@ -144,7 +151,7 @@ class DsApp private constructor() {
                     embed
                 ).setActionRows(
                     generateFirstEmbedButtons(
-                        "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"
+                        embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString()
                     ),
                     generateSecondEmbedButtons(it.idLong),
                     ActionRow.of(
@@ -180,26 +187,26 @@ class DsApp private constructor() {
 
     fun createCommands() {
         dsClient.updateCommands().addCommands(
-            Commands.slash("tickets", "Ti da una lista di vecchi ticket di un utente")
-                .addOption(OptionType.STRING, "username", "L'username/ID dell'utente a cui controllare i ticket", true),
-            Commands.slash("cronologia", "Leggi la cronologia dei messaggi")
-                .addOption(OptionType.STRING, "username", "L'username/ID dell'utente a cui controllare i ticket", true)
-                .addOption(OptionType.INTEGER, "messaggi", "Numero messaggi (10 se non messo, massimo 100)", false),
-            Commands.slash("block", "Blocca utente")
+            Commands.slash(commStrs["tickets"]!!["name"]!!, commStrs["tickets"]!!["description"]!!)
+                .addOption(OptionType.STRING, commStrs["tickets"]!!["option_1_name"]!!, commStrs["tickets"]!!["option_1_description"]!!, true),
+            Commands.slash(commStrs["cronologia"]!!["name"]!!, commStrs["cronologia"]!!["description"]!!)
+                .addOption(OptionType.STRING, commStrs["cronologia"]!!["option_1_name"]!!, commStrs["cronologia"]!!["option_1_description"]!!, true)
+                .addOption(OptionType.INTEGER, commStrs["cronologia"]!!["option_2_name"]!!, commStrs["cronologia"]!!["option_2_description"]!!, false),
+            Commands.slash(commStrs["block"]!!["name"]!!, commStrs["block"]!!["description"]!!)
                 .addOption(
                     OptionType.STRING,
-                    "username",
-                    "L'username/ID dell'utente da bloccare (utente nel thread se non specificato)",
+                    commStrs["block"]!!["option_1_name"]!!,
+                    commStrs["block"]!!["option_1_description"]!!,
                     false
                 ),
-            Commands.slash("unblock", "Sblocca utente")
+            Commands.slash(commStrs["unblock"]!!["name"]!!, commStrs["unblock"]!!["description"]!!)
                 .addOption(
                     OptionType.STRING,
-                    "username",
-                    "L'username/ID dell'utente da sbloccare (utente nel thread se non specificato)",
+                    commStrs["unblock"]!!["option_1_name"]!!,
+                    commStrs["unblock"]!!["option_1_description"]!!,
                     false
                 ),
-            Commands.message("Elimina messaggio")
+            Commands.message(commStrs["delete_message"]!!["name"]!!)
         ).queue()
     }
 

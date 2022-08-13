@@ -10,15 +10,16 @@ import me.chicchi7393.discogramRewrite.telegram.utils.FindContent
 
 class UpdateHandler(private val tgClient: SimpleTelegramClient) {
     private val settings = JsonReader().readJsonSettings("settings")!!
+    private val messageTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val ticketHandlers = ticketHandlers()
     private val dbMan = DatabaseManager.instance
     fun authStateUpdate(update: UpdateAuthorizationState) {
         println(
             when (update.authorizationState) {
-                is AuthorizationStateReady -> "Logged in"
-                is AuthorizationStateLoggingOut -> "Logging out..."
-                is AuthorizationStateClosing -> "Closing..."
-                is AuthorizationStateClosed -> "Closed"
+                is AuthorizationStateReady -> messageTable.generalStrings["log_loggedIn"]
+                is AuthorizationStateLoggingOut -> messageTable.generalStrings["log_loggingOut"]
+                is AuthorizationStateClosing -> messageTable.generalStrings["log_closing"]
+                is AuthorizationStateClosed -> messageTable.generalStrings["log_closed"]
                 else -> ""
             }
         )

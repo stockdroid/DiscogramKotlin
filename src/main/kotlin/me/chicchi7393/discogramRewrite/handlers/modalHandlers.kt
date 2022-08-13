@@ -14,6 +14,7 @@ class modalHandlers(private val event: ModalInteractionEvent) {
     private val dbMan = DatabaseManager.instance
     private val discordClient = DsApp.instance
     private val settings = JsonReader().readJsonSettings("settings")!!
+    private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     fun closeTicketHandler() {
         val channelId = event.modalId.split("-")[1].split(":")[0].toLong()
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
@@ -24,7 +25,7 @@ class modalHandlers(private val event: ModalInteractionEvent) {
         val thread = discordClient.dsClient
             .getThreadChannelById(channelId)!!
         thread.manager
-            .setName(thread.name + " (Chiuso)")
+            .setName(thread.name + messTable.generalStrings["suffix_closedTicket"])
             .setArchived(true)
             .queue()
 
@@ -33,15 +34,15 @@ class modalHandlers(private val event: ModalInteractionEvent) {
                 .retrieveMessageById(event.modalId.split(":")[1].toLong()).complete(true)
         message.editMessageComponents(
             discordClient.generateFirstEmbedButtons(
-                "https://chicchi7393.xyz/redirectTg.html?id=${ticket.telegramId}"
+                messTable.embed["tgRedirectPrefixLink"] + ticket.telegramId
             ),
             ActionRow.of(
-                Button.success("assign-$channelId", "Assegna").asDisabled(),
-                Button.secondary("suspend-$channelId", "Sospendi").asDisabled(),
-                Button.danger("close-$channelId", "Chiudi").asDisabled()
+                Button.success("assign-$channelId", messTable.embed["button_assign"]!!).asDisabled(),
+                Button.secondary("suspend-$channelId", messTable.embed["button_suspend"]!!).asDisabled(),
+                Button.danger("close-$channelId", messTable.embed["button_close"]!!).asDisabled()
             ),
             ActionRow.of(
-                Button.primary("menu", "Apri menu")
+                Button.primary("menu", messTable.embed["button_openMenu"]!!)
             )
         ).queue()
         message.editMessageEmbeds(
@@ -49,14 +50,14 @@ class modalHandlers(private val event: ModalInteractionEvent) {
                 message.embeds[0].author!!.name!!,
                 message.embeds[0].author!!.url!!,
                 message.embeds[0].description!!,
-                message.embeds[0].fields[0].value == "Sì",
-                message.embeds[0].fields[1].value != "Nessuno",
+                message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
+                message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
                 message.embeds[0].fields[1].value!!,
                 message.embeds[0].footer!!.text!!,
                 TicketState.CLOSED
             )
         ).queue()
-        event.reply("Ticket chiuso.").queue()
+        event.reply(messTable.modals["closeTicket"]!!["reply"]!!).queue()
     }
 
     fun suspendTicketHandler() {
@@ -69,7 +70,7 @@ class modalHandlers(private val event: ModalInteractionEvent) {
         val thread = discordClient.dsClient
             .getThreadChannelById(channelId)!!
         thread.manager
-            .setName(thread.name + " (Sospeso)")
+            .setName(thread.name + messTable.generalStrings["suffix_suspendedTicket"])
             .setLocked(true)
             .queue()
 
@@ -81,13 +82,13 @@ class modalHandlers(private val event: ModalInteractionEvent) {
                 message.embeds[0].author!!.name!!,
                 message.embeds[0].author!!.url!!,
                 message.embeds[0].description!!,
-                message.embeds[0].fields[0].value == "Sì",
-                message.embeds[0].fields[1].value != "Nessuno",
+                message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
+                message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
                 message.embeds[0].fields[1].value!!,
                 message.embeds[0].footer!!.text!!,
                 TicketState.SUSPENDED
             )
         ).queue()
-        event.reply("Ticket sospeso temporaneamente.").queue()
+        event.reply(messTable.modals["suspendTicket"]!!["reply"]!!).queue()
     }
 }

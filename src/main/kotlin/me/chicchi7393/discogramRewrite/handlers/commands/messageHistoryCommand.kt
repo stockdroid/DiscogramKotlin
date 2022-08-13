@@ -3,6 +3,7 @@ package me.chicchi7393.discogramRewrite.handlers.commands
 import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.GetChatHistory
 import it.tdlight.jni.TdApi.MessageText
+import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -11,13 +12,16 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
     private val tgClient = TgApp.instance
     private val dbMan = DatabaseManager.instance
+    private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
+    private val commStrs = messTable.commands
+    private val settings = JsonReader().readJsonSettings("settings")!!
 
     private fun getId(): Long {
         if (event.options.isEmpty()) {
             try {
                 idTransporter.value =
                     dbMan.Search().Tickets().searchTicketDocumentById(
-                        event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt()
+                        event.threadChannel.name.split(" ")[0].replace(settings.discord["idPrefix"] as String, "").toInt()
                     )!!.telegramId
             } catch (_: Exception) {
                 idTransporter.value = 0L
@@ -38,7 +42,7 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
     fun ticketList() {
         val userId = getId()
         if (userId == 0L) {
-            event.reply("Non dovrebbe accadere, ma l'userid è risultato 0").queue()
+            event.reply(messTable.errors["user0"]!!).queue()
         } else {
             tgClient.client.send(
                 GetChatHistory(
@@ -49,9 +53,7 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
                     }, false
                 )
             ) {
-                var message = """Cronologia messaggi:
-                |
-                """.trimMargin()
+                var message = commStrs["cronologia"]!!["template"]!!
                 val messages = it.get().messages
                 for (mess in messages) {
                     message += """${mess.authorSignature}: ${(mess.content as MessageText).text.text}"""

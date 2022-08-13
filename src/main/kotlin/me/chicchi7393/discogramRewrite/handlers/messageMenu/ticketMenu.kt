@@ -13,7 +13,9 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
     private val message_id = if (event.componentId.contains("/")) event.componentId.split("/")[1].toLong() else 0
     private val discordClient = DsApp.instance
     private val settings = JsonReader().readJsonSettings("settings")!!
-
+    private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
+    private val embedStrs = messTable.embed
+    private val menuStrs = messTable.menu["ticket_menu"]!!
 
     fun removeTicket() {
         dbMan.Update().Assignees().editAssignee(
@@ -27,7 +29,7 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
                         it.embeds[0].author!!.name!!,
                         it.embeds[0].author!!.url!!,
                         it.embeds[0].description!!,
-                        it.embeds[0].fields[0].value == "Sì",
+                        it.embeds[0].fields[0].value == embedStrs["embed_yes"],
                         false,
                         "",
                         it.embeds[0].footer!!.text!!,
@@ -36,7 +38,7 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
                 ).queue()
             }
 
-        event.editMessage("Tolto il ticket!").queue()
+        event.editMessage(menuStrs["removed_ticket"]!!).queue()
     }
 
     fun marisaTicket() {
@@ -61,6 +63,6 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
                 ).queue()
             }
 
-        event.editMessage("Ticket preso!").queue()
+        event.editMessage(menuStrs["stole_ticket"]!!).queue()
     }
 }
