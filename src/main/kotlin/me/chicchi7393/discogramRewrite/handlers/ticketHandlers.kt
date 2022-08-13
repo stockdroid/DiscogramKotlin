@@ -1,5 +1,6 @@
 package me.chicchi7393.discogramRewrite.handlers
 
+import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
@@ -20,19 +21,23 @@ class ticketHandlers {
     private val dbMan = DatabaseManager.instance
     private val dsClass = DsApp.instance
     private val tgClient = TgApp.instance
+    private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
+    private val embedStrs = messTable.embed
 
     fun startTicketWithFile(chat: Chat, file: DownloadFile?, text: String) {
+        tgClient.client.send(
+            TdApi.SendMessage(chat.id, 0, 0, null, null, InputMessageText(FormattedText(messTable.generalStrings["welcome"], null), false, false))
+        ) {}
         val pfpId = try {
             chat.photo.small.id
         } catch (_: NullPointerException) {
             69420
         }
         tgClient.downloadFile(pfpId)
-        Thread.sleep(500)
         val filePath = dsClass.getLastModified("session/database/profile_photos")!!.absolutePath
         val embed = dsClass.generateTicketEmbed(
             chat.title,
-            "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}",
+            embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString(),
             "File",
             isForced = false,
             isAssigned = false,
@@ -48,11 +53,11 @@ class ticketHandlers {
                     embed
                 ).setActionRows(
                     dsClass.generateFirstEmbedButtons(
-                        "https://chicchi7393.xyz/redirectTg.html?id=${chat.id}"
+                        embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString()
                     ),
                     dsClass.generateSecondEmbedButtons(it.idLong),
                     ActionRow.of(
-                        Button.primary("menu-${it.id}", "Apri menu")
+                        Button.primary("menu-${it.id}", embedStrs["button_openMenu"]!!)
                     )
                 ).addFile(java.io.File(URI("file://${filePath}")), "pic.png").queue()
                 it.createThreadChannel(
@@ -97,7 +102,7 @@ class ticketHandlers {
                     0,
                     null,
                     null,
-                    InputMessageText(FormattedText("Ticket riaperto.", null), false, false)
+                    InputMessageText(FormattedText(messTable.modals["suspendTicket"]!!["reopenTgMessage"], null), false, false)
                 )
             ) {}
             reopenTicket().reopenTicket(id)
@@ -148,7 +153,7 @@ class ticketHandlers {
                     0,
                     null,
                     null,
-                    InputMessageText(FormattedText("Ticket riaperto.", null), false, false)
+                    InputMessageText(FormattedText(messTable.modals["suspendTicket"]!!["reopenTgMessage"], null), false, false)
                 )
             ) {}
             reopenTicket().reopenTicket(id)
@@ -177,7 +182,7 @@ class ticketHandlers {
                 null,
                 InputMessageText(
                     FormattedText(
-                        "Ticket chiuso. ${if (text != "") "Motivazione: $text" else ""}",
+                        "${messTable.generalStrings["closedTicketTG"]} ${if (text != "") "\nMotivazione: $text" else ""}",
                         null
                     ), false, false
                 )
@@ -198,7 +203,7 @@ class ticketHandlers {
                 null,
                 InputMessageText(
                     FormattedText(
-                        "Ticket sospeso. ${if (text != "") "Motivazione: $text" else ""}",
+                        "${messTable.generalStrings["suspendedTicketTG"]} ${if (text != "") "Motivazione: $text" else ""}",
                         null
                     ), false, false
                 )
@@ -217,7 +222,7 @@ class ticketHandlers {
                 0,
                 null,
                 null,
-                InputMessageText(FormattedText("Ticket riaperto.", null), false, false)
+                InputMessageText(FormattedText(messTable.generalStrings["reopenedTicketTG"], null), false, false)
             )
         ) {}
     }

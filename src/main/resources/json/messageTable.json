@@ -1,30 +1,111 @@
 {
-  "general": {
-    "welcome": "👋Benvenuto in assistenza!👋 \n\nScrivi qui, o aspetta il messaggio di un operatore, ti contatteremo non appena ci sarà possibile",
-    "startingMessageTemplate": "{full_name} (@{message.from_user.username}) ha detto: {message.text}",
-    "forcedTicketTemplate": "{name} ha forzato il ticket a {username} con messaggio: {content}",
-    "startingMessageTemplateMedia": "{full_name} (@{message.from_user.username}) ha detto: {message.caption}",
-    "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi /start",
-    "closedThread": " (Chiuso)",
+  "generalStrings": {
+    "log_loggedIn": "Logged in",
+    "log_loggingOut": "Logging out...",
+    "log_closing": "Closing...",
+    "log_closed": "Closed",
+
+    "bot_activity": "i ban degli underage",
+
+    "ticketState_open": "Aperto",
+    "ticketState_suspended": "Sospeso",
+    "ticketState_closed": "Chiuso",
+
+    "suffix_closedTicket": " (Chiuso)",
+    "suffix_suspendedTicket": " (Sospeso)",
+
+    "welcome": "👋Benvenuto in assistenza!👋 \n\nTi contatteremo non appena ci sarà possibile",
+    "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi il messaggio",
+    "suspendedTicketTG": "Il tuo ticket è stato sospeso.\n\nPer riaprire un nuovo ticket, scrivi il messaggio",
+    "reopenedTicketTG": "Il tuo ticket è stato riaperto.",
     "errorMessage": "Si è verificato un errore, eccolo qua: "
   },
-  "modals": {
-    "sendMessage": {
-      "modalTitle": "Invia messaggio",
-      "UsernameLabel": "Username",
-      "UsernamePlaceholder": "@stockdroidofficial",
-      "TextLabel": "Testo del messaggio",
-      "TextPlaceholder": "Buongiorno ordissinauta, venga in DM per accertamenti sull'età",
-      "MessageSentResponse": "Messaggio inviato!"
+  "menu": {
+    "ticket_menu": {
+      "removed_ticket": "Tolto ticket!",
+      "stole_ticket": "Ticket preso!",
+      "assigneeMenu": "Menù assegnatario\ncosa vuoi fare?",
+      "capomodMenu": "Menù admin\ncosa vuoi fare?",
+      "noMenu": "Nessun menù per te :)",
+      "freeYourselfTicketButton": "Togliti ticket",
+      "freeTicketButton": "Disassegna ticket",
+      "stealTicket": "Prenditi ticket"
+    }
+  },
+  "buttons": {
+    "assign": {
+      "assignedReply": "Ticket assegnato.",
+      "alreadyHave": "Hai già te questo ticket.",
+      "alreadyAssign": "Non puoi assegnarti questo ticket perchè è già stato assegnato."
+    }
+  },
+  "commands": {
+    "tickets": {
+      "name": "tickets",
+      "description": "Ti da una lista di vecchi ticket di un utente",
+      "option_1_name": "username",
+      "option_1_description": "L'username/ID dell'utente a cui controllare i ticket",
+      "template": "Cronologia ticket:\n"
     },
     "cronologia": {
-      "modalTitle": "Cronologia chat",
-      "UsernameLabel": "Username",
-      "UsernamePlaceholder": "@ordissimISSIMO",
-      "MessageTemplate": "{messlist-i}. {message.from_user.first_name} ha detto: `{message.text}`\n",
-      "MessagesPrefix": "Messaggi:\n\n",
-      "MessagesLabel": "Numero messaggi:",
-      "MessagesPlaceholder": "-1 se tutti i messaggi sennò il numero di messaggi"
+      "name": "cronologia",
+      "description": "Leggi la cronologia dei messaggi",
+      "option_1_name": "username",
+      "option_1_description": "L'username/ID dell'utente a cui controllare i messaggi",
+      "option_2_name": "messaggi",
+      "option_2_description": "Numero messaggi (10 se non messo, massimo 100)",
+      "template": "Cronologia messaggi:\n"
+    },
+    "block": {
+      "name": "block",
+      "description": "Blocca utente",
+      "option_1_name": "username",
+      "option_1_description": "L'username/ID dell'utente da bloccare (utente nel thread se non specificato)",
+      "success": "Utente bloccato"
+    },
+    "unblock": {
+      "name": "unblock",
+      "description": "Sblocca utente",
+      "option_1_name": "username",
+      "option_1_description": "L'username/ID dell'utente da sbloccare (utente nel thread se non specificato)",
+      "success": "Utente sbloccato"
+    },
+    "delete_message": {
+      "name": "Elimina messaggio"
     }
+  },
+  "modals": {
+    "closeTicket": {
+      "title": "Chiudi ticket",
+      "reasonText": "Motivazione",
+      "reasonPlaceholder": "Hai rotto le palle",
+      "reply": "Ticket chiuso"
+    },
+    "suspendTicket": {
+      "title": "Sospendi ticket",
+      "reasonText": "Motivazione",
+      "reasonPlaceholder": "Hai rotto temporaneamente le palle",
+      "reply": "Ticket sospeso",
+      "reopenTgMessage": "ticketRiaperto"
+    }
+  },
+  "embed": {
+    "embed_yes": "Sì",
+    "embed_no": "No",
+    "embed_noOne": "Nessuno",
+    "embed_newTicketTitle": "Nuovo ticket!",
+    "embed_forced": "Forzato?",
+    "embed_assignedTo": "Assegnato a",
+    "embed_state": "Stato",
+    "button_openTg": "Apri profilo telegram",
+    "button_openMenu": "Apri menu",
+    "button_assign": "Assegna",
+    "button_suspend": "Sospendi",
+    "button_close": "Chiudi",
+    "tgRedirectPrefixLink": "https://chicchi7393.xyz/redirectTg.html?id="
+  },
+  "error": {
+    "noUserOrThread": "Non hai fornito l'username e non sei in un thread",
+    "user0": "Non dovrebbe accadere, ma l'userid è risultato 0"
   }
 }

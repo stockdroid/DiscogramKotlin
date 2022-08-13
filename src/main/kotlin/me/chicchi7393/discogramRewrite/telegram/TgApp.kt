@@ -75,7 +75,7 @@ class TgApp private constructor() {
     fun downloadFile(file_id: Int) {
         if (file_id == 69420) {
             remoteDownloadFile(
-                URL("https://secure.gravatar.com/avatar/332e21525f60fc83790eb080845905e3?default=mm&rating=G&size=160")
+                URL(settings.discord["no_pfp_placeholder"] as String)
             )
         } else {
             client.send(DownloadFile(file_id, 32, 0, 0, true)) {}

@@ -14,10 +14,12 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 
 
 class buttonHandlers(private val event: ButtonInteractionEvent) {
-    private val ticketHandler = ticketHandlers()
     private val dbMan = DatabaseManager.instance
     private val discordClient = DsApp.instance
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
+    private val modalStrs = messTable.modals
+    private val buttonsStrs = messTable.buttons
+    private val menuStrs = messTable.menu["ticket_menu"]!!
     private val channel_id = try {
         event.componentId.split("-")[1].toLong()
     } catch (e: Exception) {
@@ -27,11 +29,11 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
     fun closeButtonTicketHandler() {
         event.replyModal(
             Modal
-                .create("closeModal-${channel_id}:${event.message.id}", "Chiudi ticket")
+                .create("closeModal-${channel_id}:${event.message.id}", modalStrs["closeTicket"]!!["title"]!!)
                 .addActionRow(
                     ActionRow.of(
-                        TextInput.create("reason", "Motivazione", TextInputStyle.PARAGRAPH)
-                            .setPlaceholder("Hai rotto le palle")
+                        TextInput.create("reason",  modalStrs["closeTicket"]!!["reasonText"]!!, TextInputStyle.PARAGRAPH)
+                            .setPlaceholder(modalStrs["closeTicket"]!!["reasonPlaceholder"]!!)
                             .setRequiredRange(0, 1000)
                             .setRequired(false)
                             .build()
@@ -43,14 +45,14 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
     }
 
     fun suspendButtonTicketHandler() {
-        if (event.message.embeds[0].fields[2].value == "Aperto") {
+        if (event.message.embeds[0].fields[2].value == messTable.generalStrings["ticketState_open"]) {
             event.replyModal(
                 Modal
-                    .create("suspendModal-${channel_id}:${event.message.id}", "Sospendi ticket")
+                    .create("suspendModal-${channel_id}:${event.message.id}",  modalStrs["suspendTicket"]!!["title"]!!)
                     .addActionRow(
                         ActionRow.of(
-                            TextInput.create("reason", "Motivazione", TextInputStyle.PARAGRAPH)
-                                .setPlaceholder("Hai rotto temporaneamente le palle")
+                            TextInput.create("reason",  modalStrs["suspendTicket"]!!["reasonText"]!!, TextInputStyle.PARAGRAPH)
+                                .setPlaceholder(modalStrs["suspendTicket"]!!["reasonPlaceholder"]!!)
                                 .setRequiredRange(0, 1000)
                                 .setRequired(false)
                                 .build()
@@ -77,21 +79,21 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
                     event.message.embeds[0].author!!.name!!,
                     event.message.embeds[0].author!!.url!!,
                     event.message.embeds[0].description!!,
-                    event.message.embeds[0].fields[0].value == "Sì",
+                    event.message.embeds[0].fields[0].value == messTable.embed["embed_yes"],
                     true,
                     if (event.member!!.nickname == null) event.member!!.effectiveName else event.member!!.nickname!!,
                     event.message.embeds[0].footer!!.text!!,
                     event.message.embeds[0].fields[2].value!!
                 )
             ).queue()
-            event.reply("Ticket assegnato.").setEphemeral(true).queue()
+            event.reply(buttonsStrs["assign"]!!["assignedReply"]!!).setEphemeral(true).queue()
         } else if (dbMan.Search().Assignee().searchAssigneeDocumentById(
                 dbMan.Search().Tickets().searchTicketDocumentByChannelId(channel_id)!!.ticketId
             )!!.modId == event.member!!.idLong
         ) {
-            event.reply("Hai già te questo ticket.").setEphemeral(true).queue()
+            event.reply(buttonsStrs["assign"]!!["alreadyHave"]!!).setEphemeral(true).queue()
         } else {
-            event.reply("Non puoi assegnarti questo ticket perchè è già stato assegnato.").setEphemeral(true).queue()
+            event.reply(buttonsStrs["assign"]!!["alreadyAssign"]!!).setEphemeral(true).queue()
         }
     }
 
@@ -111,20 +113,16 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
     }
 
     fun menuButtonHandler() {
-        val ASSIGNEE_MENU = """Menù assegnatario
-            |cosa vuoi fare?
-        """.trimMargin()
-        val CAPOMOD_MENU = """Menù admin
-            |cosa vuoi fare?
-        """.trimMargin()
-        val NO_MENU = """Nessun menù per te :)"""
+        val ASSIGNEE_MENU = menuStrs["assigneeMenu"]!!
+        val CAPOMOD_MENU = menuStrs["capomodMenu"]!!
+        val NO_MENU = menuStrs["noMenu"]!!
 
         val ASSIGNEE_ROW = ActionRow.of(
-            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", "Togliti ticket")
+            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", menuStrs["freeYourselfTicketButton"]!!)
         )
         val CAPOMOD_ROW = ActionRow.of(
-            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", "Disassegna ticket"),
-            Button.secondary("MenuButton-ticket-marisaTicket:$channel_id/${event.message.id}", "Prenditi ticket")
+            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", menuStrs["freeTicketButton"]!!),
+            Button.secondary("MenuButton-ticket-marisaTicket:$channel_id/${event.message.id}", menuStrs["stealTicket"]!!)
         )
         val NO_MENU_ROW = "kakone"
 

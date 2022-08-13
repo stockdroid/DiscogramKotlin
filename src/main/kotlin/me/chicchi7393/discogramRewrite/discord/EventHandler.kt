@@ -92,10 +92,10 @@ class EventHandler : ListenerAdapter() {
             !event.isFromType(ChannelType.PRIVATE) &&
             event.channel.name.startsWith(settings.discord["IDPrefix"] as String, true) &&
             !event.author.isBot &&
-            !event.message.contentRaw.startsWith("###")
+            !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)
         ) {
             if (event.author.idLong == dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].split(" ")[0].toInt())!!.modId
+                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId
             ) {
                 if (ticket.status["suspended"] == true
                 ) {
@@ -129,8 +129,8 @@ class EventHandler : ListenerAdapter() {
                     }
                 }
             } else if (event.author.idLong != dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split("TCK-")[1].split(" ")[0].toInt())!!.modId &&
-                !event.message.contentRaw.startsWith("###")
+                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId &&
+                !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)
             ) {
                 event.message.delete().queue()
             }

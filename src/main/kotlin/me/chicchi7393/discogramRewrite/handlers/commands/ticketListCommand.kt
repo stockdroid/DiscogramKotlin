@@ -1,6 +1,7 @@
 package me.chicchi7393.discogramRewrite.handlers.commands
 
 import it.tdlight.jni.TdApi
+import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -8,13 +9,16 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 class ticketListCommand(val event: SlashCommandInteractionEvent) {
     private val tgClient = TgApp.instance
     private val dbMan = DatabaseManager.instance
+    private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
+    private val commStrs = messTable.commands
+    private val settings = JsonReader().readJsonSettings("settings")!!
 
     private fun getId(): Long {
         if (event.options.isEmpty()) {
             try {
                 idTransporter.value =
                     dbMan.Search().Tickets().searchTicketDocumentById(
-                        event.threadChannel.name.split(" ")[0].replace("TCK-", "").toInt()
+                        event.threadChannel.name.split(" ")[0].replace(settings.discord["idPrefix"] as String, "").toInt()
                     )!!.telegramId
             } catch (_: Exception) {
                 idTransporter.value = 0L
@@ -35,17 +39,13 @@ class ticketListCommand(val event: SlashCommandInteractionEvent) {
     fun ticketList() {
         val userId = getId()
         if (userId == 0L) {
-            event.reply("Non dovrebbe accadere, ma l'userid è risultato 0").queue()
+            event.reply(messTable.errors["user0"]!!).queue()
         } else {
             val tickets = dbMan.Search().Tickets().searchTicketDocumentsByTelegramId(userId)
-            var message = """Cronologia ticket:
-                |
-            """.trimMargin()
+            var message = commStrs["tickets"]!!["template"]!!
             for (ticket in tickets) {
                 if (ticket != null) {
-                    message += """TCK-${ticket.ticketId}
-                        |
-                    """.trimMargin()
+                    message += settings.discord["idPrefix"] as String + ticket.ticketId + "\n"
                 }
             }
             event.reply(message).queue()
