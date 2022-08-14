@@ -1,0 +1,33 @@
+{
+  "telegram": {
+    "api_id": 2687706,
+    "api_hash": "c7065e07465c29c70ad16de91c0d6084",
+    "phone_number": 393518016941,
+    "app_version": "v69.42.0",
+    "model": "SerpeNeraPhone",
+    "system_version": "Ubuntu 20.04 da qualche parte a Londra",
+    "language_code": "it",
+    "userbotID": 5477227775
+  },
+  "discord": {
+    "token": "OTY3NDE2MTc2MzQ5MTc5OTc0.G14yCD.EJP8KlSpiC64pXg6rzGts0rQ4jsQit0ThxSsx0",
+    "guild_id": 996027899251540009,
+    "channel_id": 996367646847143956,
+    "higher_roles": [
+      996367255929626734,
+      996367283507167282
+    ],
+    "ignoreTGAuthor": [
+      777000,
+      1912620252,
+      216729606
+    ],
+    "no_pfp_placeholder": "https://secure.gravatar.com/avatar/332e21525f60fc83790eb080845905e3?default=mm&rating=G&size=160",
+    "ignore_message_prefix": "###",
+    "idPrefix": "TCK-"
+  },
+  "mongodb": {
+    "connection_string": "mongodb://localhost:27017",
+    "database": "discogramTickets"
+  }
+}

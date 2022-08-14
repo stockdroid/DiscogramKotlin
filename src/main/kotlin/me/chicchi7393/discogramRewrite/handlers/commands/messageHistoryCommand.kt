@@ -4,6 +4,7 @@ import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.GetChatHistory
 import it.tdlight.jni.TdApi.MessageText
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.discord.utils.getId
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -11,36 +12,11 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
     private val tgClient = TgApp.instance
-    private val dbMan = DatabaseManager.instance
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val commStrs = messTable.commands
-    private val settings = JsonReader().readJsonSettings("settings")!!
-
-    private fun getId(): Long {
-        if (event.options.isEmpty()) {
-            try {
-                idTransporter.value =
-                    dbMan.Search().Tickets().searchTicketDocumentById(
-                        event.threadChannel.name.split(" ")[0].replace(settings.discord["idPrefix"] as String, "").toInt()
-                    )!!.telegramId
-            } catch (_: Exception) {
-                idTransporter.value = 0L
-            }
-        } else {
-            val username = event.options[0].asString
-            try {
-                idTransporter.value = username.toLong()
-            } catch (_: Exception) {
-                tgClient.client.send(TdApi.SearchPublicChat(username)) {
-                    idTransporter.value = it.get().id
-                }
-            }
-        }
-        return idTransporter.value
-    }
 
     fun ticketList() {
-        val userId = getId()
+        val userId = getId(event)
         if (userId == 0L) {
             event.reply(messTable.errors["user0"]!!).queue()
         } else {
