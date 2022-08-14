@@ -8,7 +8,7 @@ class messageCommandHandler(val event: MessageContextInteractionEvent) {
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     fun handle() {
         when (event.name) {
-            messTable.commands["delete_message"]!!["name"] -> delete(event).delete()
+            messTable.commands["delete_message"]!!["name"]!! -> delete(event).delete()
             else -> TODO()
         }
     }

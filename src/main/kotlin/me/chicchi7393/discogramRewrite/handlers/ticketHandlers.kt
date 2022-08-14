@@ -41,7 +41,7 @@ class ticketHandlers {
             "File",
             isForced = false,
             isAssigned = false,
-            footerStr = "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId()}",
+            footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId()}",
             state = TicketState.OPEN
         )
         dsClass.dsClient
@@ -61,7 +61,7 @@ class ticketHandlers {
                     )
                 ).addFile(java.io.File(URI("file://${filePath}")), "pic.png").queue()
                 it.createThreadChannel(
-                    "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
+                    "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                 ).map { tIt ->
                     dbMan.Create().Tickets().createTicketDocument(
                         TicketDocument(
@@ -203,7 +203,7 @@ class ticketHandlers {
                 null,
                 InputMessageText(
                     FormattedText(
-                        "${messTable.generalStrings["suspendedTicketTG"]} ${if (text != "") "Motivazione: $text" else ""}",
+                        "${messTable.generalStrings["suspendedTicketTG"]} ${if (text != "") "\nMotivazione: $text" else ""}",
                         null
                     ), false, false
                 )

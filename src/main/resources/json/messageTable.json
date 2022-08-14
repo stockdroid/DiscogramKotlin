@@ -16,7 +16,7 @@
 
     "welcome": "👋Benvenuto in assistenza!👋 \n\nTi contatteremo non appena ci sarà possibile",
     "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi il messaggio",
-    "suspendedTicketTG": "Il tuo ticket è stato sospeso.\n\nPer riaprire un nuovo ticket, scrivi il messaggio",
+    "suspendedTicketTG": "Il tuo ticket è stato sospeso.\n\nAspetta che un mod ti riscriva oppure scrivi te per riaprire",
     "reopenedTicketTG": "Il tuo ticket è stato riaperto.",
     "errorMessage": "Si è verificato un errore, eccolo qua: "
   },
@@ -71,7 +71,8 @@
       "success": "Utente sbloccato"
     },
     "delete_message": {
-      "name": "Elimina messaggio"
+      "name": "Elimina messaggio",
+      "deletedMessage": "Eliminato."
     }
   },
   "modals": {
@@ -86,7 +87,7 @@
       "reasonText": "Motivazione",
       "reasonPlaceholder": "Hai rotto temporaneamente le palle",
       "reply": "Ticket sospeso",
-      "reopenTgMessage": "ticketRiaperto"
+      "reopenTgMessage": "Ticket Riaperto"
     }
   },
   "embed": {
@@ -106,6 +107,6 @@
   },
   "errors": {
     "noUserOrThread": "Non hai fornito l'username e non sei in un thread",
-    "user0": "Non dovrebbe accadere, ma l'userid è risultato 0"
+    "user0": "Utente non valido"
   }
 }
