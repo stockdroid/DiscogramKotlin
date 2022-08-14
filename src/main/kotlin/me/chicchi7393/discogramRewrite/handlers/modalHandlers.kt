@@ -28,35 +28,36 @@ class modalHandlers(private val event: ModalInteractionEvent) {
             .setName(thread.name + messTable.generalStrings["suffix_closedTicket"])
             .setArchived(true)
             .queue()
-
+        Thread.sleep(1250)
         val message =
             discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
-                .retrieveMessageById(event.modalId.split(":")[1].toLong()).complete(true)
-        message.editMessageComponents(
-            discordClient.generateFirstEmbedButtons(
-                messTable.embed["tgRedirectPrefixLink"] + ticket.telegramId
-            ),
-            ActionRow.of(
-                Button.success("assign-$channelId", messTable.embed["button_assign"]!!).asDisabled(),
-                Button.secondary("suspend-$channelId", messTable.embed["button_suspend"]!!).asDisabled(),
-                Button.danger("close-$channelId", messTable.embed["button_close"]!!).asDisabled()
-            ),
-            ActionRow.of(
-                Button.primary("menu", messTable.embed["button_openMenu"]!!)
-            )
-        ).queue()
-        message.editMessageEmbeds(
-            discordClient.generateTicketEmbed(
-                message.embeds[0].author!!.name!!,
-                message.embeds[0].author!!.url!!,
-                message.embeds[0].description!!,
-                message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
-                message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
-                message.embeds[0].fields[1].value!!,
-                message.embeds[0].footer!!.text!!,
-                TicketState.CLOSED
-            )
-        ).queue()
+                .retrieveMessageById(event.modalId.split(":")[1].toLong()).queue { message ->
+                    message.editMessageComponents(
+                        discordClient.generateFirstEmbedButtons(
+                            messTable.embed["tgRedirectPrefixLink"] + ticket.telegramId
+                        ),
+                        ActionRow.of(
+                            Button.success("assign-$channelId", messTable.embed["button_assign"]!!).asDisabled(),
+                            Button.secondary("suspend-$channelId", messTable.embed["button_suspend"]!!).asDisabled(),
+                            Button.danger("close-$channelId", messTable.embed["button_close"]!!).asDisabled()
+                        ),
+                        ActionRow.of(
+                            Button.primary("menu", messTable.embed["button_openMenu"]!!)
+                        )
+                    ).setEmbeds(
+                        discordClient.generateTicketEmbed(
+                            message.embeds[0].author!!.name!!,
+                            message.embeds[0].author!!.url!!,
+                            message.embeds[0].description!!,
+                            message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
+                            message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
+                            message.embeds[0].fields[1].value!!,
+                            message.embeds[0].footer!!.text!!,
+                            TicketState.CLOSED
+                        )
+                    ).queue()
+                }
+        Thread.sleep(1250)
         event.reply(messTable.modals["closeTicket"]!!["reply"]!!).queue()
     }
 
@@ -73,22 +74,23 @@ class modalHandlers(private val event: ModalInteractionEvent) {
             .setName(thread.name + messTable.generalStrings["suffix_suspendedTicket"])
             .setLocked(true)
             .queue()
-
-        val message =
-            discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
-                .retrieveMessageById(event.modalId.split(":")[1].toLong()).complete(true)
-        message.editMessageEmbeds(
-            discordClient.generateTicketEmbed(
-                message.embeds[0].author!!.name!!,
-                message.embeds[0].author!!.url!!,
-                message.embeds[0].description!!,
-                message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
-                message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
-                message.embeds[0].fields[1].value!!,
-                message.embeds[0].footer!!.text!!,
-                TicketState.SUSPENDED
-            )
-        ).queue()
+        Thread.sleep(1250)
+        discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
+                .retrieveMessageById(event.modalId.split(":")[1].toLong()).queue {message ->
+                    message.editMessageEmbeds(
+                        discordClient.generateTicketEmbed(
+                            message.embeds[0].author!!.name!!,
+                            message.embeds[0].author!!.url!!,
+                            message.embeds[0].description!!,
+                            message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
+                            message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
+                            message.embeds[0].fields[1].value!!,
+                            message.embeds[0].footer!!.text!!,
+                            TicketState.SUSPENDED
+                        )
+                    ).queue()
+                }
+        Thread.sleep(1250)
         event.reply(messTable.modals["suspendTicket"]!!["reply"]!!).queue()
     }
 }

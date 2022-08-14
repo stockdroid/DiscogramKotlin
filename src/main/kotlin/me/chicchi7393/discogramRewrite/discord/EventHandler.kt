@@ -4,6 +4,7 @@ import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
 import me.chicchi7393.discogramRewrite.handlers.buttonHandlers
+import me.chicchi7393.discogramRewrite.handlers.messageCommandHandler
 import me.chicchi7393.discogramRewrite.handlers.messageMenu.ticketMenu
 import me.chicchi7393.discogramRewrite.handlers.modalHandlers
 import me.chicchi7393.discogramRewrite.handlers.slashCommandHandlers
@@ -90,12 +91,12 @@ class EventHandler : ListenerAdapter() {
 
         if (
             !event.isFromType(ChannelType.PRIVATE) &&
-            event.channel.name.startsWith(settings.discord["IDPrefix"] as String, true) &&
+            event.channel.name.startsWith(settings.discord["idPrefix"] as String, true) &&
             !event.author.isBot &&
             !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)
         ) {
             if (event.author.idLong == dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId
+                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId || DsApp.instance.isHigherRole(event.member!!)
             ) {
                 if (ticket.status["suspended"] == true
                 ) {
@@ -142,6 +143,6 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
-        super.onMessageContextInteraction(event)
+        messageCommandHandler(event).handle()
     }
 }

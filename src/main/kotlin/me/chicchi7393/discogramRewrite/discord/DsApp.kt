@@ -139,7 +139,7 @@ class DsApp private constructor() {
             message,
             isForced = false,
             isAssigned = false,
-            footerStr = "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}",
+            footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}",
             state = TicketState.OPEN
         )
         dsClient
@@ -159,7 +159,7 @@ class DsApp private constructor() {
                     )
                 ).queue()
                 it.createThreadChannel(
-                    "${settings.discord["IDPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
+                    "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                 ).map { tIt ->
                     dbMan.Create().Tickets().createTicketDocument(
                         TicketDocument(

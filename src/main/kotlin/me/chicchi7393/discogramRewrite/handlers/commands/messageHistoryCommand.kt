@@ -56,7 +56,7 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
                 var message = commStrs["cronologia"]!!["template"]!!
                 val messages = it.get().messages
                 for (mess in messages) {
-                    message += """${mess.authorSignature}: ${(mess.content as MessageText).text.text}"""
+                    message += "- ${(mess.content as MessageText).text.text}\n"
                 }
                 val mess_parts = mutableListOf<String>()
                 var index = 0
@@ -66,7 +66,7 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
                 }
                 for (part in mess_parts) {
                     if (mess_parts.last() == part) {
-                        event.reply(part)
+                        event.reply(part).queue()
                     } else {
                         event.channel.sendMessage(part).queue()
                     }
