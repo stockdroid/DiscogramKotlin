@@ -7,16 +7,15 @@
     "model": "SerpeNeraPhone",
     "system_version": "Ubuntu 20.04 da qualche parte a Londra",
     "language_code": "it",
-    "userbotID": 1912620252
+    "userbotID": 5477227775
   },
   "discord": {
-    "token": "OTY3ODkxNzQwMzk0NjUxNjY4.YmW5bQ.hMj_TKnl6kErKKnTcHk6eYkHG4o",
-    "guild_id": 967407366767251569,
-    "channel_id": 967408670168195122,
+    "token": "OTY3NDE2MTc2MzQ5MTc5OTc0.G14yCD.EJP8KlSpiC64pXg6rzGts0rQ4jsQit0ThxSsx0",
+    "guild_id": 996027899251540009,
+    "channel_id": 996367646847143956,
     "higher_roles": [
-      967857617877745675,
-      967857255053668372,
-      967858460400177263
+      996367255929626734,
+      996367283507167282
     ],
     "ignoreTGAuthor": [
       777000,
