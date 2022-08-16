@@ -68,10 +68,6 @@ class TgApp private constructor() {
         }
     }
 
-    fun randomNum(): Long {
-        return Random().nextLong(9000000000000000000) + 1000000000000000000
-    }
-
     fun downloadFile(file_id: Int) {
         if (file_id == 69420) {
             remoteDownloadFile(

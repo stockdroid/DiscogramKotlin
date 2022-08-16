@@ -54,7 +54,9 @@
       "option_1_description": "L'username/ID dell'utente a cui controllare i messaggi",
       "option_2_name": "messaggi",
       "option_2_description": "Numero messaggi (10 se non messo, massimo 100)",
-      "template": "Cronologia messaggi:\n"
+      "template": "Cronologia messaggi:\n",
+      "user": "Utente",
+      "assistance": "Assistenza"
     },
     "block": {
       "name": "block",

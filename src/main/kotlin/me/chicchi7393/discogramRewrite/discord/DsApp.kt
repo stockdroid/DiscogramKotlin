@@ -19,7 +19,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import java.awt.Color
 import java.io.File
-import java.net.URI
+import java.io.FileInputStream
+
 
 class DsApp private constructor() {
     private val settings = JsonReader().readJsonSettings("settings")!!
@@ -91,7 +92,7 @@ class DsApp private constructor() {
         )
     }
 
-    fun getLastModified(directoryFilePath: String): File? {
+    private fun getLastModified(directoryFilePath: String): FileInputStream {
         val directory = File(directoryFilePath)
         val files = directory.listFiles { obj: File -> obj.isFile }
         var lastModifiedTime = Long.MIN_VALUE
@@ -104,11 +105,7 @@ class DsApp private constructor() {
                 }
             }
         }
-        return chosenFile
-    }
-
-    fun getGuild(): Guild {
-        return dsClient.getGuildById(settings.discord["guild_id"] as Long)!!
+        return FileInputStream(chosenFile)
     }
 
     fun sendTextMessageToChannel(channel: Long, text: String, reply_id: Long, ticket_id: Int): MessageAction {
@@ -125,14 +122,17 @@ class DsApp private constructor() {
         TgApp.instance.client.send(
             TdApi.SendMessage(chat.id, 0, 0, null, null, InputMessageText(TdApi.FormattedText(messTable.generalStrings["welcome"] as String, null), false, false))
         ) {}
+        File("session/database/profile_photos").deleteRecursively()
         val pfpId = try {
             chat.photo.small.id
         } catch (_: NullPointerException) {
             69420
         }
         tgApp.downloadFile(pfpId)
+
         val filePath =
-            if (pfpId != 69420) getLastModified("session/database/profile_photos")!!.absolutePath else File("./session/database/profile_photos/5900.jpg").absolutePath
+            if (pfpId != 69420) getLastModified("session/database/profile_photos") else FileInputStream("./session/database/profile_photos/5900.jpg")
+
         val embed = generateTicketEmbed(
             chat.title,
             embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString(),
@@ -146,7 +146,7 @@ class DsApp private constructor() {
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
             .sendMessageEmbeds(
                 embed
-            ).addFile(File(URI("file://${filePath}")), "pic.png").map {
+            ).addFile(filePath, "pic.png").map {
                 it.editMessageEmbeds(
                     embed
                 ).setActionRows(
@@ -158,10 +158,12 @@ class DsApp private constructor() {
                         Button.primary("menu-${it.id}", "Apri menu")
                     )
                 ).queue()
-                it.createThreadChannel(
+                Thread.sleep(500)
+                val tIt = it.createThreadChannel(
                     "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-                ).map { tIt ->
-                    dbMan.Create().Tickets().createTicketDocument(
+                ).complete(true)
+                Thread.sleep(500)
+                dbMan.Create().Tickets().createTicketDocument(
                         TicketDocument(
                             chat.id,
                             tIt.idLong,
@@ -170,7 +172,6 @@ class DsApp private constructor() {
                             System.currentTimeMillis() / 1000
                         )
                     )
-                }.queue()
             }
             .queue()
     }
