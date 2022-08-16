@@ -6,14 +6,13 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import me.chicchi7393.discogramRewrite.telegram.UpdateHandler
 
-
-class Main {
+object Main {
     private val tgAppClass = TgApp.instance
     private val tgClient = tgAppClass.createApp()
     private val updateHandlers = UpdateHandler(tgClient)
     private val dsAppClass = DsApp.instance
-
-    fun main() {
+    @JvmStatic
+    fun main(args: Array<String>) {
         tgClient.addUpdateHandler(UpdateAuthorizationState::class.java, updateHandlers::authStateUpdate)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
         tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
@@ -30,6 +29,3 @@ class Main {
     }
 }
 
-fun main() {
-    Main().main()
-}

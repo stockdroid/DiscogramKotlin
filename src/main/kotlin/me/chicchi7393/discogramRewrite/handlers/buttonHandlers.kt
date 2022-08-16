@@ -62,6 +62,7 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
             ).queue()
         } else {
             reopenTicket().reopenTicket(dbMan.Search().Tickets().getTgIdByChannelId(channel_id))
+            event.reply(modalStrs["suspendTicket"]!!["reopenTgMessage"]!!)
         }
     }
 

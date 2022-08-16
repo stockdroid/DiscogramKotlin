@@ -3,11 +3,8 @@ package me.chicchi7393.discogramRewrite.discord
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
-import me.chicchi7393.discogramRewrite.handlers.buttonHandlers
-import me.chicchi7393.discogramRewrite.handlers.messageCommandHandler
+import me.chicchi7393.discogramRewrite.handlers.*
 import me.chicchi7393.discogramRewrite.handlers.messageMenu.ticketMenu
-import me.chicchi7393.discogramRewrite.handlers.modalHandlers
-import me.chicchi7393.discogramRewrite.handlers.slashCommandHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
@@ -17,7 +14,10 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.bson.BsonTimestamp
 import java.net.URL
@@ -144,5 +144,13 @@ class EventHandler : ListenerAdapter() {
 
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
         messageCommandHandler(event).handle()
+    }
+
+    override fun onMessageDelete(event: MessageDeleteEvent) {
+        messageModifyHandler(event).onMessageDelete()
+    }
+
+    override fun onMessageUpdate(event: MessageUpdateEvent) {
+        messageModifyHandler(event).onMessageUpdate()
     }
 }

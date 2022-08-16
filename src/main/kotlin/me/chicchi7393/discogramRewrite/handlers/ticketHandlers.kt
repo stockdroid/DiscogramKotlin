@@ -1,6 +1,5 @@
 package me.chicchi7393.discogramRewrite.handlers
 
-import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
@@ -14,7 +13,7 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.bson.BsonTimestamp
-import java.net.URI
+import java.io.FileInputStream
 
 class ticketHandlers {
     private val settings = JsonReader().readJsonSettings("settings")!!
@@ -23,18 +22,35 @@ class ticketHandlers {
     private val tgClient = TgApp.instance
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val embedStrs = messTable.embed
+    private fun getLastModified(directoryFilePath: String): FileInputStream {
+        val directory = java.io.File(directoryFilePath)
+        val files = directory.listFiles { obj: java.io.File -> obj.isFile }
+        var lastModifiedTime = Long.MIN_VALUE
+        var chosenFile: java.io.File? = null
+        if (files != null) {
+            for (file in files) {
+                if (file.lastModified() > lastModifiedTime) {
+                    chosenFile = file
+                    lastModifiedTime = file.lastModified()
+                }
+            }
+        }
+        return FileInputStream(chosenFile!!.absoluteFile)
+    }
 
     fun startTicketWithFile(chat: Chat, file: DownloadFile?, text: String) {
         tgClient.client.send(
-            TdApi.SendMessage(chat.id, 0, 0, null, null, InputMessageText(FormattedText(messTable.generalStrings["welcome"], null), false, false))
+            SendMessage(chat.id, 0, 0, null, null, InputMessageText(FormattedText(messTable.generalStrings["welcome"], null), false, false))
         ) {}
+        java.io.File("session/database/profile_photos").deleteRecursively()
         val pfpId = try {
             chat.photo.small.id
         } catch (_: NullPointerException) {
             69420
         }
         tgClient.downloadFile(pfpId)
-        val filePath = dsClass.getLastModified("session/database/profile_photos")!!.absolutePath
+        val filePath = getLastModified("session/database/profile_photos")
+
         val embed = dsClass.generateTicketEmbed(
             chat.title,
             embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString(),
@@ -48,7 +64,7 @@ class ticketHandlers {
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
             .sendMessageEmbeds(
                 embed
-            ).map { it ->
+            ).addFile(filePath, "pic.png").map { it ->
                 it.editMessageEmbeds(
                     embed
                 ).setActionRows(
@@ -59,30 +75,31 @@ class ticketHandlers {
                     ActionRow.of(
                         Button.primary("menu-${it.id}", embedStrs["button_openMenu"]!!)
                     )
-                ).addFile(java.io.File(URI("file://${filePath}")), "pic.png").queue()
-                it.createThreadChannel(
+                ).queue()
+                Thread.sleep(500)
+                val threaad = it.createThreadChannel(
                     "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-                ).map { tIt ->
+                ).complete()
+                Thread.sleep(500)
                     dbMan.Create().Tickets().createTicketDocument(
                         TicketDocument(
                             chat.id,
-                            tIt.idLong,
+                            threaad.idLong,
                             dbMan.Utils().getLastUsedTicketId() + 1,
                             mapOf("open" to true, "suspended" to false, "closed" to false),
                             System.currentTimeMillis() / 1000
                         )
                     )
                     if (file == null) {
-                        tIt.sendMessage(text).queue()
+                        threaad.sendMessage(text).queue()
                     } else {
                         tgClient.client.send(file) {
-                            tIt.sendMessage(text)
+                            threaad.sendMessage(text)
                                 .addFile(java.io.File(it.get().local.path)).queue()
                         }
                     }
                 }
-            }.queue()
-    }
+            }
 
     fun startTicketWithText(chat: Chat, text: String) = dsClass.createTicket(chat, text)
     fun sendFileFollowMessage(

@@ -76,7 +76,7 @@ class DatabaseManager {
                 instance.Create().MessageLink().createMessageLinkDocument(
                     MessageLinksDocument(
                         ticketDocument.ticketId,
-                        listOf<MessageLinkType>()
+                        listOf()
                     )
                 )
                 return instance.Get().getTicketsCollection()
@@ -85,7 +85,7 @@ class DatabaseManager {
             }
         }
 
-        inner class Assignee {
+        /*inner class Assignee {
             fun createAssigneeDocument(
                 assigneeDocument: AssigneeDocument
             ): BsonValue? {
@@ -93,7 +93,7 @@ class DatabaseManager {
                     .insertOne(assigneeDocument)
                     .insertedId
             }
-        }
+        }*/
 
         inner class MessageLink {
             fun createMessageLinkDocument(
@@ -147,10 +147,10 @@ class DatabaseManager {
                     .findOne(AssigneeDocument::ticketId eq ticketId)
             }
 
-            fun searchAssigneeDocumentByAssigneeId(assigneeId: Long): AssigneeDocument? {
+            /*fun searchAssigneeDocumentByAssigneeId(assigneeId: Long): AssigneeDocument? {
                 return instance.Get().getAssigneesCollection()
                     .findOne(AssigneeDocument::modId eq assigneeId)
-            }
+            }*/
 
         }
 
@@ -253,7 +253,7 @@ class DatabaseManager {
                     )
             }
 
-            private fun editAssigneewithoutTrack(ticketId: Int, assigneeId: Long): UpdateResult {
+            /*private fun editAssigneewithoutTrack(ticketId: Int, assigneeId: Long): UpdateResult {
                 return instance.Get().getAssigneesCollection()
                     .updateOne(
                         AssigneeDocument::ticketId eq ticketId,
@@ -266,7 +266,7 @@ class DatabaseManager {
                     ticket.ticketId,
                     0
                 )
-            }
+            }*/
         }
 
         inner class MessageLinks {

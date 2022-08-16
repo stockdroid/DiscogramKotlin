@@ -1,16 +1,17 @@
 package me.chicchi7393.discogramRewrite.handlers.commands
 
-import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.GetChatHistory
+import it.tdlight.jni.TdApi.MessageSenderUser
 import it.tdlight.jni.TdApi.MessageText
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.utils.getId
-import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import kotlin.math.min
 
 
 class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
+    private val settings = JsonReader().readJsonSettings("settings")!!
     private val tgClient = TgApp.instance
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val commStrs = messTable.commands
@@ -32,12 +33,12 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
                 var message = commStrs["cronologia"]!!["template"]!!
                 val messages = it.get().messages
                 for (mess in messages) {
-                    message += "- ${(mess.content as MessageText).text.text}\n"
+                    message += "${if ((mess.senderId as MessageSenderUser).userId == settings.telegram["userbotID"]) commStrs["cronologia"]!!["assistance"] else commStrs["cronologia"]!!["user"]} ${(mess.content as MessageText).text.text}\n"
                 }
                 val mess_parts = mutableListOf<String>()
                 var index = 0
                 while (index < message.length) {
-                    mess_parts.add(message.substring(index, Math.min(index + 2000, message.length)))
+                    mess_parts.add(message.substring(index, min(index + 2000, message.length)))
                     index += 2000
                 }
                 for (part in mess_parts) {
