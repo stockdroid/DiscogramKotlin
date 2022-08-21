@@ -3,6 +3,7 @@ package me.chicchi7393.discogramRewrite.handlers.messageMenu
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 
@@ -31,6 +32,7 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
                         it.embeds[0].description!!,
                         it.embeds[0].fields[0].value == embedStrs["embed_yes"],
                         false,
+                        it.embeds[0].fields[2].value!!,
                         "",
                         it.embeds[0].footer!!.text!!,
                         it.embeds[0].fields[2].value!!
@@ -58,7 +60,8 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
                         true,
                         if (event.member!!.nickname == null) event.member!!.effectiveName else event.member!!.nickname!!,
                         it.embeds[0].footer!!.text!!,
-                        it.embeds[0].fields[2].value!!
+                        it.embeds[0].fields[2].value!!,
+                        TicketState.OPEN
                     )
                 ).queue()
             }

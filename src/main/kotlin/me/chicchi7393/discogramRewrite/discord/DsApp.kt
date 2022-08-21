@@ -58,6 +58,7 @@ class DsApp private constructor() {
         message: String,
         isForced: Boolean,
         isAssigned: Boolean,
+        idOrUser: String,
         assignedTo: String = "",
         footerStr: String,
         state: Any
@@ -70,6 +71,7 @@ class DsApp private constructor() {
             .addField(embedStrs["embed_forced"]!!, if (isForced) embedStrs["embed_yes"]!! else embedStrs["embed_no"]!!, true)
             .addField(embedStrs["embed_assignedTo"]!!, if (isAssigned) assignedTo else embedStrs["embed_noOne"]!!, true)
             .addField(embedStrs["embed_state"]!!, state.toString(), false)
+            .addField(embedStrs["embed_idOrUser"]!!, idOrUser, false)
             .setFooter(footerStr, null)
             .build()
     }
@@ -131,7 +133,7 @@ class DsApp private constructor() {
         tgApp.downloadFile(pfpId)
 
         val filePath =
-            if (pfpId != 69420) getLastModified("session/database/profile_photos") else FileInputStream("./session/database/profile_photos/5900.jpg")
+            if (pfpId != 69420) getLastModified("session/database/profile_photos") else FileInputStream("./session/database/5900.jpg")
 
         val embed = generateTicketEmbed(
             chat.title,
@@ -139,6 +141,7 @@ class DsApp private constructor() {
             message,
             isForced = false,
             isAssigned = false,
+            chat.id.toString(),
             footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}",
             state = TicketState.OPEN
         )
@@ -159,19 +162,21 @@ class DsApp private constructor() {
                     )
                 ).queue()
                 Thread.sleep(500)
-                val tIt = it.createThreadChannel(
+                it.createThreadChannel(
                     "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-                ).complete(true)
-                Thread.sleep(500)
-                dbMan.Create().Tickets().createTicketDocument(
+                ).queue {
+                    Thread.sleep(500)
+                    dbMan.Create().Tickets().createTicketDocument(
                         TicketDocument(
                             chat.id,
-                            tIt.idLong,
+                            it.idLong,
                             dbMan.Utils().getLastUsedTicketId() + 1,
                             mapOf("open" to true, "suspended" to false, "closed" to false),
                             System.currentTimeMillis() / 1000
                         )
                     )
+                }
+
             }
             .queue()
     }

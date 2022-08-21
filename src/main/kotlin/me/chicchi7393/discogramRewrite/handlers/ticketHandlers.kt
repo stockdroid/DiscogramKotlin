@@ -57,6 +57,7 @@ class ticketHandlers {
             "File",
             isForced = false,
             isAssigned = false,
+            chat.id.toString(),
             footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId()}",
             state = TicketState.OPEN
         )
@@ -77,10 +78,10 @@ class ticketHandlers {
                     )
                 ).queue()
                 Thread.sleep(500)
-                val threaad = it.createThreadChannel(
+                it.createThreadChannel(
                     "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-                ).complete()
-                Thread.sleep(500)
+                ).queue { threaad ->
+                    Thread.sleep(500)
                     dbMan.Create().Tickets().createTicketDocument(
                         TicketDocument(
                             chat.id,
@@ -99,6 +100,8 @@ class ticketHandlers {
                         }
                     }
                 }
+                }
+
             }
 
     fun startTicketWithText(chat: Chat, text: String) = dsClass.createTicket(chat, text)

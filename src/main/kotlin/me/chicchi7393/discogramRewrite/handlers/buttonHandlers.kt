@@ -67,12 +67,13 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
     }
 
     fun assignButtonTicketHandler() {
+        val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(channel_id)!!
         if (dbMan.Search().Assignee().searchAssigneeDocumentById(
-                dbMan.Search().Tickets().searchTicketDocumentByChannelId(channel_id)!!.ticketId
+                ticket.ticketId
             )!!.modId == 0L || discordClient.isHigherRole(event.member!!)
         ) {
             dbMan.Update().Assignees().editAssignee(
-                dbMan.Search().Tickets().searchTicketDocumentByChannelId(channel_id)!!.ticketId,
+                ticket.ticketId,
                 event.member!!.idLong
             )
             event.message.editMessageEmbeds(
@@ -82,6 +83,7 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
                     event.message.embeds[0].description!!,
                     event.message.embeds[0].fields[0].value == messTable.embed["embed_yes"],
                     true,
+                    ticket.telegramId.toString(),
                     if (event.member!!.nickname == null) event.member!!.effectiveName else event.member!!.nickname!!,
                     event.message.embeds[0].footer!!.text!!,
                     event.message.embeds[0].fields[2].value!!
