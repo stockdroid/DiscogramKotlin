@@ -25,6 +25,7 @@ class reopenTicket {
                     message.embeds[0].description!!,
                     message.embeds[0].fields[0].value == messageTable.embed["embed_yes"],
                     message.embeds[0].fields[1].value != messageTable.embed["embed_noOne"],
+                    message.embeds[0].fields[2].value!!,
                     message.embeds[0].fields[1].value!!,
                     message.embeds[0].footer!!.text!!,
                     TicketState.OPEN

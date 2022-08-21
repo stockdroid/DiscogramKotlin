@@ -4,6 +4,9 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.utils.getId
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+import kotlin.math.min
 
 class ticketListCommand(val event: SlashCommandInteractionEvent) {
     private val dbMan = DatabaseManager.instance
@@ -25,7 +28,19 @@ class ticketListCommand(val event: SlashCommandInteractionEvent) {
                     message += "${settings.discord["idPrefix"] as String}${ticket.ticketId}: ${messageLink}\n"
                 }
             }
-            event.reply(message).queue()
+            val mess_parts = mutableListOf<String>()
+            var index = 0
+            while (index < message.length) {
+                mess_parts.add(message.substring(index, min(index + 2000, message.length)))
+                index += 2000
+            }
+            for (part in mess_parts.reversed()) {
+                if (mess_parts.last() == part) {
+                    event.reply(part).queue()
+                } else {
+                    event.channel.sendMessage(part).queue()
+                }
+            }
         }
     }
 }

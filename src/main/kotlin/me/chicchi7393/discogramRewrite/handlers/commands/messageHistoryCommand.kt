@@ -1,12 +1,12 @@
 package me.chicchi7393.discogramRewrite.handlers.commands
 
-import it.tdlight.jni.TdApi.GetChatHistory
-import it.tdlight.jni.TdApi.MessageSenderUser
-import it.tdlight.jni.TdApi.MessageText
+import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.utils.getId
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlin.math.min
 
 
@@ -33,7 +33,7 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
                 var message = commStrs["cronologia"]!!["template"]!!
                 val messages = it.get().messages
                 for (mess in messages) {
-                    message += "${if ((mess.senderId as MessageSenderUser).userId == settings.telegram["userbotID"]) commStrs["cronologia"]!!["assistance"] else commStrs["cronologia"]!!["user"]} ${(mess.content as MessageText).text.text}\n"
+                    message += "${if ((mess.senderId as MessageSenderUser).userId == (settings.telegram["userbotID"] as Number).toLong()) commStrs["cronologia"]!!["assistance"] else commStrs["cronologia"]!!["user"]}: ${(mess.content as MessageText).text.text}\n"
                 }
                 val mess_parts = mutableListOf<String>()
                 var index = 0
@@ -41,7 +41,7 @@ class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
                     mess_parts.add(message.substring(index, min(index + 2000, message.length)))
                     index += 2000
                 }
-                for (part in mess_parts) {
+                for (part in mess_parts.reversed()) {
                     if (mess_parts.last() == part) {
                         event.reply(part).queue()
                     } else {

@@ -28,7 +28,7 @@ class modalHandlers(private val event: ModalInteractionEvent) {
             .setName(thread.name + messTable.generalStrings["suffix_closedTicket"])
             .setArchived(true)
             .queue()
-        Thread.sleep(1250)
+        Thread.sleep(800)
         val message =
             discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .retrieveMessageById(event.modalId.split(":")[1].toLong()).queue { message ->
@@ -51,13 +51,14 @@ class modalHandlers(private val event: ModalInteractionEvent) {
                             message.embeds[0].description!!,
                             message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
                             message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
+                            ticket.telegramId.toString(),
                             message.embeds[0].fields[1].value!!,
                             message.embeds[0].footer!!.text!!,
                             TicketState.CLOSED
                         )
                     ).queue()
                 }
-        Thread.sleep(1250)
+        Thread.sleep(1000)
         event.reply(messTable.modals["closeTicket"]!!["reply"]!!).queue()
     }
 
@@ -74,7 +75,7 @@ class modalHandlers(private val event: ModalInteractionEvent) {
             .setName(thread.name + messTable.generalStrings["suffix_suspendedTicket"])
             .setLocked(true)
             .queue()
-        Thread.sleep(1250)
+        Thread.sleep(1000)
         discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .retrieveMessageById(event.modalId.split(":")[1].toLong()).queue {message ->
                     message.editMessageEmbeds(
@@ -84,13 +85,14 @@ class modalHandlers(private val event: ModalInteractionEvent) {
                             message.embeds[0].description!!,
                             message.embeds[0].fields[0].value == messTable.embed["embed_yes"]!!,
                             message.embeds[0].fields[1].value != messTable.embed["embed_noOne"]!!,
+                            ticket.telegramId.toString(),
                             message.embeds[0].fields[1].value!!,
                             message.embeds[0].footer!!.text!!,
                             TicketState.SUSPENDED
                         )
                     ).queue()
                 }
-        Thread.sleep(1250)
+        Thread.sleep(1000)
         event.reply(messTable.modals["suspendTicket"]!!["reply"]!!).queue()
     }
 }

@@ -11,7 +11,6 @@ import java.io.BufferedInputStream
 import java.io.FileOutputStream
 import java.net.URL
 import java.nio.file.Paths
-import java.util.*
 
 
 class TgApp private constructor() {
@@ -57,7 +56,7 @@ class TgApp private constructor() {
     private fun remoteDownloadFile(url: URL) {
         url.openStream().use { inp ->
             BufferedInputStream(inp).use { bis ->
-                FileOutputStream("./session/database/profile_photos/5900.jpg").use { fos ->
+                FileOutputStream("./session/database/5900.jpg").use { fos ->
                     val data = ByteArray(1024)
                     var count: Int
                     while (bis.read(data, 0, 1024).also { count = it } != -1) {
@@ -76,6 +75,6 @@ class TgApp private constructor() {
         } else {
             client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
         }
-        Thread.sleep(1000)
+        Thread.sleep(800)
     }
 }
