@@ -28,7 +28,7 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
 
     private fun ticketIfList(chat: Chat, message: Message): Boolean {
         return (chat.type is ChatTypePrivate
-                && chat.id !in settings.discord["ignoreTGAuthor"] as List<Long>
+                && chat.id !in (settings.discord["ignoreTGAuthor"] as List<Number>)
                 && (message.senderId as MessageSenderUser).userId != (settings.telegram["userbotID"] as Number).toLong())
     }
 
