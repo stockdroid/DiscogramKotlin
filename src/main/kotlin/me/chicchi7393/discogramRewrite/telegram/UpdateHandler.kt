@@ -6,6 +6,7 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.handlers.ticketHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.utils.FindContent
+import java.lang.NullPointerException
 
 
 class UpdateHandler(private val tgClient: SimpleTelegramClient) {
@@ -31,11 +32,11 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                 && (message.senderId as MessageSenderUser).userId != (settings.telegram["userbotID"] as Number).toLong())
     }
 
-    fun onUpdateNewMessage(update: UpdateNewMessage) {
+    fun onUpdateNewMessage(update: UpdateNewMessage): Any {
         val findContentClass = FindContent(update.message)
         val text = findContentClass.findText()
         val document = findContentClass.findData()
-
+        if (((System.currentTimeMillis()/1000)-update.message.date) > 30 ) {return false}
         tgClient.send(GetChat(update.message.chatId)) {
             val chat = it.get()
             if (update.message.content is MessageText) {
@@ -84,13 +85,16 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                 }
             }
         }
+        return true
     }
 
     fun onUpdateMessageSendSucceeded(update: UpdateMessageSendSucceeded) {
-        dbMan.Update().MessageLinks().updateMessageId(
-            dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.message.chatId)!!.ticketId,
-            update.oldMessageId,
-            update.message.id
-        )
+        try {
+            dbMan.Update().MessageLinks().updateMessageId(
+                dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.message.chatId)!!.ticketId,
+                update.oldMessageId,
+                update.message.id
+            )
+        } catch (_: NullPointerException) {}
     }
 }

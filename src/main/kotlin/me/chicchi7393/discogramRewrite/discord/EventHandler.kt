@@ -95,8 +95,9 @@ class EventHandler : ListenerAdapter() {
             !event.author.isBot &&
             !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)
         ) {
-            if (event.author.idLong == dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId || DsApp.instance.isHigherRole(event.member!!)
+            if ((event.author.idLong == dbMan.Search().Assignee()
+                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId || DsApp.instance.isHigherRole(event.member!!))
+                && ticket.status["open"] == true
             ) {
                 if (ticket.status["suspended"] == true
                 ) {
@@ -129,9 +130,9 @@ class EventHandler : ListenerAdapter() {
                         )
                     }
                 }
-            } else if (event.author.idLong != dbMan.Search().Assignee()
+            } else if ((event.author.idLong != dbMan.Search().Assignee()
                     .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId &&
-                !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)
+                !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)) || (ticket.status["open"] == false && !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String))
             ) {
                 event.message.delete().queue()
             }

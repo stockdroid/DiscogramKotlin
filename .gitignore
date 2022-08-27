@@ -26,5 +26,5 @@ session/
 target/
 .idea/
 .cache/
-src/main/resources/json/settings.json
-src/main/resources/json/settings_dev.json
+json/settings.json
+json/settings_dev.json

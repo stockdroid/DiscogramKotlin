@@ -1,7 +1,10 @@
 package me.chicchi7393.discogramRewrite
 
+import io.javalin.Javalin
+import io.javalin.http.HandlerType
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.discord.DsApp
+import me.chicchi7393.discogramRewrite.http.HTTPManager
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import me.chicchi7393.discogramRewrite.telegram.UpdateHandler
@@ -17,6 +20,7 @@ object Main {
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
         tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
         DatabaseManager().createClient()
+        HTTPManager.createApp(4763)
         Thread {
             tgClient.start(tgAppClass.generateAuth())
             tgClient.waitForExit()

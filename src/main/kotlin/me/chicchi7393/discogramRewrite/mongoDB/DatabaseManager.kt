@@ -5,10 +5,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.AssigneeDocument
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinksDocument
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.*
 import org.bson.BsonValue
 import org.litote.kmongo.*
 
@@ -58,6 +55,10 @@ class DatabaseManager {
             return getDB()
                 .getCollection<MessageLinksDocument>("messageLinks")
         }
+        fun getRatingsCollection(): MongoCollection<RatingDocument> {
+            return getDB()
+                .getCollection<RatingDocument>("ratings")
+        }
     }
 
     inner class Create {
@@ -85,22 +86,22 @@ class DatabaseManager {
             }
         }
 
-        /*inner class Assignee {
-            fun createAssigneeDocument(
-                assigneeDocument: AssigneeDocument
-            ): BsonValue? {
-                return instance.Get().getAssigneesCollection()
-                    .insertOne(assigneeDocument)
-                    .insertedId
-            }
-        }*/
-
         inner class MessageLink {
             fun createMessageLinkDocument(
                 messageLinkDocument: MessageLinksDocument
             ): BsonValue? {
                 return instance.Get().getMessageLinkCollection()
                     .insertOne(messageLinkDocument)
+                    .insertedId
+            }
+        }
+
+        inner class Ratings {
+            fun createRatingDocument(
+                ratingDocument: RatingDocument
+            ): BsonValue? {
+                return instance.Get().getRatingsCollection()
+                    .insertOne(ratingDocument)
                     .insertedId
             }
         }
@@ -146,12 +147,6 @@ class DatabaseManager {
                 return instance.Get().getAssigneesCollection()
                     .findOne(AssigneeDocument::ticketId eq ticketId)
             }
-
-            /*fun searchAssigneeDocumentByAssigneeId(assigneeId: Long): AssigneeDocument? {
-                return instance.Get().getAssigneesCollection()
-                    .findOne(AssigneeDocument::modId eq assigneeId)
-            }*/
-
         }
 
         inner class MessageLinks {
@@ -178,6 +173,25 @@ class DatabaseManager {
                     }
                 }
                 return 0L
+            }
+        }
+
+        inner class Ratings {
+            fun searchRatingById(ticketId: Int): RatingDocument? {
+                return instance.Get().getRatingsCollection()
+                    .findOne(RatingDocument::id eq ticketId)
+            }
+            fun searchRatingBySpeedRating(speed: Float): RatingDocument? {
+                return instance.Get().getRatingsCollection()
+                    .findOne(RatingDocument::speedRating eq speed)
+            }
+            fun searchRatingByGentilezzaRating(gentilezza: Float): RatingDocument? {
+                return instance.Get().getRatingsCollection()
+                    .findOne(RatingDocument::gentilezzaRating eq gentilezza)
+            }
+            fun searchRatingByGeneralRating(general: Float): RatingDocument? {
+                return instance.Get().getRatingsCollection()
+                    .findOne(RatingDocument::generalRating eq general)
             }
         }
     }
