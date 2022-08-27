@@ -15,10 +15,11 @@
     "suffix_suspendedTicket": " (Sospeso)",
 
     "welcome": "👋Benvenuto in assistenza!👋 \n\nTi contatteremo non appena ci sarà possibile",
-    "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi il messaggio",
+    "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi il messaggio\n\nSe vuoi aiutarci, dacci un feedback su questo ticket!",
     "suspendedTicketTG": "Il tuo ticket è stato sospeso.\n\nAspetta che un mod ti riscriva oppure scrivi te per riaprire",
     "reopenedTicketTG": "Il tuo ticket è stato riaperto.",
-    "errorMessage": "Si è verificato un errore, eccolo qua: "
+    "errorMessage": "Si è verificato un errore, eccolo qua: ",
+    "feedback_url": "https://localhost:3000/rating?id="
   },
   "menu": {
     "ticket_menu": {
@@ -111,5 +112,16 @@
   "errors": {
     "noUserOrThread": "Non hai fornito l'username e non sei in un thread",
     "user0": "Utente non valido"
+  },
+  "ratings": {
+    "prefix": "Nuovo rating!",
+    "ticketIDDesc": "ID Ticket",
+    "speedDesc": "Stelle velocità",
+    "gentilezzaDesc": "Stelle gentilezza",
+    "generalDesc": "Stelle generali",
+    "isProblemFixedDesc": "Il problema è risolto",
+    "problemFixedYes": "Sì",
+    "problemFixedNo": "No",
+    "commentsDesc": "Commenti"
   }
 }

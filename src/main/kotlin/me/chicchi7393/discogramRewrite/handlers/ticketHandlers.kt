@@ -202,7 +202,7 @@ class ticketHandlers {
                 null,
                 InputMessageText(
                     FormattedText(
-                        "${messTable.generalStrings["closedTicketTG"]} ${if (text != "") "\nMotivazione: $text" else ""}",
+                        "${messTable.generalStrings["closedTicketTG"]} ${messTable.generalStrings["feedback_url"]+ticket.ticketId.toString()} ${if (text != "") "\nMotivazione: $text" else ""}",
                         null
                     ), false, false
                 )
