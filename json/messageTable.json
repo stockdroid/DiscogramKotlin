@@ -16,6 +16,7 @@
 
     "welcome": "👋Benvenuto in assistenza!👋 \n\nTi contatteremo non appena ci sarà possibile",
     "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi un messaggio\n\nSe vuoi aiutarci, dacci un feedback su questo ticket!",
+    "closedTicketTGWR": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi un messaggio",
     "suspendedTicketTG": "Il tuo ticket è stato sospeso.\n\nAspetta che un mod ti riscriva oppure scrivi te per riaprire",
     "reopenedTicketTG": "Il tuo ticket è stato riaperto.",
     "errorMessage": "Si è verificato un errore, eccolo qua: ",
@@ -81,6 +82,7 @@
   "modals": {
     "closeTicket": {
       "title": "Chiudi ticket",
+      "titleWR": "Chiudi ticket senza rating",
       "reasonText": "Motivazione",
       "reasonPlaceholder": "Hai rotto le palle",
       "reply": "Ticket chiuso"
@@ -106,6 +108,7 @@
     "button_assign": "Assegna",
     "button_suspend": "Sospendi",
     "button_close": "Chiudi",
+    "button_closenorating": "Chiudi senza rating",
     "tgRedirectPrefixLink": "https://chicchi7393.xyz/redirectTg.html?id=",
     "embed_idOrUser": "ID"
   },

@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
@@ -27,7 +26,7 @@ import java.util.*
 
 
 class EventHandler : ListenerAdapter() {
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
     private val dbMan = DatabaseManager.instance
     private val tgClient = TgApp.instance.client
     private fun sendContent(tgId: Long, dsId: Long, content: InputMessageContent, ticket_id: Int, reply_id: Long) {
@@ -45,7 +44,6 @@ class EventHandler : ListenerAdapter() {
         }
     }
 
-
     private fun downloadFile(url: URL, filename: String): Path {
         val path = Files.createDirectory(
             Path.of(
@@ -62,7 +60,8 @@ class EventHandler : ListenerAdapter() {
         val buttonHandler = buttonHandlers(event)
         val ticketMenu = ticketMenu(event)
         when {
-            event.componentId.startsWith("close") -> buttonHandler.closeButtonTicketHandler()
+            event.componentId.startsWith("closeNoRating") -> buttonHandler.closeButtonTicketHandler(false)
+            event.componentId.startsWith("close") -> buttonHandler.closeButtonTicketHandler(true)
             event.componentId.startsWith("suspend") -> buttonHandler.suspendButtonTicketHandler()
             event.componentId.startsWith("assign") -> buttonHandler.assignButtonTicketHandler()
             event.componentId.startsWith("menu") -> buttonHandler.menuButtonHandler()
@@ -75,7 +74,8 @@ class EventHandler : ListenerAdapter() {
     override fun onModalInteraction(event: ModalInteractionEvent) {
         val modalHandlers = modalHandlers(event)
         when {
-            event.modalId.startsWith("closeModal") -> modalHandlers.closeTicketHandler()
+            event.modalId.startsWith("closeModal") -> modalHandlers.closeTicketHandler(true)
+            event.modalId.startsWith("closeWRModal") -> modalHandlers.closeTicketHandler(false)
             event.modalId.startsWith("suspendModal") -> modalHandlers.suspendTicketHandler()
         }
     }
@@ -88,7 +88,6 @@ class EventHandler : ListenerAdapter() {
             TicketDocument(0L, 0L, 0, mapOf("open" to false, "suspended" to false, "closed" to true), 0L)
         }
         val tgId = ticket.telegramId
-
         if (
             !event.isFromType(ChannelType.PRIVATE) &&
             event.channel.name.startsWith(settings.discord["idPrefix"] as String, true) &&
@@ -96,7 +95,11 @@ class EventHandler : ListenerAdapter() {
             !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)
         ) {
             if ((event.author.idLong == dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId || DsApp.instance.isHigherRole(event.member!!))
+                    .searchAssigneeDocumentById(
+                        event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(
+                            " "
+                        )[0].toInt()
+                    )!!.modId || DsApp.instance.isHigherRole(event.member!!))
                 && ticket.status["open"] == true
             ) {
                 if (ticket.status["suspended"] == true
@@ -131,8 +134,14 @@ class EventHandler : ListenerAdapter() {
                     }
                 }
             } else if ((event.author.idLong != dbMan.Search().Assignee()
-                    .searchAssigneeDocumentById(event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(" ")[0].toInt())!!.modId &&
-                !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)) || (ticket.status["open"] == false && !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String))
+                    .searchAssigneeDocumentById(
+                        event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(
+                            " "
+                        )[0].toInt()
+                    )!!.modId &&
+                        !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)) || (ticket.status["open"] == false && !event.message.contentRaw.startsWith(
+                    settings.discord["ignore_message_prefix"] as String
+                ))
             ) {
                 event.message.delete().queue()
             }
@@ -148,10 +157,10 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onMessageDelete(event: MessageDeleteEvent) {
-        messageModifyHandler(event).onMessageDelete()
+        MessageModifyHandler(event).onMessageDelete()
     }
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {
-        messageModifyHandler(event).onMessageUpdate()
+        MessageModifyHandler(event).onMessageUpdate()
     }
 }

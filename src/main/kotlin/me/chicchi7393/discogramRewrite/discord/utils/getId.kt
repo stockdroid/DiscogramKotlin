@@ -11,7 +11,7 @@ object idTransporter {
 }
 
 private val dbMan = DatabaseManager.instance
-private val settings = JsonReader().readJsonSettings("settings")!!
+private val settings = JsonReader().readJsonSettings()!!
 private val tgClient = TgApp.instance
 
 fun getId(event: SlashCommandInteractionEvent): Long {

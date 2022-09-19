@@ -11,7 +11,7 @@ import org.litote.kmongo.*
 
 
 class DatabaseManager {
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
 
     init {
         println("Mongo Class Initialized")
@@ -55,6 +55,7 @@ class DatabaseManager {
             return getDB()
                 .getCollection<MessageLinksDocument>("messageLinks")
         }
+
         fun getRatingsCollection(): MongoCollection<RatingDocument> {
             return getDB()
                 .getCollection<RatingDocument>("ratings")
@@ -181,14 +182,17 @@ class DatabaseManager {
                 return instance.Get().getRatingsCollection()
                     .findOne(RatingDocument::id eq ticketId)
             }
+
             fun searchRatingBySpeedRating(speed: Float): RatingDocument? {
                 return instance.Get().getRatingsCollection()
                     .findOne(RatingDocument::speedRating eq speed)
             }
+
             fun searchRatingByGentilezzaRating(gentilezza: Float): RatingDocument? {
                 return instance.Get().getRatingsCollection()
                     .findOne(RatingDocument::gentilezzaRating eq gentilezza)
             }
+
             fun searchRatingByGeneralRating(general: Float): RatingDocument? {
                 return instance.Get().getRatingsCollection()
                     .findOne(RatingDocument::generalRating eq general)
@@ -310,12 +314,13 @@ class DatabaseManager {
 
     inner class Utils {
         fun getLastUsedTicketId(): Int {
-            return try {
+            val ticketId = try {
                 FindLatest().findLatestTicket()!!
                     .ticketId
             } catch (e: java.lang.NullPointerException) {
                 0
             }
+            return ticketId
         }
 
         fun searchAlreadyOpen(telegram_id: Long): TicketDocument? {

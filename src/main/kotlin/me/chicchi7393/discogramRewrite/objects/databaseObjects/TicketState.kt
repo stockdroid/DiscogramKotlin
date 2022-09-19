@@ -3,6 +3,7 @@ package me.chicchi7393.discogramRewrite.objects.databaseObjects
 import me.chicchi7393.discogramRewrite.JsonReader
 
 private val messageTable = JsonReader().readJsonMessageTable("messageTable")!!.generalStrings
+
 enum class TicketState {
 
     OPEN {
@@ -20,7 +21,6 @@ enum class TicketState {
             return messageTable["ticketState_closed"] as String
         }
     }
-
 
 
 }
