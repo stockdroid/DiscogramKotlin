@@ -26,13 +26,16 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         0
     }
 
-    fun closeButtonTicketHandler() {
+    fun closeButtonTicketHandler(rating: Boolean) {
         event.replyModal(
             Modal
-                .create("closeModal-${channel_id}:${event.message.id}", modalStrs["closeTicket"]!!["title"]!!)
+                .create(
+                    "close${if (rating) "" else "WR"}Modal-${channel_id}:${event.message.id}",
+                    if (rating) modalStrs["closeTicket"]!!["title"]!! else modalStrs["closeTicket"]!!["titleWR"]!!
+                )
                 .addActionRow(
                     ActionRow.of(
-                        TextInput.create("reason",  modalStrs["closeTicket"]!!["reasonText"]!!, TextInputStyle.PARAGRAPH)
+                        TextInput.create("reason", modalStrs["closeTicket"]!!["reasonText"]!!, TextInputStyle.PARAGRAPH)
                             .setPlaceholder(modalStrs["closeTicket"]!!["reasonPlaceholder"]!!)
                             .setRequiredRange(0, 1000)
                             .setRequired(false)
@@ -48,10 +51,14 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         if (event.message.embeds[0].fields[2].value == messTable.generalStrings["ticketState_open"]) {
             event.replyModal(
                 Modal
-                    .create("suspendModal-${channel_id}:${event.message.id}",  modalStrs["suspendTicket"]!!["title"]!!)
+                    .create("suspendModal-${channel_id}:${event.message.id}", modalStrs["suspendTicket"]!!["title"]!!)
                     .addActionRow(
                         ActionRow.of(
-                            TextInput.create("reason",  modalStrs["suspendTicket"]!!["reasonText"]!!, TextInputStyle.PARAGRAPH)
+                            TextInput.create(
+                                "reason",
+                                modalStrs["suspendTicket"]!!["reasonText"]!!,
+                                TextInputStyle.PARAGRAPH
+                            )
                                 .setPlaceholder(modalStrs["suspendTicket"]!!["reasonPlaceholder"]!!)
                                 .setRequiredRange(0, 1000)
                                 .setRequired(false)
@@ -121,11 +128,20 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         val NO_MENU = menuStrs["noMenu"]!!
 
         val ASSIGNEE_ROW = ActionRow.of(
-            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", menuStrs["freeYourselfTicketButton"]!!)
+            Button.secondary(
+                "MenuButton-ticket-removeTicket:$channel_id/${event.message.id}",
+                menuStrs["freeYourselfTicketButton"]!!
+            )
         )
         val CAPOMOD_ROW = ActionRow.of(
-            Button.secondary("MenuButton-ticket-removeTicket:$channel_id/${event.message.id}", menuStrs["freeTicketButton"]!!),
-            Button.secondary("MenuButton-ticket-marisaTicket:$channel_id/${event.message.id}", menuStrs["stealTicket"]!!)
+            Button.secondary(
+                "MenuButton-ticket-removeTicket:$channel_id/${event.message.id}",
+                menuStrs["freeTicketButton"]!!
+            ),
+            Button.secondary(
+                "MenuButton-ticket-marisaTicket:$channel_id/${event.message.id}",
+                menuStrs["stealTicket"]!!
+            )
         )
         val NO_MENU_ROW = "kakone"
 

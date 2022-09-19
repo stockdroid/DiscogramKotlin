@@ -13,7 +13,7 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
         if (event.componentId.contains(":")) event.componentId.split(":")[1].split("/")[0].toLong() else 0
     private val message_id = if (event.componentId.contains("/")) event.componentId.split("/")[1].toLong() else 0
     private val discordClient = DsApp.instance
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val embedStrs = messTable.embed
     private val menuStrs = messTable.menu["ticket_menu"]!!

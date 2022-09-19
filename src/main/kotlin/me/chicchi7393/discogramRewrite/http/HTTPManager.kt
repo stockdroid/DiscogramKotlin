@@ -1,15 +1,13 @@
 package me.chicchi7393.discogramRewrite.http
 
 import io.javalin.Javalin
-import io.javalin.core.JavalinConfig
 import io.javalin.http.HandlerType
 import me.chicchi7393.discogramRewrite.http.handlers.HTTPHandlerClass
 import me.chicchi7393.discogramRewrite.http.utilities.FindClass
-import java.util.function.Consumer
 
 object HTTPManager {
-    lateinit var app: Javalin
-    val methods = mapOf("get" to HandlerType.GET, "post" to HandlerType.POST)
+    private lateinit var app: Javalin
+    private val methods = mapOf("get" to HandlerType.GET, "post" to HandlerType.POST)
     fun createApp(port: Int) {
         app = Javalin.create { config ->
             config.enableCorsForAllOrigins()

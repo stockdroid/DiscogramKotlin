@@ -3,14 +3,14 @@ package me.chicchi7393.discogramRewrite.telegram
 import it.tdlight.client.SimpleTelegramClient
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.handlers.TelegramCommandsHandler
 import me.chicchi7393.discogramRewrite.handlers.ticketHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.utils.FindContent
-import java.lang.NullPointerException
 
 
 class UpdateHandler(private val tgClient: SimpleTelegramClient) {
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
     private val messageTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val ticketHandlers = ticketHandlers()
     private val dbMan = DatabaseManager.instance
@@ -36,10 +36,15 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
         val findContentClass = FindContent(update.message)
         val text = findContentClass.findText()
         val document = findContentClass.findData()
-        if (((System.currentTimeMillis()/1000)-update.message.date) > 30 ) {return false}
+        if (((System.currentTimeMillis() / 1000) - update.message.date) > 30) {
+            return false
+        }
         tgClient.send(GetChat(update.message.chatId)) {
             val chat = it.get()
             if (update.message.content is MessageText) {
+                if (chat.id == (settings.telegram["moderatorGroup"] as Number).toLong()) {
+                    TelegramCommandsHandler().onSlashCommand(update.message.content.toString())
+                }
                 if (ticketIfList(chat, update.message)) {
                     if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
                             .searchAlreadySuspended(chat.id) != null
@@ -95,6 +100,7 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                 update.oldMessageId,
                 update.message.id
             )
-        } catch (_: NullPointerException) {}
+        } catch (_: NullPointerException) {
+        }
     }
 }

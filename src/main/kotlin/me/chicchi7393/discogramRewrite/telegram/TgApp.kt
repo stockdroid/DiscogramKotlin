@@ -5,8 +5,9 @@ import it.tdlight.client.AuthenticationData
 import it.tdlight.client.SimpleTelegramClient
 import it.tdlight.client.TDLibSettings
 import it.tdlight.common.Init
-import it.tdlight.jni.TdApi.DownloadFile
+import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
 import java.net.URL
@@ -14,7 +15,7 @@ import java.nio.file.Paths
 
 
 class TgApp private constructor() {
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
 
     init {
         println("TgApp Class Initialized")
@@ -38,13 +39,15 @@ class TgApp private constructor() {
         val sessionPath = Paths.get("session")
 
         Init.start()
-        tgSettings.databaseDirectoryPath = sessionPath.resolve("database")
+        tgSettings.databaseDirectoryPath =
+            sessionPath.resolve(if (VariableStorage.isProd) "database" else "database_dev")
         tgSettings.downloadedFilesDirectoryPath = sessionPath.resolve("downloads")
 
         tgSettings.applicationVersion = tg["app_version"] as String?
         tgSettings.deviceModel = tg["model"] as String?
         tgSettings.systemLanguageCode = tg["language_code"] as String?
         tgSettings.systemVersion = tg["system_version"] as String?
+
         client = SimpleTelegramClient(tgSettings)
         return client
     }
@@ -76,5 +79,27 @@ class TgApp private constructor() {
             client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
         }
         Thread.sleep(800)
+    }
+
+    fun alertTicket(chat_title: String, message: String, thread_link: String) {
+        client.send(
+            SendMessage(
+                (settings.telegram["moderatorGroup"] as Number).toLong(),
+                0L,
+                0L,
+                null,
+                null,
+                InputMessageText(
+                    FormattedText(
+                        "Nuovo ticket!\nDa: ${chat_title}\nMessaggio: ${message}\nLink: $thread_link",
+                        null
+                    ),
+                    false,
+                    false
+                )
+            )
+        ) {
+            it.get()
+        }
     }
 }

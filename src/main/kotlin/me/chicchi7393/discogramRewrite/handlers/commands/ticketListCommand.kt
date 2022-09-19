@@ -4,15 +4,13 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.utils.getId
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlin.math.min
 
 class ticketListCommand(val event: SlashCommandInteractionEvent) {
     private val dbMan = DatabaseManager.instance
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val commStrs = messTable.commands
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
 
 
     fun ticketList() {
@@ -24,7 +22,8 @@ class ticketListCommand(val event: SlashCommandInteractionEvent) {
             var message = commStrs["tickets"]!!["template"]!!
             for (ticket in tickets) {
                 if (ticket != null) {
-                    val messageLink = "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${ticket.channelId}"
+                    val messageLink =
+                        "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${ticket.channelId}"
                     message += "${settings.discord["idPrefix"] as String}${ticket.ticketId}: ${messageLink}\n"
                 }
             }

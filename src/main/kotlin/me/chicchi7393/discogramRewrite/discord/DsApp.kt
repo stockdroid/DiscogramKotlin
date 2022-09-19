@@ -8,10 +8,14 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import me.chicchi7393.discogramRewrite.telegram.TgApp
+import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -23,7 +27,7 @@ import java.io.FileInputStream
 
 
 class DsApp private constructor() {
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val embedStrs = messTable.embed
     private val commStrs = messTable.commands
@@ -68,7 +72,11 @@ class DsApp private constructor() {
             .setTitle(embedStrs["embed_newTicketTitle"]!!)
             .setAuthor(authorName, authorUrl, "attachment://pic.png")
             .setDescription(message)
-            .addField(embedStrs["embed_forced"]!!, if (isForced) embedStrs["embed_yes"]!! else embedStrs["embed_no"]!!, true)
+            .addField(
+                embedStrs["embed_forced"]!!,
+                if (isForced) embedStrs["embed_yes"]!! else embedStrs["embed_no"]!!,
+                true
+            )
             .addField(embedStrs["embed_assignedTo"]!!, if (isAssigned) assignedTo else embedStrs["embed_noOne"]!!, true)
             .addField(embedStrs["embed_state"]!!, state.toString(), false)
             .addField(embedStrs["embed_idOrUser"]!!, idOrUser, false)
@@ -90,12 +98,13 @@ class DsApp private constructor() {
                 Button.success("assign-$channel_id", embedStrs["button_assign"]!!),
                 Button.secondary("suspend-$channel_id", embedStrs["button_suspend"]!!),
                 Button.danger("close-$channel_id", embedStrs["button_close"]!!),
+                Button.danger("closeNoRating-$channel_id", embedStrs["button_closenorating"]!!),
             )
         )
     }
 
-    private fun getLastModified(directoryFilePath: String): FileInputStream {
-        val directory = File(directoryFilePath)
+    private fun getLastModified(): FileInputStream {
+        val directory = File("session/${if (VariableStorage.isProd) "database" else "database_dev"}/profile_photos")
         val files = directory.listFiles { obj: File -> obj.isFile }
         var lastModifiedTime = Long.MIN_VALUE
         var chosenFile: File? = null
@@ -122,7 +131,14 @@ class DsApp private constructor() {
 
     fun createTicket(chat: Chat, message: String) {
         TgApp.instance.client.send(
-            TdApi.SendMessage(chat.id, 0, 0, null, null, InputMessageText(TdApi.FormattedText(messTable.generalStrings["welcome"] as String, null), false, false))
+            TdApi.SendMessage(
+                chat.id,
+                0,
+                0,
+                null,
+                null,
+                InputMessageText(TdApi.FormattedText(messTable.generalStrings["welcome"] as String, null), false, false)
+            )
         ) {}
         File("session/database/profile_photos").deleteRecursively()
         val pfpId = try {
@@ -133,11 +149,11 @@ class DsApp private constructor() {
         tgApp.downloadFile(pfpId)
 
         val filePath =
-            if (pfpId != 69420) getLastModified("session/database/profile_photos") else FileInputStream("./session/database/5900.jpg")
+            if (pfpId != 69420) getLastModified() else FileInputStream("./session/database/5900.jpg")
 
         val embed = generateTicketEmbed(
             chat.title,
-            embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString(),
+            embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
             message,
             isForced = false,
             isAssigned = false,
@@ -154,7 +170,7 @@ class DsApp private constructor() {
                     embed
                 ).setActionRows(
                     generateFirstEmbedButtons(
-                        embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString()
+                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString()
                     ),
                     generateSecondEmbedButtons(it.idLong),
                     ActionRow.of(
@@ -176,7 +192,11 @@ class DsApp private constructor() {
                         )
                     )
                 }
-
+                tgApp.alertTicket(
+                    chat.title,
+                    message,
+                    "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${it.id}"
+                )
             }
             .queue()
     }
@@ -194,10 +214,25 @@ class DsApp private constructor() {
     fun createCommands() {
         dsClient.updateCommands().addCommands(
             Commands.slash(commStrs["tickets"]!!["name"]!!, commStrs["tickets"]!!["description"]!!)
-                .addOption(OptionType.STRING, commStrs["tickets"]!!["option_1_name"]!!, commStrs["tickets"]!!["option_1_description"]!!, true),
+                .addOption(
+                    OptionType.STRING,
+                    commStrs["tickets"]!!["option_1_name"]!!,
+                    commStrs["tickets"]!!["option_1_description"]!!,
+                    true
+                ),
             Commands.slash(commStrs["cronologia"]!!["name"]!!, commStrs["cronologia"]!!["description"]!!)
-                .addOption(OptionType.STRING, commStrs["cronologia"]!!["option_1_name"]!!, commStrs["cronologia"]!!["option_1_description"]!!, true)
-                .addOption(OptionType.INTEGER, commStrs["cronologia"]!!["option_2_name"]!!, commStrs["cronologia"]!!["option_2_description"]!!, false),
+                .addOption(
+                    OptionType.STRING,
+                    commStrs["cronologia"]!!["option_1_name"]!!,
+                    commStrs["cronologia"]!!["option_1_description"]!!,
+                    true
+                )
+                .addOption(
+                    OptionType.INTEGER,
+                    commStrs["cronologia"]!!["option_2_name"]!!,
+                    commStrs["cronologia"]!!["option_2_description"]!!,
+                    false
+                ),
             Commands.slash(commStrs["block"]!!["name"]!!, commStrs["block"]!!["description"]!!)
                 .addOption(
                     OptionType.STRING,

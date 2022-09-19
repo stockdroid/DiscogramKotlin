@@ -5,13 +5,11 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.utils.getId
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlin.math.min
 
 
 class messageHistoryCommand(val event: SlashCommandInteractionEvent) {
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
     private val tgClient = TgApp.instance
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val commStrs = messTable.commands

@@ -9,6 +9,7 @@ import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import me.chicchi7393.discogramRewrite.telegram.TgApp
+import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -16,14 +17,16 @@ import org.bson.BsonTimestamp
 import java.io.FileInputStream
 
 class ticketHandlers {
-    private val settings = JsonReader().readJsonSettings("settings")!!
+    private val settings = JsonReader().readJsonSettings()!!
     private val dbMan = DatabaseManager.instance
     private val dsClass = DsApp.instance
     private val tgClient = TgApp.instance
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val embedStrs = messTable.embed
-    private fun getLastModified(directoryFilePath: String): FileInputStream {
-        val directory = java.io.File(directoryFilePath)
+
+    private fun getLastModified(): FileInputStream {
+        val directory =
+            java.io.File("session/${if (VariableStorage.isProd) "database" else "database_dev"}/profile_photos")
         val files = directory.listFiles { obj: java.io.File -> obj.isFile }
         var lastModifiedTime = Long.MIN_VALUE
         var chosenFile: java.io.File? = null
@@ -40,7 +43,14 @@ class ticketHandlers {
 
     fun startTicketWithFile(chat: Chat, file: DownloadFile?, text: String) {
         tgClient.client.send(
-            SendMessage(chat.id, 0, 0, null, null, InputMessageText(FormattedText(messTable.generalStrings["welcome"], null), false, false))
+            SendMessage(
+                chat.id,
+                0,
+                0,
+                null,
+                null,
+                InputMessageText(FormattedText(messTable.generalStrings["welcome"], null), false, false)
+            )
         ) {}
         java.io.File("session/database/profile_photos").deleteRecursively()
         val pfpId = try {
@@ -49,11 +59,11 @@ class ticketHandlers {
             69420
         }
         tgClient.downloadFile(pfpId)
-        val filePath = getLastModified("session/database/profile_photos")
+        val filePath = getLastModified()
 
         val embed = dsClass.generateTicketEmbed(
             chat.title,
-            embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString(),
+            embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
             "File",
             isForced = false,
             isAssigned = false,
@@ -70,7 +80,7 @@ class ticketHandlers {
                     embed
                 ).setActionRows(
                     dsClass.generateFirstEmbedButtons(
-                        embedStrs["tgRedirectPrefixLink"]!!+chat.id.toString()
+                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString()
                     ),
                     dsClass.generateSecondEmbedButtons(it.idLong),
                     ActionRow.of(
@@ -99,10 +109,15 @@ class ticketHandlers {
                                 .addFile(java.io.File(it.get().local.path)).queue()
                         }
                     }
+                    tgClient.alertTicket(
+                        chat.title,
+                        text,
+                        "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${threaad.id}"
+                    )
                 }
-                }
-
             }
+
+    }
 
     fun startTicketWithText(chat: Chat, text: String) = dsClass.createTicket(chat, text)
     fun sendFileFollowMessage(
@@ -122,7 +137,11 @@ class ticketHandlers {
                     0,
                     null,
                     null,
-                    InputMessageText(FormattedText(messTable.modals["suspendTicket"]!!["reopenTgMessage"], null), false, false)
+                    InputMessageText(
+                        FormattedText(messTable.modals["suspendTicket"]!!["reopenTgMessage"], null),
+                        false,
+                        false
+                    )
                 )
             ) {}
             reopenTicket().reopenTicket(id)
@@ -173,7 +192,11 @@ class ticketHandlers {
                     0,
                     null,
                     null,
-                    InputMessageText(FormattedText(messTable.modals["suspendTicket"]!!["reopenTgMessage"], null), false, false)
+                    InputMessageText(
+                        FormattedText(messTable.modals["suspendTicket"]!!["reopenTgMessage"], null),
+                        false,
+                        false
+                    )
                 )
             ) {}
             reopenTicket().reopenTicket(id)
@@ -189,7 +212,7 @@ class ticketHandlers {
     }
 
 
-    fun closeTicket(ticket: TicketDocument, text: String) {
+    fun closeTicket(ticket: TicketDocument, text: String, rating: Boolean) {
         dbMan.Update().Tickets().closeTicket(
             ticket
         )
@@ -202,7 +225,7 @@ class ticketHandlers {
                 null,
                 InputMessageText(
                     FormattedText(
-                        "${messTable.generalStrings["closedTicketTG"]} ${messTable.generalStrings["feedback_url"]+ticket.ticketId.toString()} ${if (text != "") "\nMotivazione: $text" else ""}",
+                        "${if (rating) messTable.generalStrings["closedTicketTG"] else messTable.generalStrings["closedTicketTGWR"]} ${if (rating) messTable.generalStrings["feedback_url"] + ticket.ticketId.toString() else ""} ${if (text != "") "\nMotivazione: $text" else ""}",
                         null
                     ), false, false
                 )
