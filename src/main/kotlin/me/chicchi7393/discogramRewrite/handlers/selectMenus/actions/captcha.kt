@@ -20,7 +20,7 @@ class captcha : ReasonAction() {
             )!!.telegramId
         )
 
-        modalHandlers(event).closeTicketHandler(
+        event.reply(modalHandlers(event).closeTicketHandler(
             event
                 .values[0]
                 .split("-")[1]
@@ -28,9 +28,9 @@ class captcha : ReasonAction() {
                 .toLong(), event.values[0].split(":")[1].toLong(),
             "Captcha richiesto di nuovo, link al messaggio: ${
                 (Parser.default()
-                    .parse(StringBuilder(response.body.toString())) as com.beust.klaxon.JsonObject).obj("response")!!["link"]
+                    .parse(StringBuilder(response.body!!.string())) as com.beust.klaxon.JsonObject).obj("response")!!["link"]
             }", // in
             true
-        )
+        )).setEphemeral(true).queue()
     }
 }

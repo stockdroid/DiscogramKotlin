@@ -87,11 +87,11 @@
       "reasonText": "Motivazione",
       "reasonPlaceholder": "Hai rotto le palle",
       "reply": "Ticket chiuso",
-      "underageDescription": "L'utente ha meno di 14 anni!",
-      "overageDescription": "L'utente ha più di 14 anni e può restare nel gruppo!",
-      "segnalazioneEffettuataDescription": "Segnalazione ricevuta con successo!",
-      "questioneRisoltaDescription": "Questione risolta",
-      "captchaDescription": "Esegui il captcha",
+      "underageDescription": "\"Underage, ricontattare ai 14 anni\"",
+      "overageDescription": "\"Verifica completata, grazie per la collaborazione!\"",
+      "segnalazioneEffettuataDescription": "\"Segnalazione effettuata\"",
+      "questioneRisoltaDescription": "\"Questione risolta.\"",
+      "captchaDescription": "\"Captcha richiesto di nuovo, link al messaggio: [link]\"",
       "otherDescription": "Inserisci una motivazione"
     },
     "suspendTicket": {
@@ -115,7 +115,6 @@
     "button_assign": "Assegna",
     "button_suspend": "Sospendi",
     "button_close": "Chiudi",
-    "button_closenorating": "Chiudi senza rating",
     "tgRedirectPrefixLink": "https://chicchi7393.xyz/redirectTg.html?id=",
     "embed_idOrUser": "ID"
   },

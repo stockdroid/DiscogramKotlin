@@ -45,8 +45,8 @@ class closeReason(val event: SelectMenuInteractionEvent) {
             event.values[0].startsWith("answeredQuestion") -> answeredQuestion().handle(event)
             event.values[0].startsWith("reported") -> reported().handle(event)
             event.values[0].startsWith("captcha") -> captcha().handle(event)
-            event.values[0].startsWith("custom") -> customReason(true)
             event.values[0].startsWith("custom_no_rating") -> customReason(false)
+            event.values[0].startsWith("custom") -> customReason(true)
             else -> {
                 TODO("Option not implemented")
             }

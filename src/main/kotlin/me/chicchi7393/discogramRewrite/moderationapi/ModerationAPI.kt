@@ -18,8 +18,8 @@ object ModerationAPI {
 
         val body: RequestBody = ("""
             {
-                "apikey": ${apiSettings["apiToken"]},
-                "name": $endpoint,
+                "apikey": "${apiSettings["apiToken"]}",
+                "name": "$endpoint",
                 "arguments": ${JsonObject(arguments).toJsonString(true)}
             }
         """.trimIndent()).toRequestBody(
