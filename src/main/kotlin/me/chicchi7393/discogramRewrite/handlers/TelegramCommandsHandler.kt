@@ -14,6 +14,7 @@ class TelegramCommandsHandler {
                 commands["cronologia"]!!["name"] -> MessageListCommandTG().handle(
                     message.replace("/", "").split(" ")[0]
                 )
+
                 else -> TODO("Command not implemented")
             }
         }

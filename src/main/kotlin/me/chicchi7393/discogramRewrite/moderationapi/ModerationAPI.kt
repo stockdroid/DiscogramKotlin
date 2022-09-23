@@ -2,9 +2,12 @@ package me.chicchi7393.discogramRewrite.moderationapi
 
 import com.beust.klaxon.JsonObject
 import me.chicchi7393.discogramRewrite.JsonReader
-import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 
 
 object ModerationAPI {
@@ -41,5 +44,10 @@ object ModerationAPI {
     fun unmute(user_id: Long, reason: String = ""): Int {
         val response = triggerEndpoint("unmute", mapOf<String, Any>("userid" to user_id, "reason" to reason))
         return if (response.code == 200) 0 else 1
+    }
+
+    // funzione captcha
+    fun captcha(user_id: Long): Response {
+        return triggerEndpoint("captcha", mapOf<String, Any>("userid" to user_id))
     }
 }

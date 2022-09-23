@@ -4,7 +4,7 @@ import me.chicchi7393.discogramRewrite.handlers.modalHandlers
 import me.chicchi7393.discogramRewrite.handlers.selectMenus.ReasonAction
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
 
-class answeredQuestion: ReasonAction() {
+class answeredQuestion : ReasonAction() {
     override fun handle(event: SelectMenuInteractionEvent) {
         modalHandlers(event).closeTicketHandler(
             event

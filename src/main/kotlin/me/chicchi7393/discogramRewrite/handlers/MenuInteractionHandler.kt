@@ -7,7 +7,9 @@ class MenuInteractionHandler(private val event: SelectMenuInteractionEvent) {
     fun onSelectMenuInteraction() {
         when (event.componentId) {
             "closereason" -> closeReason(event).handle()
-            else -> {TODO("Select Menu not implemented")}
+            else -> {
+                TODO("Select Menu not implemented")
+            }
         }
     }
 }
