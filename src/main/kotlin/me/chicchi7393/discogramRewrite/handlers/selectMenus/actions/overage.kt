@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEve
 
 class overage : ReasonAction() {
     override fun handle(event: SelectMenuInteractionEvent) {
-        modalHandlers(event).closeTicketHandler(
+        event.reply(modalHandlers(event).closeTicketHandler(
             event
                 .values[0]
                 .split("-")[1]
@@ -14,6 +14,6 @@ class overage : ReasonAction() {
                 .toLong(), event.values[0].split(":")[1].toLong(),
             "Verifica completata, grazie per la collaborazione!",
             true
-        )
+        )).setEphemeral(true).queue()
     }
 }

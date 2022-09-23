@@ -61,8 +61,7 @@ class EventHandler : ListenerAdapter() {
         val buttonHandler = buttonHandlers(event)
         val ticketMenu = ticketMenu(event)
         when {
-            event.componentId.startsWith("closeNoRating") -> buttonHandler.closeButtonTicketHandler(false)
-            event.componentId.startsWith("close") -> buttonHandler.closeButtonTicketHandler(true)
+            event.componentId.startsWith("close") -> buttonHandler.closeButtonTicketHandler()
             event.componentId.startsWith("suspend") -> buttonHandler.suspendButtonTicketHandler()
             event.componentId.startsWith("assign") -> buttonHandler.assignButtonTicketHandler()
             event.componentId.startsWith("menu") -> buttonHandler.menuButtonHandler()

@@ -9,13 +9,13 @@ import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEve
 class underage : ReasonAction() {
     private val dbman = DatabaseManager()
     override fun handle(event: SelectMenuInteractionEvent) {
-        modalHandlers(event).closeTicketHandler(
+        val response = modalHandlers(event).closeTicketHandler(
             event
                 .values[0]
                 .split("-")[1]
                 .split(":")[0]
                 .toLong(), event.values[0].split(":")[1].toLong(),
-            "Underage, contattare ai 14 anni",
+            "Underage, ricontattare ai 14 anni",
             true
         )
 
@@ -29,5 +29,6 @@ class underage : ReasonAction() {
                     .toLong()
             )!!.telegramId, "underage"
         )
+        event.reply(response).setEphemeral(true).queue()
     }
 }

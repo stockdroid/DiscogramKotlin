@@ -98,7 +98,6 @@ class DsApp private constructor() {
                 Button.success("assign-$channel_id", embedStrs["button_assign"]!!),
                 Button.secondary("suspend-$channel_id", embedStrs["button_suspend"]!!),
                 Button.danger("close-$channel_id", embedStrs["button_close"]!!),
-                Button.danger("closeNoRating-$channel_id", embedStrs["button_closenorating"]!!),
             )
         )
     }
