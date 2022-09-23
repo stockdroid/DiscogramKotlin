@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
@@ -74,8 +75,8 @@ class EventHandler : ListenerAdapter() {
     override fun onModalInteraction(event: ModalInteractionEvent) {
         val modalHandlers = modalHandlers(event)
         when {
-            event.modalId.startsWith("closeModal") -> modalHandlers.closeTicketHandler(true)
-            event.modalId.startsWith("closeWRModal") -> modalHandlers.closeTicketHandler(false)
+            event.modalId.startsWith("closeModal") -> modalHandlers.closeTicketModal(true)
+            event.modalId.startsWith("closeWRModal") -> modalHandlers.closeTicketModal(false)
             event.modalId.startsWith("suspendModal") -> modalHandlers.suspendTicketHandler()
         }
     }
@@ -162,5 +163,8 @@ class EventHandler : ListenerAdapter() {
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {
         MessageModifyHandler(event).onMessageUpdate()
+    }
+    override fun onSelectMenuInteraction(event: SelectMenuInteractionEvent) {
+        MenuInteractionHandler(event).onSelectMenuInteraction()
     }
 }

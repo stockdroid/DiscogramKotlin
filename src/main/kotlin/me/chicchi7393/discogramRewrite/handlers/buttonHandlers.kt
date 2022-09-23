@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Modal
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 
@@ -27,24 +28,23 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
     }
 
     fun closeButtonTicketHandler(rating: Boolean) {
-        event.replyModal(
-            Modal
-                .create(
-                    "close${if (rating) "" else "WR"}Modal-${channel_id}:${event.message.id}",
-                    if (rating) modalStrs["closeTicket"]!!["title"]!! else modalStrs["closeTicket"]!!["titleWR"]!!
-                )
-                .addActionRow(
+        event.reply(
+            MessageBuilder()
+                .setContent(if (rating) modalStrs["closeTicket"]!!["title"]!! else modalStrs["closeTicket"]!!["titleWR"]!!)
+                .setActionRows(
                     ActionRow.of(
-                        TextInput.create("reason", modalStrs["closeTicket"]!!["reasonText"]!!, TextInputStyle.PARAGRAPH)
-                            .setPlaceholder(modalStrs["closeTicket"]!!["reasonPlaceholder"]!!)
-                            .setRequiredRange(0, 1000)
-                            .setRequired(false)
+                        SelectMenu.create("closereason")
+                            .addOption("Underage", "underage-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["underageDescription"]!!)
+                            .addOption("Controllo età completato", "overage-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["underageDescription"]!!)
+                            .addOption("Questione risolta", "answeredQuestion-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["questioneRisoltaDescription"]!!)
+                            .addOption("Segnalazione ricevuta", "reported-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["segnalazioneEffettuataDescription"]!!)
+                            .addOption("Custom", "custom-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["otherDescription"]!!)
+                            .addOption("Custom senza rating", "custom_no_rating-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["otherDescription"]!!)
                             .build()
-                    ).actionComponents
+                    )
                 )
                 .build()
-        )
-            .queue()
+        ).setEphemeral(true).queue()
     }
 
     fun suspendButtonTicketHandler() {
