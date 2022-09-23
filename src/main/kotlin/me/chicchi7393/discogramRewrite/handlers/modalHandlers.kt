@@ -5,22 +5,26 @@ import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class modalHandlers(private val event: ModalInteractionEvent) {
+class modalHandlers(private val event: GenericInteractionCreateEvent) {
     private val ticketHandler = ticketHandlers()
     private val dbMan = DatabaseManager.instance
     private val discordClient = DsApp.instance
     private val settings = JsonReader().readJsonSettings()!!
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
-    fun closeTicketHandler(rating: Boolean) {
-        val channelId = event.modalId.split("-")[1].split(":")[0].toLong()
+    fun closeTicketModal(rating: Boolean) {
+        val channelId = (event as ModalInteractionEvent).modalId.split("-")[1].split(":")[0].toLong()
+        event.reply(closeTicketHandler(channelId, event.modalId.split(":")[1].toLong(), event.values[0].asString, rating)).setEphemeral(true).queue()
+    }
+    fun closeTicketHandler(channelId: Long, message_id: Long, reason: String, rating: Boolean): String {
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
             channelId
         )!!
-        ticketHandler.closeTicket(ticket, event.values[0].asString, rating)
+        ticketHandler.closeTicket(ticket, reason, rating)
 
         val thread = discordClient.dsClient
             .getThreadChannelById(channelId)!!
@@ -30,7 +34,7 @@ class modalHandlers(private val event: ModalInteractionEvent) {
             .queue()
         Thread.sleep(800)
         discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
-            .retrieveMessageById(event.modalId.split(":")[1].toLong()).queue { message ->
+            .retrieveMessageById(message_id).queue { message ->
                 message.editMessageComponents(
                     discordClient.generateFirstEmbedButtons(
                         messTable.embed["tgRedirectPrefixLink"] + ticket.telegramId
@@ -61,11 +65,11 @@ class modalHandlers(private val event: ModalInteractionEvent) {
         discordClient.dsClient.getThreadChannelById(ticket.channelId)!!
             .sendMessage(messTable.modals["closeTicket"]!!["reply"]!!)
             .queue()
-        event.reply(messTable.modals["closeTicket"]!!["reply"]!!).setEphemeral(true).queue()
+        return messTable.modals["closeTicket"]!!["reply"]!!
     }
 
     fun suspendTicketHandler() {
-        val channelId = event.modalId.split("-")[1].split(":")[0].toLong()
+        val channelId = (event as ModalInteractionEvent).modalId.split("-")[1].split(":")[0].toLong()
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
             channelId
         )!!

@@ -31,5 +31,9 @@
   "mongodb": {
     "connection_string": "mongodb://localhost:27017",
     "database": "discogramTickets"
+  },
+  "moderationApi": {
+    "url": "https://crisatici.stockdroid.it:8443/api/v1",
+    "apiToken": "632a0653e169c9408abcdf83"
   }
 }
