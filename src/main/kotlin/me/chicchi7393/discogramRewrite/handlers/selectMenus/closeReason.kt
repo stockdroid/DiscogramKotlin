@@ -1,10 +1,7 @@
 package me.chicchi7393.discogramRewrite.handlers.selectMenus
 
 import me.chicchi7393.discogramRewrite.JsonReader
-import me.chicchi7393.discogramRewrite.handlers.selectMenus.actions.answeredQuestion
-import me.chicchi7393.discogramRewrite.handlers.selectMenus.actions.overage
-import me.chicchi7393.discogramRewrite.handlers.selectMenus.actions.reported
-import me.chicchi7393.discogramRewrite.handlers.selectMenus.actions.underage
+import me.chicchi7393.discogramRewrite.handlers.selectMenus.actions.*
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.Modal
@@ -47,9 +44,12 @@ class closeReason(val event: SelectMenuInteractionEvent) {
             event.values[0].startsWith("overage") -> overage().handle(event)
             event.values[0].startsWith("answeredQuestion") -> answeredQuestion().handle(event)
             event.values[0].startsWith("reported") -> reported().handle(event)
+            event.values[0].startsWith("captcha") -> captcha().handle(event)
             event.values[0].startsWith("custom") -> customReason(true)
             event.values[0].startsWith("custom_no_rating") -> customReason(false)
-            else -> {TODO("Option not implemented")}
+            else -> {
+                TODO("Option not implemented")
+            }
         }
     }
 }

@@ -18,8 +18,16 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     fun closeTicketModal(rating: Boolean) {
         val channelId = (event as ModalInteractionEvent).modalId.split("-")[1].split(":")[0].toLong()
-        event.reply(closeTicketHandler(channelId, event.modalId.split(":")[1].toLong(), event.values[0].asString, rating)).setEphemeral(true).queue()
+        event.reply(
+            closeTicketHandler(
+                channelId,
+                event.modalId.split(":")[1].toLong(),
+                event.values[0].asString,
+                rating
+            )
+        ).setEphemeral(true).queue()
     }
+
     fun closeTicketHandler(channelId: Long, message_id: Long, reason: String, rating: Boolean): String {
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
             channelId

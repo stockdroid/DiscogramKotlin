@@ -34,12 +34,41 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
                 .setActionRows(
                     ActionRow.of(
                         SelectMenu.create("closereason")
-                            .addOption("Underage", "underage-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["underageDescription"]!!)
-                            .addOption("Controllo età completato", "overage-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["underageDescription"]!!)
-                            .addOption("Questione risolta", "answeredQuestion-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["questioneRisoltaDescription"]!!)
-                            .addOption("Segnalazione ricevuta", "reported-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["segnalazioneEffettuataDescription"]!!)
-                            .addOption("Custom", "custom-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["otherDescription"]!!)
-                            .addOption("Custom senza rating", "custom_no_rating-$channel_id:${event.message.id}", modalStrs["close_ticket"]!!["otherDescription"]!!)
+                            .addOption(
+                                "Underage",
+                                "underage-$channel_id:${event.message.id}",
+                                modalStrs["close_ticket"]!!["underageDescription"]!!
+                            )
+                            .addOption(
+                                "Controllo età completato",
+                                "overage-$channel_id:${event.message.id}",
+                                modalStrs["close_ticket"]!!["underageDescription"]!!
+                            )
+                            .addOption(
+                                "Questione risolta",
+                                "answeredQuestion-$channel_id:${event.message.id}",
+                                modalStrs["close_ticket"]!!["questioneRisoltaDescription"]!!
+                            )
+                            .addOption(
+                                "Segnalazione ricevuta",
+                                "reported-$channel_id:${event.message.id}",
+                                modalStrs["close_ticket"]!!["segnalazioneEffettuataDescription"]!!
+                            )
+                            .addOption(
+                                "Esegui captcha",
+                                "captcha-$channel_id:${event.message.id}",
+                                modalStrs["close_ticket"]!!["captchaDescription"]!!
+                            )
+                            .addOption(
+                                "Custom",
+                                "custom-$channel_id:${event.message.id}",
+                                modalStrs["close_ticket"]!!["otherDescription"]!!
+                            )
+                            .addOption(
+                                "Custom senza rating",
+                                "custom_no_rating-$channel_id:${event.message.id}",
+                                modalStrs["close_ticket"]!!["otherDescription"]!!
+                            )
                             .build()
                     )
                 )

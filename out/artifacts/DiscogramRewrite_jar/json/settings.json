@@ -1,0 +1,39 @@
+{
+  "telegram": {
+    "api_id": 2687706,
+    "api_hash": "c7065e07465c29c70ad16de91c0d6084",
+    "phone_number": 393534381558,
+    "app_version": "v69.42.0",
+    "model": "SerpeNeraPhone",
+    "system_version": "Ubuntu 20.04 da qualche parte a Londra",
+    "language_code": "it",
+    "userbotID": 1912620252,
+    "moderatorGroup": -1001649672339
+  },
+  "discord": {
+    "token": "OTY3ODkxNzQwMzk0NjUxNjY4.YmW5bQ.hMj_TKnl6kErKKnTcHk6eYkHG4o",
+    "guild_id": 967407366767251569,
+    "channel_id": 967408670168195122,
+    "higher_roles": [
+      967857617877745675,
+      967857255053668372,
+      967858460400177263
+    ],
+    "ignoreTGAuthor": [
+      777000,
+      1912620252,
+      216729606
+    ],
+    "no_pfp_placeholder": "https://secure.gravatar.com/avatar/332e21525f60fc83790eb080845905e3?default=mm&rating=G&size=160",
+    "ignore_message_prefix": "###",
+    "idPrefix": "TCK-"
+  },
+  "mongodb": {
+    "connection_string": "mongodb://localhost:27017",
+    "database": "discogramTickets"
+  },
+  "moderationApi": {
+    "url": "https://crisatici.stockdroid.it:8443/api/v1",
+    "apiToken": "632a0653e169c9408abcdf83"
+  }
+}

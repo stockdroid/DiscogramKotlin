@@ -164,6 +164,7 @@ class EventHandler : ListenerAdapter() {
     override fun onMessageUpdate(event: MessageUpdateEvent) {
         MessageModifyHandler(event).onMessageUpdate()
     }
+
     override fun onSelectMenuInteraction(event: SelectMenuInteractionEvent) {
         MenuInteractionHandler(event).onSelectMenuInteraction()
     }
