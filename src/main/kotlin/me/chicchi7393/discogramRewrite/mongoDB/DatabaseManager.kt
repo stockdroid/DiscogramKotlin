@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.result.UpdateResult
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.*
+import me.chicchi7393.discogramRewrite.objects.enums.ReasonEnum
 import org.bson.BsonValue
 import org.litote.kmongo.*
 
@@ -60,6 +61,11 @@ class DatabaseManager {
             return getDB()
                 .getCollection<RatingDocument>("ratings")
         }
+
+        fun getReasonsCollection(): MongoCollection<ReasonsDocument> {
+            return getDB()
+                .getCollection<ReasonsDocument>("reasons")
+        }
     }
 
     inner class Create {
@@ -103,6 +109,16 @@ class DatabaseManager {
             ): BsonValue? {
                 return instance.Get().getRatingsCollection()
                     .insertOne(ratingDocument)
+                    .insertedId
+            }
+        }
+
+        inner class Reasons {
+            fun createReasonsDocument(
+                reasonsDocument: ReasonsDocument
+            ): BsonValue? {
+                return instance.Get().getReasonsCollection()
+                    .insertOne(reasonsDocument)
                     .insertedId
             }
         }
@@ -196,6 +212,41 @@ class DatabaseManager {
             fun searchRatingByGeneralRating(general: Float): RatingDocument? {
                 return instance.Get().getRatingsCollection()
                     .findOne(RatingDocument::generalRating eq general)
+            }
+        }
+
+        inner class Reasons {
+            fun searchReasonDocumentById(ticketId: Int): ReasonsDocument? {
+                return instance.Get().getReasonsCollection()
+                    .findOne(ReasonsDocument::ticket_id eq ticketId)
+            }
+
+            fun searchReasonDocumentByTelegramId(telegramId: Long): ReasonsDocument? {
+                return instance.Get().getReasonsCollection()
+                    .find(ReasonsDocument::telegram_id eq telegramId)
+                    .descendingSort(ReasonsDocument::ticket_id)
+                    .first()
+            }
+
+            fun searchReasonDocumentsByTelegramId(telegramId: Long): List<ReasonsDocument?> {
+                return instance.Get().getReasonsCollection()
+                    .find(ReasonsDocument::telegram_id eq telegramId)
+                    .descendingSort(ReasonsDocument::ticket_id)
+                    .toList()
+            }
+
+            fun searchReasonDocumentByReasonId(reasonId: Int): ReasonsDocument? {
+                return instance.Get().getReasonsCollection()
+                    .find(ReasonsDocument::reason_id eq reasonId)
+                    .descendingSort(ReasonsDocument::ticket_id)
+                    .first()
+            }
+
+            fun searchReasonDocumentsByReasonId(reasonId: Int): List<ReasonsDocument?> {
+                return instance.Get().getReasonsCollection()
+                    .find(ReasonsDocument::reason_id eq reasonId)
+                    .descendingSort(ReasonsDocument::ticket_id)
+                    .toList()
             }
         }
     }
@@ -357,6 +408,15 @@ class DatabaseManager {
                 return null
             }
             return null
+        }
+
+        fun isUserUnderage(telegram_id: Long): Boolean {
+            for (reason in Search().Reasons().searchReasonDocumentsByTelegramId(telegram_id)) {
+                if (reason!!.reason_id == ReasonEnum.OVERAGE.ordinal + 1) {
+                    return false
+                }
+            }
+            return true
         }
     }
 }

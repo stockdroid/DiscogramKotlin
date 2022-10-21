@@ -3,7 +3,9 @@ package me.chicchi7393.discogramRewrite.handlers
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
+import me.chicchi7393.discogramRewrite.objects.databaseObjects.ReasonsDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
+import me.chicchi7393.discogramRewrite.objects.enums.ReasonEnum
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -18,6 +20,18 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     fun closeTicketModal(rating: Boolean) {
         val channelId = (event as ModalInteractionEvent).modalId.split("-")[1].split(":")[0].toLong()
+        val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
+            channelId
+        )!!
+
+        dbMan.Create().Reasons().createReasonsDocument(
+            ReasonsDocument(
+                ticket.ticketId,
+                ticket.telegramId,
+                event.values[0].asString,
+                ReasonEnum.CUSTOM.ordinal + 1
+            )
+        )
         event.reply(
             closeTicketHandler(
                 channelId,

@@ -29,7 +29,7 @@
     "idPrefix": "TCK-"
   },
   "mongodb": {
-    "connection_string": "mongodb://localhost:27017",
+    "connection_string": "mongodb://assistancebot:S%23%40MAph7CG%40kdc@localhost/?authSource=discogramTickets",
     "database": "discogramTickets"
   },
   "moderationApi": {

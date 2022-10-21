@@ -15,6 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+        <mainClass>me.chicchi7393.discogramRewrite.main.Main</mainClass>
     </properties>
 
     <repositories>
@@ -67,19 +68,102 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.github.dingxin</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>1.0.3</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>proguard</goal>
+                            <goal>shade</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/maven/</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <minimizeJar>true</minimizeJar>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <Main-Class>me.chicchi7393.discogramRewrite.main.Main</Main-Class>
+                            </manifestEntries>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"></transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                            <addHeader>false</addHeader>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                            <resource>.txt</resource>
+                        </transformer>
+                    </transformers>
+                    <relocations>
+                        <relocation>
+                            <pattern>com</pattern>
+                            <shadedPattern>hidden.com</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org</pattern>
+                            <shadedPattern>hidden.org</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.5.1</version>
+                <executions>
+                    <execution>
+                        <id>shaded-small</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                        <configuration>
+                            <proguardVersion>5.2</proguardVersion>
+                            <attach>true</attach>
+                            <options>
+                                <option>-optimizationpasses 5</option>
+                                <option>-overloadaggressively</option>
+                                <option>-allowaccessmodification</option>
+                                <option>-repackageclasses 'hidden'</option>
+                                <option>-keep public class me.chicchi7393.discogramRewrite.main.Main { public static
+                                    void main(java.lang.String[]); }
+                                </option>
+                            </options>
+                            <injar>${project.build.finalName}_proguard_base.jar</injar>
+                            <includeDependency>false</includeDependency>
+                            <libs>
+                                <lib>${java.home}/lib/yguard-3.1.0.jar</lib>
+                                <lib>${java.home}/lib/rt.jar</lib>
+                                <lib>${java.home}/lib/jce.jar</lib>
+                            </libs>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>net.sf.proguard</groupId>
+                                    <artifactId>proguard-base</artifactId>
+                                    <version>5.2</version>
+                                    <scope>runtime</scope>
+                                </dependency>
+                            </dependencies>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
