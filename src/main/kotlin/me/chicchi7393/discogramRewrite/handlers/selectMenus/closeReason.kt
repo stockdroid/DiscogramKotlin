@@ -18,6 +18,7 @@ class closeReason(val event: SelectMenuInteractionEvent) {
     }
 
     private fun customReason(rating: Boolean) {
+
         event.replyModal(
             Modal
                 .create(

@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
-    <facet type="IntelliGuard" name="Obfuscation">
-      <configuration>
-        <option name="yGuardJar" value="$MODULE_DIR$/../yguard-bundle-3.1.0/lib/yguard-3.1.0.jar" />
-        <option name="mainclass" value="me.chicchi6393.discogramRewrite.Main" />
-      </configuration>
-    </facet>
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="5" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false">
         <compilerSettings />
@@ -48,10 +42,6 @@
     <orderEntry type="library" name="Maven: com.neovisionaries:nv-websocket-client:2.14" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:4.9.3" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:2.8.0" level="project" />
-    <orderEntry type="library" name="Maven: club.minnced:opus-java:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: club.minnced:opus-java-api:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.4.0" level="project" />
-    <orderEntry type="library" name="Maven: club.minnced:opus-java-natives:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.2" level="project" />
@@ -63,6 +53,7 @@
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: net.harawata:appdirs:1.2.1" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:5.6.0" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:5.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.zxing:core:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-amd64:4.0.265" level="project" />
     <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-aarch64:4.0.265" level="project" />
