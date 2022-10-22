@@ -14,13 +14,14 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
+import net.dv8tion.jda.api.utils.FileUpload
 import java.awt.Color
 import java.io.File
 import java.io.FileInputStream
@@ -118,14 +119,14 @@ class DsApp private constructor() {
         return FileInputStream(chosenFile)
     }
 
-    fun sendTextMessageToChannel(channel: Long, text: String, reply_id: Long, ticket_id: Int): MessageAction {
+    fun sendTextMessageToChannel(channel: Long, text: String, reply_id: Long, ticket_id: Int): MessageCreateAction {
         var ds_reply = 0L
         if (reply_id != 0L) {
             ds_reply = dbMan.Search().MessageLinks().searchDsMessageByTelegramMessage(ticket_id, reply_id)
         }
         return dsClient.getThreadChannelById(
             channel
-        )!!.sendMessage(text).referenceById(ds_reply)
+        )!!.sendMessage(text).setMessageReference(ds_reply)
     }
 
     fun createTicket(chat: Chat, message: String) {
@@ -164,10 +165,10 @@ class DsApp private constructor() {
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
             .sendMessageEmbeds(
                 embed
-            ).addFile(filePath, "pic.png").map {
+            ).addFiles(FileUpload.fromData(filePath, "pic.png")).map {
                 it.editMessageEmbeds(
                     embed
-                ).setActionRows(
+                ).setComponents(
                     generateFirstEmbedButtons(
                         embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString()
                     ),

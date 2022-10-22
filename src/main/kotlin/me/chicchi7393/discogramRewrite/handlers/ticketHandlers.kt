@@ -10,9 +10,10 @@ import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import me.chicchi7393.discogramRewrite.utilities.VariableStorage
-import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.utils.FileUpload
 import org.bson.BsonTimestamp
 import java.io.FileInputStream
 
@@ -75,10 +76,10 @@ class ticketHandlers {
             .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
             .sendMessageEmbeds(
                 embed
-            ).addFile(filePath, "pic.png").map { it ->
+            ).addFiles(FileUpload.fromData(filePath, "pic.png")).map { it ->
                 it.editMessageEmbeds(
                     embed
-                ).setActionRows(
+                ).setComponents(
                     dsClass.generateFirstEmbedButtons(
                         embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString()
                     ),
@@ -106,7 +107,7 @@ class ticketHandlers {
                     } else {
                         tgClient.client.send(file) {
                             threaad.sendMessage(text)
-                                .addFile(java.io.File(it.get().local.path)).queue()
+                                .addFiles(FileUpload.fromData(java.io.File(it.get().local.path))).queue()
                         }
                     }
                     tgClient.alertTicket(
@@ -166,7 +167,7 @@ class ticketHandlers {
                     reply_id,
                     ticket_id
                 )
-                    .addFile(java.io.File(it.get().local.path)).queue {
+                    .addFiles(FileUpload.fromData(java.io.File(it.get().local.path))).queue {
                         dbMan.Update().MessageLinks().addMessageToMessageLinks(
                             ticket_id,
                             MessageLinkType(tg_id, it.idLong, BsonTimestamp(System.currentTimeMillis() / 1000))

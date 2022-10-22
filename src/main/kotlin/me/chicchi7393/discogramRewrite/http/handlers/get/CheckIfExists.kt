@@ -11,7 +11,7 @@ class CheckIfExists : HTTPHandlerClass() {
     override var path = "/check"
     override fun handle(ctx: Context): Context {
         try {
-            val args = ConvertQueryStringToMap.convert(ctx.req.queryString)
+            val args = ConvertQueryStringToMap.convert(ctx.req().queryString)
             if (!args.containsKey("id")) return ctx.status(404).result("ID not in args")
             val ticket = dbMan.Search().Tickets().searchTicketDocumentById(args["id"] as Int)
                 ?: return ctx.status(404).result("Ticket not found")
