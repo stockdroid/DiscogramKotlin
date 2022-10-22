@@ -40,7 +40,7 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>1.7.10</version>
+                <version>1.7.20</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -52,16 +52,14 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
@@ -101,7 +99,7 @@
                             </manifestEntries>
                         </transformer>
                         <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"></transformer>
+                                implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
                             <addHeader>false</addHeader>
@@ -123,48 +121,6 @@
                     </relocations>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.5.1</version>
-                <executions>
-                    <execution>
-                        <id>shaded-small</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>proguard</goal>
-                        </goals>
-                        <configuration>
-                            <proguardVersion>5.2</proguardVersion>
-                            <attach>true</attach>
-                            <options>
-                                <option>-optimizationpasses 5</option>
-                                <option>-overloadaggressively</option>
-                                <option>-allowaccessmodification</option>
-                                <option>-repackageclasses 'hidden'</option>
-                                <option>-keep public class me.chicchi7393.discogramRewrite.main.Main { public static
-                                    void main(java.lang.String[]); }
-                                </option>
-                            </options>
-                            <injar>${project.build.finalName}_proguard_base.jar</injar>
-                            <includeDependency>false</includeDependency>
-                            <libs>
-                                <lib>${java.home}/lib/yguard-3.1.0.jar</lib>
-                                <lib>${java.home}/lib/rt.jar</lib>
-                                <lib>${java.home}/lib/jce.jar</lib>
-                            </libs>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>net.sf.proguard</groupId>
-                                    <artifactId>proguard-base</artifactId>
-                                    <version>5.2</version>
-                                    <scope>runtime</scope>
-                                </dependency>
-                            </dependencies>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -184,7 +140,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>1.7.10</version>
+            <version>1.7.20</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
@@ -194,7 +150,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.13</version>
+            <version>5.0.0-alpha.21</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -215,14 +171,9 @@
             <artifactId>tdlight-natives-linux-aarch64</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.31</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.31</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.4</version>
         </dependency>
         <dependency>
             <groupId>org.litote.kmongo</groupId>
@@ -232,7 +183,7 @@
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
-            <version>4.6.4</version>
+            <version>5.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
