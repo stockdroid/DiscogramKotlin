@@ -41,7 +41,7 @@ class MessageModifyHandler(val event: GenericMessageEvent) {
         val newEvent = event as MessageDeleteEvent
         try {
             val ticket: TicketDocument =
-                dbMan.Search().Tickets().searchTicketDocumentByChannelId(event.threadChannel.idLong)
+                dbMan.Search().Tickets().searchTicketDocumentByChannelId(event.channel.idLong)
                     ?: return false
             val tgId =
                 dbMan.Search().MessageLinks().searchTgMessageByDiscordMessage(ticket.ticketId, newEvent.messageIdLong)
@@ -50,7 +50,7 @@ class MessageModifyHandler(val event: GenericMessageEvent) {
             }
             tgClient.send(GetMessage(ticket.telegramId, tgId)) { tgIt ->
                 tgClient.send(DeleteMessages(ticket.telegramId, longArrayOf(tgId), true)) {}
-                event.threadChannel.sendMessage(genStrings["messageBeenDeleted"]!!).queue {
+                event.channel.sendMessage(genStrings["messageBeenDeleted"]!!).queue {
                     if ((tgIt.get().senderId as MessageSenderUser).userId != (settings.telegram["userbotID"] as Long)) {
                         sendContent(
                             ticket.telegramId,
@@ -74,7 +74,7 @@ class MessageModifyHandler(val event: GenericMessageEvent) {
         val newEvent = event as MessageUpdateEvent
         try {
             val ticket: TicketDocument =
-                dbMan.Search().Tickets().searchTicketDocumentByChannelId(event.threadChannel.idLong) ?: return false
+                dbMan.Search().Tickets().searchTicketDocumentByChannelId(event.channel.idLong) ?: return false
             val tgId =
                 dbMan.Search().MessageLinks().searchTgMessageByDiscordMessage(ticket.ticketId, newEvent.messageIdLong)
             if (tgId == 0L) {

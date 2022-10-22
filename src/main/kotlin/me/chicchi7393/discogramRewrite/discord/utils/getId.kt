@@ -19,7 +19,7 @@ fun getId(event: SlashCommandInteractionEvent): Long {
         try {
             idTransporter.value =
                 dbMan.Search().Tickets().searchTicketDocumentById(
-                    event.threadChannel.name.split(" ")[0].replace(settings.discord["idPrefix"] as String, "").toInt()
+                    event.channel.name.split(" ")[0].replace(settings.discord["idPrefix"] as String, "").toInt()
                 )!!.telegramId
         } catch (_: Exception) {
             idTransporter.value = 0L

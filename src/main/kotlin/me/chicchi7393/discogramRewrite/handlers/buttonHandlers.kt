@@ -4,7 +4,6 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -14,6 +13,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 
 class buttonHandlers(private val event: ButtonInteractionEvent) {
@@ -31,19 +31,18 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
 
     fun closeButtonTicketHandler() {
         event.reply(
-            MessageBuilder()
+            MessageCreateBuilder()
                 .setContent(modalStrs["closeTicket"]!!["title"]!!)
-                .setActionRows(
-                    ActionRow.of(
-                        SelectMenu.create("closereason")
-                            .addOptions(
-                                SelectOption.of("Underage", "underage-$channel_id:${event.message.id}")
-                                    .withDescription(modalStrs["closeTicket"]!!["underageDescription"]!!)
-                                    .withEmoji(Emoji.fromUnicode("\uD83D\uDD1E")),
+                .addActionRow(
+                    SelectMenu.create("closereason")
+                        .addOptions(
+                            SelectOption.of("Underage", "underage-$channel_id:${event.message.id}")
+                                .withDescription(modalStrs["closeTicket"]!!["underageDescription"]!!)
+                                .withEmoji(Emoji.fromUnicode("\uD83D\uDD1E")),
 
-                                SelectOption.of("Controllo età completato", "overage-$channel_id:${event.message.id}")
-                                    .withDescription(modalStrs["closeTicket"]!!["overageDescription"]!!)
-                                    .withEmoji(Emoji.fromUnicode("✅")),
+                            SelectOption.of("Controllo età completato", "overage-$channel_id:${event.message.id}")
+                                .withDescription(modalStrs["closeTicket"]!!["overageDescription"]!!)
+                                .withEmoji(Emoji.fromUnicode("✅")),
 
                                 SelectOption.of("Questione risolta", "answeredQuestion-$channel_id:${event.message.id}")
                                     .withDescription(modalStrs["closeTicket"]!!["questioneRisoltaDescription"]!!)
@@ -66,7 +65,6 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
                                     .withEmoji(Emoji.fromUnicode("\uD83D\uDCC4"))
                             )
                             .build()
-                    )
                 )
                 .build()
         ).setEphemeral(true).queue()
@@ -173,7 +171,8 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
         val menu = menuChooser(ASSIGNEE_MENU, CAPOMOD_MENU, NO_MENU) as String
         val row = menuChooser(ASSIGNEE_ROW, CAPOMOD_ROW, NO_MENU_ROW) as ActionRow?
 
-        if (row != null) event.reply(MessageBuilder().setContent(menu).setActionRows(row).build()).setEphemeral(true)
-            .queue() else event.reply(MessageBuilder().setContent(menu).build()).setEphemeral(true).queue()
+        if (row != null) event.reply(MessageCreateBuilder().setContent(menu).addComponents(row).build())
+            .setEphemeral(true)
+            .queue() else event.reply(MessageCreateBuilder().setContent(menu).build()).setEphemeral(true).queue()
     }
 }

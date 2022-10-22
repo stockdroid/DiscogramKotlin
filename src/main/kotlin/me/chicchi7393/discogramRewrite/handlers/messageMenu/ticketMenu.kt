@@ -4,7 +4,7 @@ import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 
 class ticketMenu(private val event: ButtonInteractionEvent) {
