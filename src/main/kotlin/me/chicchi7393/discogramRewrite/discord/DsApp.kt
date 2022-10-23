@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.utils.FileUpload
 import java.awt.Color
@@ -53,6 +54,7 @@ class DsApp private constructor() {
         dsClient = JDABuilder.createDefault(settings.discord["token"] as String)
             .setActivity(Activity.watching(messTable.generalStrings["bot_activity"]!!))
             .addEventListeners(EventHandler())
+            .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
             .build()
         return dsClient
     }

@@ -21,6 +21,8 @@ class underage : ReasonAction() {
             true
         )
 
+        event.reply(response).setEphemeral(true).queue()
+
         // cerca nel database per userID
         ModerationAPI.ban(
             dbman.Search().Tickets().searchTicketDocumentByChannelId(
@@ -48,7 +50,5 @@ class underage : ReasonAction() {
                 ReasonEnum.UNDERAGE.ordinal + 1
             )
         )
-
-        event.reply(response).setEphemeral(true).queue()
     }
 }
