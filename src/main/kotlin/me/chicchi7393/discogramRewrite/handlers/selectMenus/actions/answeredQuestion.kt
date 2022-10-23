@@ -10,6 +10,17 @@ import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEve
 class answeredQuestion : ReasonAction() {
     private val dbMan = DatabaseManager.instance
     override fun handle(event: SelectMenuInteractionEvent) {
+        event.reply(
+            modalHandlers(event).closeTicketHandler(
+                event
+                    .values[0]
+                    .split("-")[1]
+                    .split(":")[0]
+                    .toLong(), event.values[0].split(":")[1].toLong(),
+                "Questione risolta.",
+                true
+            )
+        ).setEphemeral(true).queue()
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
             event
                 .values[0]
@@ -25,16 +36,5 @@ class answeredQuestion : ReasonAction() {
                 ReasonEnum.QUESTION_ANSWERED.ordinal + 1
             )
         )
-        event.reply(
-            modalHandlers(event).closeTicketHandler(
-                event
-                    .values[0]
-                    .split("-")[1]
-                    .split(":")[0]
-                    .toLong(), event.values[0].split(":")[1].toLong(),
-                "Questione risolta.",
-                true
-            )
-        ).setEphemeral(true).queue()
     }
 }
