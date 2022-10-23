@@ -10,7 +10,7 @@ class CheckIfReplied : HTTPHandlerClass() {
     override var path = "checkIfReplied"
     override fun handle(ctx: Context): Context {
         try {
-            val args = ConvertQueryStringToMap.convert(ctx.req().queryString)
+            val args = ConvertQueryStringToMap.convert(ctx.req.queryString)
             val time: Int = if (!args.containsKey("time")) 86400 else args["time"]!!
             if (ctx.body().isEmpty() or !ctx.body().all { char -> char.isDigit() }) return ctx.status(406)
             val ticket = dbMan.Search().Tickets().searchTicketDocumentsByTelegramId(ctx.body().toLong())
