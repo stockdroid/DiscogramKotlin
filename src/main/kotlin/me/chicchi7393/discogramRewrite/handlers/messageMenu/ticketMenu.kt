@@ -58,8 +58,8 @@ class ticketMenu(private val event: ButtonInteractionEvent) {
                         it.embeds[0].description!!,
                         it.embeds[0].fields[0].value == "Sì",
                         true,
-                        if (event.member!!.nickname == null) event.member!!.effectiveName else event.member!!.nickname!!,
                         it.embeds[0].footer!!.text!!,
+                        if (event.member!!.nickname == null) event.member!!.effectiveName else event.member!!.nickname!!,
                         it.embeds[0].fields[2].value!!,
                         TicketState.OPEN
                     )
