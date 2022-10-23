@@ -12,6 +12,18 @@ class overage : ReasonAction() {
     private val dbman = DatabaseManager()
 
     override fun handle(event: SelectMenuInteractionEvent) {
+        event.reply(
+            modalHandlers(event).closeTicketHandler(
+                event
+                    .values[0]
+                    .split("-")[1]
+                    .split(":")[0]
+                    .toLong(), event.values[0].split(":")[1].toLong(),
+                "Verifica completata, grazie per la collaborazione!",
+                true
+            )
+        ).setEphemeral(true).queue()
+
         val ticket = dbman.Search().Tickets().searchTicketDocumentByChannelId(
             event
                 .values[0]
@@ -32,17 +44,5 @@ class overage : ReasonAction() {
                 ReasonEnum.OVERAGE.ordinal + 1
             )
         )
-
-        event.reply(
-            modalHandlers(event).closeTicketHandler(
-                event
-                    .values[0]
-                    .split("-")[1]
-                    .split(":")[0]
-                    .toLong(), event.values[0].split(":")[1].toLong(),
-                "Verifica completata, grazie per la collaborazione!",
-                true
-            )
-        ).setEphemeral(true).queue()
     }
 }

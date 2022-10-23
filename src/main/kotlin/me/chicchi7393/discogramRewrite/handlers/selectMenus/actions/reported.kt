@@ -10,6 +10,19 @@ import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEve
 class reported : ReasonAction() {
     private val dbman = DatabaseManager()
     override fun handle(event: SelectMenuInteractionEvent) {
+        event.reply(
+            modalHandlers(event).closeTicketHandler(
+                event
+                    .values[0]
+                    .split("-")[1]
+                    .split(":")[0]
+                    .toLong(), event.values[0].split(":")[1].toLong(),
+                "Segnalazione effettuata",
+                true
+            )
+        ).setEphemeral(true).queue()
+
+
         val ticket = dbman.Search().Tickets().searchTicketDocumentByChannelId(
             event
                 .values[0]
@@ -26,17 +39,5 @@ class reported : ReasonAction() {
                 ReasonEnum.REPORTED.ordinal + 1
             )
         )
-
-        event.reply(
-            modalHandlers(event).closeTicketHandler(
-                event
-                    .values[0]
-                    .split("-")[1]
-                    .split(":")[0]
-                    .toLong(), event.values[0].split(":")[1].toLong(),
-                "Segnalazione effettuata",
-                true
-            )
-        ).setEphemeral(true).queue()
     }
 }

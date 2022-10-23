@@ -12,16 +12,6 @@ import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEve
 class captcha : ReasonAction() {
     private val dbMan = DatabaseManager()
     override fun handle(event: SelectMenuInteractionEvent) {
-        val response = ModerationAPI.captcha(
-            dbMan.Search().Tickets().searchTicketDocumentByChannelId(
-                event
-                    .values[0]
-                    .split("-")[1]
-                    .split(":")[0]
-                    .toLong()
-            )!!.telegramId
-        )
-
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
             event
                 .values[0]
@@ -29,13 +19,8 @@ class captcha : ReasonAction() {
                 .split(":")[0]
                 .toLong()
         )!!
-        dbMan.Create().Reasons().createReasonsDocument(
-            ReasonsDocument(
-                ticket.ticketId,
-                ticket.telegramId,
-                "Captcha richiesto di nuovo.",
-                ReasonEnum.CAPTCHA.ordinal + 1
-            )
+        val response = ModerationAPI.captcha(
+            ticket.telegramId
         )
 
         event.reply(
@@ -52,5 +37,14 @@ class captcha : ReasonAction() {
                 true
             )
         ).setEphemeral(true).queue()
+
+        dbMan.Create().Reasons().createReasonsDocument(
+            ReasonsDocument(
+                ticket.ticketId,
+                ticket.telegramId,
+                "Captcha richiesto di nuovo.",
+                ReasonEnum.CAPTCHA.ordinal + 1
+            )
+        )
     }
 }
