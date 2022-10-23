@@ -7,7 +7,7 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 
 class CheckIfReplied : HTTPHandlerClass() {
     private val dbMan = DatabaseManager.instance
-    override var path = "checkIfReplied"
+    override var path = "/api/checkIfReplied"
     override fun handle(ctx: Context): Context {
         try {
             val args = ConvertQueryStringToMap.convert(ctx.req.queryString)

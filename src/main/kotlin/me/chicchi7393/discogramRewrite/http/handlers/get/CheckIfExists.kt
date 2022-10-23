@@ -8,7 +8,7 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 class CheckIfExists : HTTPHandlerClass() {
     private val dbMan = DatabaseManager.instance
 
-    override var path = "/check"
+    override var path = "/api/check"
     override fun handle(ctx: Context): Context {
         try {
             val args = ConvertQueryStringToMap.convert(ctx.req.queryString)
