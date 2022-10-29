@@ -47,7 +47,10 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
             channelId
         )!!
         ticketHandler.closeTicket(ticket, reason, rating)
-
+        discordClient.dsClient.getThreadChannelById(ticket.channelId)!!
+            .sendMessage(messTable.modals["closeTicket"]!!["reply"]!!)
+            .queue()
+        Thread.sleep(500)
         val thread = discordClient.dsClient
             .getThreadChannelById(channelId)!!
         thread.manager
@@ -83,10 +86,6 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
                     )
                 ).queue()
             }
-        Thread.sleep(1000)
-        discordClient.dsClient.getThreadChannelById(ticket.channelId)!!
-            .sendMessage(messTable.modals["closeTicket"]!!["reply"]!!)
-            .queue()
         return messTable.modals["closeTicket"]!!["reply"]!!
     }
 
@@ -96,7 +95,10 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
             channelId
         )!!
         ticketHandler.suspendTicket(ticket, event.values[0].asString)
-
+        discordClient.dsClient.getThreadChannelById(ticket.channelId)!!
+            .sendMessage(messTable.modals["suspendTicket"]!!["reply"]!!)
+            .queue()
+        Thread.sleep(500)
         val thread = discordClient.dsClient
             .getThreadChannelById(channelId)!!
         thread.manager
@@ -120,10 +122,6 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
                     )
                 ).queue()
             }
-        Thread.sleep(1000)
-        discordClient.dsClient.getThreadChannelById(ticket.channelId)!!
-            .sendMessage(messTable.modals["suspendTicket"]!!["reply"]!!)
-            .queue()
         event.reply(messTable.modals["suspendTicket"]!!["reply"]!!).setEphemeral(true).queue()
     }
 }

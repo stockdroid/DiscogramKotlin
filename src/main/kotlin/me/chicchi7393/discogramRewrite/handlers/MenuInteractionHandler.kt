@@ -1,9 +1,9 @@
 package me.chicchi7393.discogramRewrite.handlers
 
 import me.chicchi7393.discogramRewrite.handlers.selectMenus.closeReason
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 
-class MenuInteractionHandler(private val event: SelectMenuInteractionEvent) {
+class MenuInteractionHandler(private val event: StringSelectInteractionEvent) {
     fun onSelectMenuInteraction() {
         when (event.componentId) {
             "closereason" -> closeReason(event).handle()

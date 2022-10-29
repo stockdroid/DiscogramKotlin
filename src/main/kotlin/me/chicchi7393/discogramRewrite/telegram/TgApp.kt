@@ -17,10 +17,6 @@ import java.nio.file.Paths
 class TgApp private constructor() {
     private val settings = JsonReader().readJsonSettings()!!
 
-    init {
-        println("TgApp Class Initialized")
-    }
-
     private object GetInstance {
         val INSTANCE = TgApp()
     }

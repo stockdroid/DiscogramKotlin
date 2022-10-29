@@ -14,10 +14,6 @@ import org.litote.kmongo.*
 class DatabaseManager {
     private val settings = JsonReader().readJsonSettings()!!
 
-    init {
-        println("Mongo Class Initialized")
-    }
-
     private object GetInstance {
         val INSTANCE = DatabaseManager()
     }
@@ -411,12 +407,20 @@ class DatabaseManager {
         }
 
         fun isUserUnderage(telegram_id: Long): Boolean {
+            var found_overage = false
+            var is_underage = false
             for (reason in Search().Reasons().searchReasonDocumentsByTelegramId(telegram_id)) {
                 if (reason!!.reason_id == ReasonEnum.OVERAGE.ordinal + 1) {
-                    return false
+                    is_underage = false
+                    found_overage = true
+                }
+                if (reason.reason_id == ReasonEnum.UNDERAGE.ordinal + 1) {
+                    if (!found_overage) {
+                        is_underage = true
+                    }
                 }
             }
-            return true
+            return is_underage
         }
     }
 }

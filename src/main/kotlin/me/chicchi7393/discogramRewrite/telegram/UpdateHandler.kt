@@ -17,7 +17,6 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
     fun authStateUpdate(update: UpdateAuthorizationState) {
         println(
             when (update.authorizationState) {
-                is AuthorizationStateReady -> messageTable.generalStrings["log_loggedIn"]
                 is AuthorizationStateLoggingOut -> messageTable.generalStrings["log_loggingOut"]
                 is AuthorizationStateClosing -> messageTable.generalStrings["log_closing"]
                 is AuthorizationStateClosed -> messageTable.generalStrings["log_closed"]
