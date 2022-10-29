@@ -36,10 +36,6 @@ class DsApp private constructor() {
     private val dbMan = DatabaseManager.instance
     private val tgApp = TgApp.instance
 
-    init {
-        println("DsApp Class Initialized")
-    }
-
     private object GetInstance {
         val INSTANCE = DsApp()
     }

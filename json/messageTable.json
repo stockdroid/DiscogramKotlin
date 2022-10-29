@@ -1,6 +1,5 @@
 {
   "generalStrings": {
-    "log_loggedIn": "Logged in",
     "log_loggingOut": "Logging out...",
     "log_closing": "Closing...",
     "log_closed": "Closed",

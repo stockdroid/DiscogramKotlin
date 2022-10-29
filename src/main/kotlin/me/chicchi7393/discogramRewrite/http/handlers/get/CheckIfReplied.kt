@@ -9,11 +9,11 @@ class CheckIfReplied : HTTPHandlerClass() {
     private val dbMan = DatabaseManager.instance
     override var path = "/api/checkIfReplied"
     override fun handle(ctx: Context): Context {
-        try {
-            val args = ConvertQueryStringToMap.convert(ctx.req.queryString)
-            val time: Int = args["time"]!!
+        val time: Int = try {
+            val args = ConvertQueryStringToMap.convert(ctx.req().queryString)
+            args["time"]!!
         } catch (_: NullPointerException) {
-            val time: Int = 86400
+            86400
         }
         if (ctx.body().isEmpty() or !ctx.body().all { char -> char.isDigit() }) return ctx.status(406)
         val ticket = dbMan.Search().Tickets().searchTicketDocumentsByTelegramId(ctx.body().toLong())

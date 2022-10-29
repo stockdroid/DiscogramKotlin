@@ -7,12 +7,12 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Modal
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 
 
@@ -34,7 +34,7 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
             MessageCreateBuilder()
                 .setContent(modalStrs["closeTicket"]!!["title"]!!)
                 .addActionRow(
-                    SelectMenu.create("closereason")
+                    StringSelectMenu.create("closereason")
                         .addOptions(
                             SelectOption.of("Underage", "underage-$channel_id:${event.message.id}")
                                 .withDescription(modalStrs["closeTicket"]!!["underageDescription"]!!)
