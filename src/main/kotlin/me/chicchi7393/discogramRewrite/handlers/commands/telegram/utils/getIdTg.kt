@@ -8,11 +8,10 @@ fun getIdTg(option: String): Long {
     if (option.isEmpty()) {
         idTransporter.value = 0L
     } else {
-        val username = option
         try {
-            idTransporter.value = username.toLong()
+            idTransporter.value = option.toLong()
         } catch (_: Exception) {
-            TgApp.instance.client.send(TdApi.SearchPublicChat(username)) {
+            TgApp.instance.client.send(TdApi.SearchPublicChat(option)) {
                 idTransporter.value = it.get().id
             }
         }

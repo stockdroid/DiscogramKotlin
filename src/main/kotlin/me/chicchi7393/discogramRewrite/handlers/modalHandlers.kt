@@ -50,14 +50,12 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
         discordClient.dsClient.getThreadChannelById(ticket.channelId)!!
             .sendMessage(messTable.modals["closeTicket"]!!["reply"]!!)
             .queue()
-        Thread.sleep(500)
         val thread = discordClient.dsClient
             .getThreadChannelById(channelId)!!
         thread.manager
             .setName(thread.name + messTable.generalStrings["suffix_closedTicket"])
             .setArchived(true)
             .queue()
-        Thread.sleep(800)
         discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
             .retrieveMessageById(message_id).queue { message ->
                 message.editMessageComponents(
@@ -98,14 +96,12 @@ class modalHandlers(private val event: GenericInteractionCreateEvent) {
         discordClient.dsClient.getThreadChannelById(ticket.channelId)!!
             .sendMessage(messTable.modals["suspendTicket"]!!["reply"]!!)
             .queue()
-        Thread.sleep(500)
         val thread = discordClient.dsClient
             .getThreadChannelById(channelId)!!
         thread.manager
             .setName(thread.name + messTable.generalStrings["suffix_suspendedTicket"])
             .setLocked(true)
             .queue()
-        Thread.sleep(1000)
         discordClient.dsClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
             .retrieveMessageById(event.modalId.split(":")[1].toLong()).queue { message ->
                 message.editMessageEmbeds(
