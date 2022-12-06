@@ -44,27 +44,27 @@ class buttonHandlers(private val event: ButtonInteractionEvent) {
                                 .withDescription(modalStrs["closeTicket"]!!["overageDescription"]!!)
                                 .withEmoji(Emoji.fromUnicode("✅")),
 
-                                SelectOption.of("Questione risolta", "answeredQuestion-$channel_id:${event.message.id}")
-                                    .withDescription(modalStrs["closeTicket"]!!["questioneRisoltaDescription"]!!)
-                                    .withEmoji(Emoji.fromUnicode("❔")),
+                            SelectOption.of("Questione risolta", "answeredQuestion-$channel_id:${event.message.id}")
+                                .withDescription(modalStrs["closeTicket"]!!["questioneRisoltaDescription"]!!)
+                                .withEmoji(Emoji.fromUnicode("❔")),
 
-                                SelectOption.of("Segnalazione ricevuta", "reported-$channel_id:${event.message.id}")
-                                    .withDescription(modalStrs["closeTicket"]!!["segnalazioneEffettuataDescription"]!!)
-                                    .withEmoji(Emoji.fromUnicode("‼")),
+                            SelectOption.of("Segnalazione ricevuta", "reported-$channel_id:${event.message.id}")
+                                .withDescription(modalStrs["closeTicket"]!!["segnalazioneEffettuataDescription"]!!)
+                                .withEmoji(Emoji.fromUnicode("‼")),
 
-                                SelectOption.of("Esegui captcha", "captcha-$channel_id:${event.message.id}")
-                                    .withDescription(modalStrs["closeTicket"]!!["captchaDescription"]!!)
-                                    .withEmoji(Emoji.fromUnicode("\uD83E\uDD16")),
+                            SelectOption.of("Esegui captcha", "captcha-$channel_id:${event.message.id}")
+                                .withDescription(modalStrs["closeTicket"]!!["captchaDescription"]!!)
+                                .withEmoji(Emoji.fromUnicode("\uD83E\uDD16")),
 
-                                SelectOption.of("Custom", "custom-$channel_id:${event.message.id}")
-                                    .withDescription(modalStrs["closeTicket"]!!["otherDescription"]!!)
-                                    .withEmoji(Emoji.fromUnicode("\uD83D\uDCDD")),
+                            SelectOption.of("Custom", "custom-$channel_id:${event.message.id}")
+                                .withDescription(modalStrs["closeTicket"]!!["otherDescription"]!!)
+                                .withEmoji(Emoji.fromUnicode("\uD83D\uDCDD")),
 
-                                SelectOption.of("Custom senza rating", "custom_no_rating-$channel_id:${event.message.id}")
-                                    .withDescription(modalStrs["closeTicket"]!!["otherDescription"]!!)
-                                    .withEmoji(Emoji.fromUnicode("\uD83D\uDCC4"))
-                            )
-                            .build()
+                            SelectOption.of("Custom senza rating", "custom_no_rating-$channel_id:${event.message.id}")
+                                .withDescription(modalStrs["closeTicket"]!!["otherDescription"]!!)
+                                .withEmoji(Emoji.fromUnicode("\uD83D\uDCC4"))
+                        )
+                        .build()
                 )
                 .build()
         ).setEphemeral(true).queue()

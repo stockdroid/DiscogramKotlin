@@ -7,8 +7,10 @@ import it.tdlight.client.TDLibSettings
 import it.tdlight.common.Init
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import java.io.BufferedInputStream
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.net.URL
 import java.nio.file.Paths
@@ -52,6 +54,18 @@ class TgApp private constructor() {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
     }
 
+    fun downloadPic(pfp: ChatPhotoInfo): FileInputStream {
+        java.io.File("session/database/profile_photos").deleteRecursively()
+        val pfpId = try {
+            pfp.small.id
+        } catch (_: NullPointerException) {
+            69420
+        }
+        downloadFile(pfpId)
+
+        return if (pfpId != 69420) DsApp.instance.getLastModified() else FileInputStream("./session/database/5900.jpg")
+    }
+
     private fun remoteDownloadFile(url: URL) {
         url.openStream().use { inp ->
             BufferedInputStream(inp).use { bis ->
@@ -74,7 +88,6 @@ class TgApp private constructor() {
         } else {
             client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
         }
-        Thread.sleep(800)
     }
 
     fun alertTicket(chat_title: String, message: String, thread_link: String) {

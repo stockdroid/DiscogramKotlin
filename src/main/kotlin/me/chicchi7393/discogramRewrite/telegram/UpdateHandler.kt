@@ -3,10 +3,12 @@ package me.chicchi7393.discogramRewrite.telegram
 import it.tdlight.client.SimpleTelegramClient
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.handlers.TelegramCommandsHandler
 import me.chicchi7393.discogramRewrite.handlers.ticketHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.utils.FindContent
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 
 
 class UpdateHandler(private val tgClient: SimpleTelegramClient) {
@@ -14,6 +16,7 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
     private val messageTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val ticketHandlers = ticketHandlers()
     private val dbMan = DatabaseManager.instance
+    private val dsApp = DsApp.instance
     fun authStateUpdate(update: UpdateAuthorizationState) {
         println(
             when (update.authorizationState) {
@@ -29,6 +32,17 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
         return (chat.type is ChatTypePrivate
                 && chat.id !in (settings.discord["ignoreTGAuthor"] as List<Number>)
                 && (message.senderId as MessageSenderUser).userId != (settings.telegram["userbotID"] as Number).toLong())
+    }
+
+    fun onUpdateChatAction(update: UpdateChatAction) {
+        println("updatechat")
+        if (update.action is ChatActionTyping) {
+            val ticket = dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.chatId)
+            if (ticket != null) {
+                val channel = dsApp.dsClient.getChannelById(ThreadChannel::class.java, ticket.channelId)
+                channel!!.sendTyping().queue()
+            }
+        }
     }
 
     fun onUpdateNewMessage(update: UpdateNewMessage): Any {

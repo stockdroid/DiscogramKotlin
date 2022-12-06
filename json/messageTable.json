@@ -115,7 +115,7 @@
     "button_suspend": "Sospendi",
     "button_close": "Chiudi",
     "tgRedirectPrefixLink": "https://chicchi7393.xyz/redirectTg.html?id=",
-    "embed_idOrUser": "ID"
+    "embed_idOrUser": "ID/Username"
   },
   "errors": {
     "noUserOrThread": "Non hai fornito l'username e non sei in un thread",

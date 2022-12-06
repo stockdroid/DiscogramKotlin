@@ -163,24 +163,27 @@ class DatabaseManager {
         }
 
         inner class MessageLinks {
+            private fun looperThruMessages(ticketId: Int): List<MessageLinkType> {
+                return instance.Get().getMessageLinkCollection()
+                    .findOne(MessageLinksDocument::ticket_id eq ticketId)!!.messages
+            }
+
             fun searchMessageLinkById(ticketId: Int): MessageLinksDocument? {
                 return instance.Get().getMessageLinkCollection()
                     .findOne(MessageLinksDocument::ticket_id eq ticketId)
             }
 
             fun searchTgMessageByDiscordMessage(ticketId: Int, dsMessageId: Long): Long {
-                for (mess in instance.Get().getMessageLinkCollection()
-                    .findOne(MessageLinksDocument::ticket_id eq ticketId)!!.messages) {
+                for (mess in looperThruMessages(ticketId)) {
                     if (mess.ds_message_id == dsMessageId) {
-                        return mess.tg_message_id
+                        return mess.ds_message_id
                     }
                 }
                 return 0L
             }
 
             fun searchDsMessageByTelegramMessage(ticketId: Int, tgMessageId: Long): Long {
-                for (mess in instance.Get().getMessageLinkCollection()
-                    .findOne(MessageLinksDocument::ticket_id eq ticketId)!!.messages) {
+                for (mess in looperThruMessages(ticketId)) {
                     if (mess.tg_message_id == tgMessageId) {
                         return mess.ds_message_id
                     }
