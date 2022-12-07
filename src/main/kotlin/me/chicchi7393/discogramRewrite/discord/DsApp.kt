@@ -184,7 +184,7 @@ class DsApp private constructor() {
                     tgApp.alertTicket(
                         chat.title,
                         message,
-                        "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}"
+                        "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${settings.discord["channel_id"].toString()}"
                     )
                 }
                 .queue()
