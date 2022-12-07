@@ -62,7 +62,7 @@ class TgApp private constructor() {
             69420
         }
         downloadFile(pfpId)
-
+        Thread.sleep(600)
         return if (pfpId != 69420) DsApp.instance.getLastModified() else FileInputStream("./session/database/5900.jpg")
     }
 
