@@ -54,7 +54,7 @@ class TgApp private constructor() {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
     }
 
-    fun downloadPic(pfp: ChatPhotoInfo): FileInputStream {
+    fun downloadPic(pfp: ChatPhotoInfo?): FileInputStream {
         java.io.File("session/database/profile_photos").deleteRecursively()
         val pfpId = try {
             pfp.small.id
