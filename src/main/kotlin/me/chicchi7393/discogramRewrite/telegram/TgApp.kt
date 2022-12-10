@@ -57,7 +57,7 @@ class TgApp private constructor() {
     fun downloadPic(pfp: ChatPhotoInfo?): FileInputStream {
         java.io.File("session/database/profile_photos").deleteRecursively()
         val pfpId = try {
-            pfp.small.id
+            pfp!!.small.id
         } catch (_: NullPointerException) {
             69420
         }
