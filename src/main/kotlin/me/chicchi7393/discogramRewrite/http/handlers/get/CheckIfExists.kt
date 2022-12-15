@@ -6,7 +6,7 @@ import me.chicchi7393.discogramRewrite.http.utilities.ConvertQueryStringToMap
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 
 class CheckIfExists : HTTPHandlerClass() {
-    override var path = "/api/check"
+    override var path = "/check"
     override fun handle(ctx: Context): Context {
         try {
             val args = ConvertQueryStringToMap.convert(ctx.req().queryString)
