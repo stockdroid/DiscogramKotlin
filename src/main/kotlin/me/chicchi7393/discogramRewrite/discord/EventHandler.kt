@@ -43,7 +43,7 @@ class EventHandler : ListenerAdapter() {
     ) {
         var tgReply = 0L
         if (replyId != 0L) {
-            tgReply = dbMan.Search().MessageLinks().searchTgMessageByDiscordMessage(ticketId, replyId)
+            tgReply = dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, replyId, true)
         }
         TgApp.sendMessage(tgId, content, tgReply, inputMessageContent) {
             dbMan.Update().MessageLinks().addMessageToMessageLinks(

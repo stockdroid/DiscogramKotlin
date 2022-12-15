@@ -22,21 +22,14 @@ object TgApp {
     lateinit var client: SimpleTelegramClient
 
     fun createApp(): SimpleTelegramClient {
-        val tg = settings.telegram
         val tgSettings = TDLibSettings.create(
-            APIToken(tg["api_id"] as Int, tg["api_hash"] as String?)
+            APIToken(settings.telegram["api_id"] as Int, settings.telegram["api_hash"] as String)
         )
-        val sessionPath = Paths.get("session")
 
         Init.start()
         tgSettings.databaseDirectoryPath =
-            sessionPath.resolve(if (VariableStorage.isProd) "database" else "database_dev")
-        tgSettings.downloadedFilesDirectoryPath = sessionPath.resolve("downloads")
-
-        tgSettings.applicationVersion = tg["app_version"] as String?
-        tgSettings.deviceModel = tg["model"] as String?
-        tgSettings.systemLanguageCode = tg["language_code"] as String?
-        tgSettings.systemVersion = tg["system_version"] as String?
+            Paths.get("session").resolve(if (VariableStorage.isProd) "database" else "database_dev")
+        tgSettings.downloadedFilesDirectoryPath = Paths.get("session").resolve("downloads")
 
         client = SimpleTelegramClient(tgSettings)
         return client
@@ -51,67 +44,51 @@ object TgApp {
         message: String,
         replyId: Long,
         inputMessageContent: InputMessageContent = InputMessageText(
-            FormattedText(message, null),
-            false,
-            false
+            FormattedText(message, null), false, false
         ),
         callback: (it.tdlight.client.Result<Message>) -> Unit
     ) {
         client.send(
             SendMessage(
-                chatId,
-                0,
+                chatId, 0,
                 replyId,
-                null,
-                null,
+                null, null,
                 inputMessageContent
             )
-        ) {
-            callback(it)
-        }
+        ) { callback(it) }
     }
 
     fun downloadPic(pfp: ChatPhotoInfo?): FileInputStream {
         java.io.File("session/database/profile_photos").deleteRecursively()
-        val pfpId = try {
-            pfp!!.small.id
-        } catch (_: NullPointerException) {
-            69420
-        }
-        downloadFile(pfpId)
-        Thread.sleep(600)
+        downloadFile(
+            try {
+                pfp!!.small.id
+            } catch (_: NullPointerException) {
+                69420
+            }
+        )
+        Thread.sleep(500)
         return DsApp.getLastModified()
     }
 
-    private fun remoteDownloadFile(url: URL) {
-        url.openStream().use { inp ->
-            BufferedInputStream(inp).use { bis ->
-                FileOutputStream("./session/database/5900.jpg").use { fos ->
-                    val data = ByteArray(1024)
-                    var count: Int
-                    while (bis.read(data, 0, 1024).also { count = it } != -1) {
-                        fos.write(data, 0, count)
-                    }
+    private fun downloadPlaceholder() = URL(settings.discord["no_pfp_placeholder"] as String).openStream().use { inp ->
+        BufferedInputStream(inp).use { bis ->
+            FileOutputStream("./session/database/5900.jpg").use { fos ->
+                val data = ByteArray(1024)
+                var count: Int
+                while (bis.read(data, 0, 1024).also { count = it } != -1) {
+                    fos.write(data, 0, count)
                 }
             }
         }
     }
 
-    private fun downloadFile(fileId: Int) {
-        if (fileId == 69420) {
-            remoteDownloadFile(
-                URL(settings.discord["no_pfp_placeholder"] as String)
-            )
-        } else {
-            client.send(DownloadFile(fileId, 32, 0, 0, true)) {}
-        }
-    }
+    private fun downloadFile(fileId: Int) =
+        if (fileId == 69420) downloadPlaceholder() else client.send(DownloadFile(fileId, 32, 0, 0, true)) {}
 
-    fun alertTicket(chatTitle: String, message: String, threadLink: String) {
+    fun alertTicket(chatTitle: String, message: String, threadLink: String) =
         sendMessage(
             (settings.telegram["moderatorGroup"] as Number).toLong(),
-            "Nuovo ticket!\nDa: ${chatTitle}\nMessaggio: ${message}\nLink: $threadLink",
-            0
+            "Nuovo ticket!\nDa: ${chatTitle}\nMessaggio: ${message}\nLink: $threadLink", 0
         ) {}
-    }
 }

@@ -173,18 +173,16 @@ class DatabaseManager {
                     .findOne(MessageLinksDocument::ticketId eq ticketIdM)
             }
 
-            fun searchTgMessageByDiscordMessage(ticketId: Int, dsMessageId: Long): Long {
+            fun searchMessageByOtherMessage(
+                ticketId: Int,
+                dsMessageId: Long = 0,
+                returnsDs: Boolean,
+                tgMessageId: Long = 0
+            ): Long {
                 for (mess in looperThruMessages(ticketId)) {
-                    if (mess.dsMessageId == dsMessageId) {
+                    if (mess.dsMessageId == dsMessageId && returnsDs) {
                         return mess.dsMessageId
-                    }
-                }
-                return 0L
-            }
-
-            fun searchDsMessageByTelegramMessage(ticketId: Int, tgMessageId: Long): Long {
-                for (mess in looperThruMessages(ticketId)) {
-                    if (mess.tgMessageId == tgMessageId) {
+                    } else if (mess.tgMessageId == tgMessageId && !returnsDs) {
                         return mess.dsMessageId
                     }
                 }
@@ -197,53 +195,12 @@ class DatabaseManager {
                 return instance.Get().getRatingsCollection()
                     .findOne(RatingDocument::id eq ticketId)
             }
-
-            fun searchRatingBySpeedRating(speed: Float): RatingDocument? {
-                return instance.Get().getRatingsCollection()
-                    .findOne(RatingDocument::speedRating eq speed)
-            }
-
-            fun searchRatingByGentilezzaRating(gentilezza: Float): RatingDocument? {
-                return instance.Get().getRatingsCollection()
-                    .findOne(RatingDocument::gentilezzaRating eq gentilezza)
-            }
-
-            fun searchRatingByGeneralRating(general: Float): RatingDocument? {
-                return instance.Get().getRatingsCollection()
-                    .findOne(RatingDocument::generalRating eq general)
-            }
         }
 
         inner class Reasons {
-            fun searchReasonDocumentById(ticketIdM: Int): ReasonsDocument? {
-                return instance.Get().getReasonsCollection()
-                    .findOne(ReasonsDocument::ticketId eq ticketIdM)
-            }
-
-            fun searchReasonDocumentByTelegramId(telegramIdM: Long): ReasonsDocument? {
-                return instance.Get().getReasonsCollection()
-                    .find(ReasonsDocument::telegramId eq telegramIdM)
-                    .descendingSort(ReasonsDocument::ticketId)
-                    .first()
-            }
-
             fun searchReasonDocumentsByTelegramId(telegramIdM: Long): List<ReasonsDocument?> {
                 return instance.Get().getReasonsCollection()
                     .find(ReasonsDocument::telegramId eq telegramIdM)
-                    .descendingSort(ReasonsDocument::ticketId)
-                    .toList()
-            }
-
-            fun searchReasonDocumentByReasonId(reasonIdM: Int): ReasonsDocument? {
-                return instance.Get().getReasonsCollection()
-                    .find(ReasonsDocument::reasonId eq reasonIdM)
-                    .descendingSort(ReasonsDocument::ticketId)
-                    .first()
-            }
-
-            fun searchReasonDocumentsByReasonId(reasonIdM: Int): List<ReasonsDocument?> {
-                return instance.Get().getReasonsCollection()
-                    .find(ReasonsDocument::reasonId eq reasonIdM)
                     .descendingSort(ReasonsDocument::ticketId)
                     .toList()
             }
@@ -320,21 +277,6 @@ class DatabaseManager {
                         setValue(AssigneeDocument::modId, assigneeId)
                     )
             }
-
-            /*private fun editAssigneewithoutTrack(ticketId: Int, assigneeId: Long): UpdateResult {
-                return instance.Get().getAssigneesCollection()
-                    .updateOne(
-                        AssigneeDocument::ticketId eq ticketId,
-                        setValue(AssigneeDocument::modId, assigneeId)
-                    )
-            }
-
-            fun cleanAssignee(ticket: AssigneeDocument): UpdateResult {
-                return editAssigneewithoutTrack(
-                    ticket.ticketId,
-                    0
-                )
-            }*/
         }
 
         inner class MessageLinks {

@@ -13,12 +13,10 @@ class JsonReader {
     }
 
     fun readJsonSettings(): SettingsObject? {
-        return Klaxon()
-            .parse<SettingsObject>(getResourceFile(if (VariableStorage.isProd) "settings" else "settings_dev"))
+        return Klaxon().parse<SettingsObject>(getResourceFile(if (VariableStorage.isProd) "settings" else "settings_dev"))
     }
 
     fun readJsonMessageTable(fileName: String): MessageTableObject? {
-        return Klaxon()
-            .parse<MessageTableObject>(getResourceFile(fileName))
+        return Klaxon().parse<MessageTableObject>(getResourceFile(fileName))
     }
 }

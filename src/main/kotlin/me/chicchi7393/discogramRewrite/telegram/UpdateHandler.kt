@@ -13,19 +13,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 
 class UpdateHandler(private val tgClient: SimpleTelegramClient) {
     private val settings = JsonReader().readJsonSettings()!!
-    private val messageTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val ticketHandlers = TicketHandlers()
     private val dbMan = DatabaseManager.instance
-    fun authStateUpdate(update: UpdateAuthorizationState) {
-        println(
-            when (update.authorizationState) {
-                is AuthorizationStateLoggingOut -> messageTable.generalStrings["log_loggingOut"]
-                is AuthorizationStateClosing -> messageTable.generalStrings["log_closing"]
-                is AuthorizationStateClosed -> messageTable.generalStrings["log_closed"]
-                else -> ""
-            }
-        )
-    }
 
     private fun ticketIfList(chat: Chat, message: Message): Boolean {
         return (chat.type is ChatTypePrivate
@@ -34,7 +23,6 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
     }
 
     fun onUpdateChatAction(update: UpdateChatAction) {
-        println("updatechat")
         if (update.action is ChatActionTyping) {
             val ticket = dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.chatId)
             if (ticket != null) {
@@ -54,13 +42,17 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
         tgClient.send(GetChat(update.message.chatId)) {
             val chat = it.get()
             if (update.message.content is MessageText) {
+                // se è messaggio di testo
                 if (chat.id == (settings.telegram["moderatorGroup"] as Number).toLong()) {
+                    // se viene da moderatori
                     TelegramCommandsHandler().onSlashCommand(update.message.content.toString())
                 }
                 if (ticketIfList(chat, update.message)) {
+                    // se è privato, non in blacklist e non è se stesso
                     if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
                             .searchAlreadySuspended(chat.id) != null
                     )
+                    // se c'è già un ticket all'utente
                         ticketHandlers.sendTextFollowMessage(
                             chat.id,
                             text,
@@ -71,24 +63,17 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                             update.message.replyToMessageId
                         )
                     else
+                    // avvia nuovo ticket
                         ticketHandlers.startTicketWithText(chat, text)
                 }
             } else {
-                val file: DownloadFile? = if (document != 0) {
-                    DownloadFile(document, 1, 0, 0, true)
-                } else {
-                    null
-                }
+                // se è documento
+                val file: DownloadFile? = if (document != 0) DownloadFile(document, 1, 0, 0, true) else null
                 if (ticketIfList(chat, update.message)) {
-                    if (dbMan.Utils().searchAlreadyOpen(chat.id) == null && dbMan.Utils()
-                            .searchAlreadySuspended(chat.id) == null
+                    if (dbMan.Utils().searchAlreadyOpen(chat.id) != null && dbMan.Utils()
+                            .searchAlreadySuspended(chat.id) != null
                     )
-                        ticketHandlers.startTicketWithFile(
-                            chat,
-                            file,
-                            text
-                        )
-                    else
+                    // se c'è già un ticket all'utente
                         ticketHandlers.sendFileFollowMessage(
                             chat.id,
                             file,
@@ -99,6 +84,9 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                             update.message.id,
                             update.message.replyToMessageId
                         )
+                    else
+                    // avvia nuovo ticket
+                        ticketHandlers.startTicketWithFile(chat, file, text)
                 }
             }
         }

@@ -9,20 +9,13 @@ object HTTPManager {
     private lateinit var app: Javalin
     private val methods = mapOf("get" to HandlerType.GET, "post" to HandlerType.POST)
     fun createApp(port: Int) {
-        app = Javalin.create {
-            it.showJavalinBanner = false
-        }.start(port)
+        app = Javalin.create().start(port)
         for (method in methods) {
-            val classes = FindClass.findClasses("me.chicchi7393.discogramRewrite.http.handlers.${method.key}")
-            for (className in classes) {
+            for (className in FindClass.findClasses("me.chicchi7393.discogramRewrite.http.handlers.${method.key}")) {
                 val temp = Class.forName(className).getDeclaredConstructor()
                 temp.isAccessible = true
                 val handlerClass = temp.newInstance()
-                app.addHandler(method.value, (handlerClass as HTTPHandlerClass).path) { ctx ->
-                    handlerClass.handle(
-                        ctx
-                    )
-                }
+                app.addHandler(method.value, (handlerClass as HTTPHandlerClass).path) { handlerClass.handle(it) }
             }
         }
 
