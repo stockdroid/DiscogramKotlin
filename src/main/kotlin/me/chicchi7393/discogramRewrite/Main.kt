@@ -17,7 +17,6 @@ object Main {
 
         val tgClient = TgApp.createApp()
         val updateHandlers = UpdateHandler(tgClient)
-        tgClient.addUpdateHandler(UpdateAuthorizationState::class.java, updateHandlers::authStateUpdate)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
         tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
         tgClient.addUpdateHandler(UpdateChatAction::class.java, updateHandlers::onUpdateChatAction)
@@ -32,13 +31,5 @@ object Main {
             DsApp.createApp()
             DsApp.createCommands()
         }.start()
-        Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
-            TgApp.sendMessage(
-                (settings.telegram["moderatorGroup"] as Number).toLong(),
-                "Errore avvenuto! @Chicchi7393\nMessaggio: ${paramThrowable.message}\nCausa: ${paramThrowable.cause}",
-                0
-            ) {}
-        }
     }
 }
-

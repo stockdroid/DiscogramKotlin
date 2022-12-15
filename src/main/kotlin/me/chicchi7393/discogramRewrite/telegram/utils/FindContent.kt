@@ -4,7 +4,7 @@ import it.tdlight.jni.TdApi.*
 
 class FindContent(private val input: Message) {
     fun findText(): String {
-        val text = when (input.content) {
+        return when (input.content) {
             is MessageAnimatedEmoji -> (input.content as MessageAnimatedEmoji).emoji
             is MessageVoiceNote -> (input.content as MessageVoiceNote).caption.text
             is MessageDocument -> (input.content as MessageDocument).caption.text
@@ -17,7 +17,6 @@ class FindContent(private val input: Message) {
                 "ㅤ"
             }
         }
-        return if (text != "") text else "ㅤ"
     }
 
     fun findData(): Int {

@@ -40,11 +40,6 @@ object ModerationAPI {
         return if (response.code == 200) 0 else 1
     }
 
-    fun unban(userId: Long, reason: String = ""): Int {
-        val response = triggerEndpoint("unban", mapOf<String, Any>("userid" to userId, "reason" to reason))
-        return if (response.code == 200) 0 else 1
-    }
-
     // funzione unmute (smuta automaticamente)
     fun unmute(userId: Long, reason: String = ""): Int {
         val response = triggerEndpoint("unmute", mapOf<String, Any>("userid" to userId, "reason" to reason))

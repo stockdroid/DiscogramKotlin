@@ -110,7 +110,7 @@ object DsApp {
             channel
         )!!.sendMessage(text).setMessageReference(
             if (replyId != 0L) {
-                dbMan.Search().MessageLinks().searchDsMessageByTelegramMessage(ticketId, replyId)
+                dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, 0, false, replyId)
             } else 0L
         )
     }
