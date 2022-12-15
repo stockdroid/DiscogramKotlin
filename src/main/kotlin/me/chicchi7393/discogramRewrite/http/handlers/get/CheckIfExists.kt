@@ -18,7 +18,7 @@ class CheckIfExists : HTTPHandlerClass() {
                     .searchRatingById(args["id"] as Int) != null
             ) return ctx.status(403)
                 .result("Ticket already rated")
-            return ctx.result("Ticket found")
+            return ctx.status(200).result("Ticket found")
         } catch (_: NullPointerException) {
             return ctx.status(404).result("No args specified")
         }
