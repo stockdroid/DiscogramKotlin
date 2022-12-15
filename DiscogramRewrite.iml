@@ -56,26 +56,26 @@
     <orderEntry type="library" name="Maven: com.google.zxing:core:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-amd64:4.0.265" level="project" />
     <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-aarch64:4.0.265" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.4.4" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.4.4" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.3" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-core:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-sync:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.mongodb:bson:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:4.7.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.mongodb:bson-record-codec:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-property:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-data:4.7.1" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.4.5" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.4.5" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-core:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-sync:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:bson:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:4.8.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.mongodb:bson-record-codec:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-property:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-data:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.litote:kreflect:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-jackson-mapping:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-shared:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-id:4.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-id-jackson:4.7.1" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-jackson-mapping:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-shared:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-id:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-id-jackson:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.litote.jackson:jackson-module-loader:0.4.0" level="project" />
     <orderEntry type="library" name="Maven: de.undercouch:bson4jackson:2.13.1" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4" level="project" />
-    <orderEntry type="library" name="Maven: io.javalin:javalin:5.1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1" level="project" />
+    <orderEntry type="library" name="Maven: io.javalin:javalin:5.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:11.0.12" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api:5.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:11.0.12" level="project" />

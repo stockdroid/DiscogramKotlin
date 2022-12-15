@@ -2,7 +2,6 @@ package me.chicchi7393.discogramRewrite.discord
 
 import it.tdlight.jni.TdApi
 import it.tdlight.jni.TdApi.Chat
-import it.tdlight.jni.TdApi.InputMessageText
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
@@ -28,75 +27,64 @@ import java.io.File
 import java.io.FileInputStream
 
 
-class DsApp private constructor() {
+object DsApp {
     private val settings = JsonReader().readJsonSettings()!!
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val embedStrs = messTable.embed
     private val commStrs = messTable.commands
     private val dbMan = DatabaseManager.instance
-    private val tgApp = TgApp.instance
 
-    private object GetInstance {
-        val INSTANCE = DsApp()
-    }
-
-    companion object {
-        val instance: DsApp by lazy { GetInstance.INSTANCE }
-    }
-
-    lateinit var dsClient: JDA
+    lateinit var client: JDA
 
     fun createApp(): JDA {
-        dsClient = JDABuilder.createDefault(settings.discord["token"] as String)
+        client = JDABuilder.createDefault(settings.discord["token"] as String)
             .setActivity(Activity.watching(messTable.generalStrings["bot_activity"]!!))
             .addEventListeners(EventHandler())
-            .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+            .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
             .build()
-        return dsClient
+        return client
     }
 
     fun generateTicketEmbed(
         authorName: String,
         authorUrl: String,
         message: String,
-        isForced: Boolean,
-        isAssigned: Boolean,
+        isAssigned: Boolean = false,
         idOrUser: String,
         assignedTo: String = "",
         footerStr: String,
-        state: Any
+        state: Any = TicketState.OPEN
     ): MessageEmbed {
-        return EmbedBuilder()
-            .setColor(Color.blue)
-            .setTitle(embedStrs["embed_newTicketTitle"]!!)
+        return EmbedBuilder().setColor(Color.blue).setTitle(embedStrs["embed_newTicketTitle"]!!)
             .setAuthor(authorName, authorUrl, "attachment://pic.png")
             .setDescription(message)
-            .addField(
-                embedStrs["embed_forced"]!!,
-                if (isForced) embedStrs["embed_yes"]!! else embedStrs["embed_no"]!!,
-                true
-            )
             .addField(embedStrs["embed_assignedTo"]!!, if (isAssigned) assignedTo else embedStrs["embed_noOne"]!!, true)
             .addField(embedStrs["embed_state"]!!, state.toString(), false)
             .addField(embedStrs["embed_idOrUser"]!!, idOrUser, false)
-            .setFooter(footerStr, null)
-            .build()
+            .setFooter(footerStr, null).build()
     }
 
-    fun generateFirstEmbedButtons(tg_profile: String = "https://google.com"): ActionRow {
-        return ActionRow.of(
-            listOf(
-                Button.link(tg_profile, embedStrs["button_openTg"]!!)
-            )
-        )
-    }
-
-    fun generateSecondEmbedButtons(channel_id: Long): ActionRow {
-        return ActionRow.of(
-            listOf(
-                Button.success("assign-$channel_id", embedStrs["button_assign"]!!),
-                Button.secondary("suspend-$channel_id", embedStrs["button_suspend"]!!),
-                Button.danger("close-$channel_id", embedStrs["button_close"]!!),
+    fun generateRowsEmbedButtons(
+        tgProfile: String,
+        channelId: Long,
+        menuId: String,
+        disableSecondButtons: Boolean = false
+    ): List<ActionRow> {
+        return listOf(
+            ActionRow.of(
+                listOf(
+                    Button.link(tgProfile, embedStrs["button_openTg"]!!)
+                )
+            ), ActionRow.of(
+                listOf(
+                    Button.success("assign-$channelId", embedStrs["button_assign"]!!)
+                        .withDisabled(disableSecondButtons),
+                    Button.secondary("suspend-$channelId", embedStrs["button_suspend"]!!)
+                        .withDisabled(disableSecondButtons),
+                    Button.danger("close-$channelId", embedStrs["button_close"]!!).withDisabled(disableSecondButtons),
+                )
+            ), ActionRow.of(
+                Button.primary("menu${if (menuId != "") "-$menuId" else ""}", "Apri menu")
             )
         )
     }
@@ -114,73 +102,54 @@ class DsApp private constructor() {
                 }
             }
         }
-        return FileInputStream(chosenFile)
+        return FileInputStream(chosenFile ?: File("./session/database/5900.jpg"))
     }
 
-    fun sendTextMessageToChannel(channel: Long, text: String, reply_id: Long, ticket_id: Int): MessageCreateAction {
-        var ds_reply = 0L
-        if (reply_id != 0L) {
-            ds_reply = dbMan.Search().MessageLinks().searchDsMessageByTelegramMessage(ticket_id, reply_id)
-        }
-        return dsClient.getThreadChannelById(
+    fun sendTextMessageToChannel(channel: Long, text: String, replyId: Long, ticketId: Int): MessageCreateAction {
+        return client.getThreadChannelById(
             channel
-        )!!.sendMessage(text).setMessageReference(ds_reply)
+        )!!.sendMessage(text).setMessageReference(
+            if (replyId != 0L) {
+                dbMan.Search().MessageLinks().searchDsMessageByTelegramMessage(ticketId, replyId)
+            } else 0L
+        )
     }
 
     fun createTicket(chat: Chat, message: String) {
-        TgApp.instance.client.send(
-            TdApi.SendMessage(
-                chat.id,
-                0,
-                0,
-                null,
-                null,
-                InputMessageText(TdApi.FormattedText(messTable.generalStrings["welcome"] as String, null), false, false)
-            )
-        ) {}
+        TgApp.sendMessage(chat.id, messTable.generalStrings["welcome"] as String, 0) {}
 
-        val filePath = tgApp.downloadPic(chat.photo)
-        tgApp.client.send(TdApi.GetUser(chat.id)) { uname ->
-            val embed = generateTicketEmbed(
-                chat.title,
-                embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
-                message,
-                isForced = false,
-                isAssigned = false,
-                "${chat.id}/${if (uname.get().username == null) "Nessun username" else ("@" + uname.get().username)}",
-                footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}",
-                state = TicketState.OPEN
-            )
-            dsClient
+        val filePath = TgApp.downloadPic(chat.photo)
+        TgApp.client.send(TdApi.GetUser(chat.id)) { uname ->
+            client
                 .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .sendMessageEmbeds(
-                    embed
+                    generateTicketEmbed(
+                        chat.title, embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
+                        message,
+                        idOrUser = "${chat.id}/${if (uname.get().username == null) "Nessun username" else ("@" + uname.get().username)}",
+                        footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
+                    )
+
                 ).addFiles(FileUpload.fromData(filePath, "pic.png")).map {
-                    it.editMessageEmbeds(
-                        embed
-                    ).setComponents(
-                        generateFirstEmbedButtons(
-                            embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString()
-                        ),
-                        generateSecondEmbedButtons(it.idLong),
-                        ActionRow.of(
-                            Button.primary("menu-${it.id}", "Apri menu")
-                        )
-                    ).queue()
+                    val rows = generateRowsEmbedButtons(
+                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
+                        it.idLong, it.id
+                    )
+                    it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
                     it.createThreadChannel(
                         "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-                    ).queue {
+                    ).queue { itThread ->
                         dbMan.Create().Tickets().createTicketDocument(
                             TicketDocument(
                                 chat.id,
-                                it.idLong,
+                                itThread.idLong,
                                 dbMan.Utils().getLastUsedTicketId() + 1,
                                 mapOf("open" to true, "suspended" to false, "closed" to false),
                                 System.currentTimeMillis() / 1000
                             )
                         )
                     }
-                    tgApp.alertTicket(
+                    TgApp.alertTicket(
                         chat.title,
                         message,
                         "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${settings.discord["channel_id"].toString()}"
@@ -193,7 +162,7 @@ class DsApp private constructor() {
     fun isHigherRole(member: Member): Boolean {
         var isHigher = false
         for (role in member.roles) {
-            if (role.idLong in settings.discord["higher_roles"] as List<Long>) {
+            if (role.idLong in settings.discord["higher_roles"] as List<*>) {
                 isHigher = true
             }
         }
@@ -201,7 +170,7 @@ class DsApp private constructor() {
     }
 
     fun createCommands() {
-        dsClient.updateCommands().addCommands(
+        client.updateCommands().addCommands(
             Commands.slash(commStrs["tickets"]!!["name"]!!, commStrs["tickets"]!!["description"]!!)
                 .addOption(
                     OptionType.STRING,

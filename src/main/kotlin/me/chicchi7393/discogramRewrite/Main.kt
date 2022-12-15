@@ -9,15 +9,13 @@ import me.chicchi7393.discogramRewrite.telegram.UpdateHandler
 import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 
 object Main {
-    private val tgAppClass = TgApp.instance
-    private val dsAppClass = DsApp.instance
     private val settings = JsonReader().readJsonSettings()!!
 
     @JvmStatic
     fun main(args: Array<String>) {
         VariableStorage.init_timestamp = (System.currentTimeMillis() / 1000)
 
-        val tgClient = tgAppClass.createApp()
+        val tgClient = TgApp.createApp()
         val updateHandlers = UpdateHandler(tgClient)
         tgClient.addUpdateHandler(UpdateAuthorizationState::class.java, updateHandlers::authStateUpdate)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
@@ -26,34 +24,20 @@ object Main {
         DatabaseManager().createClient()
         HTTPManager.createApp(4763)
         Thread {
-            tgClient.start(tgAppClass.generateAuth())
+            tgClient.start(TgApp.generateAuth())
             tgClient.waitForExit()
         }.start()
 
         Thread {
-            dsAppClass.createApp()
-            dsAppClass.createCommands()
+            DsApp.createApp()
+            DsApp.createCommands()
         }.start()
         Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
-            tgClient.send(
-                SendMessage(
-                    (settings.telegram["moderatorGroup"] as Number).toLong(),
-                    0L,
-                    0L,
-                    null,
-                    null,
-                    InputMessageText(
-                        FormattedText(
-                            "Errore avvenuto! @Chicchi7393\nMessaggio: ${paramThrowable.message}\nCausa: ${paramThrowable.cause}",
-                            null
-                        ),
-                        false,
-                        false
-                    )
-                )
-            ) {
-                it.get()
-            }
+            TgApp.sendMessage(
+                (settings.telegram["moderatorGroup"] as Number).toLong(),
+                "Errore avvenuto! @Chicchi7393\nMessaggio: ${paramThrowable.message}\nCausa: ${paramThrowable.cause}",
+                0
+            ) {}
         }
     }
 }

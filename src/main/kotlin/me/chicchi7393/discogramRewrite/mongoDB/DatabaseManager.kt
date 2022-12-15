@@ -163,20 +163,20 @@ class DatabaseManager {
         }
 
         inner class MessageLinks {
-            private fun looperThruMessages(ticketId: Int): List<MessageLinkType> {
+            private fun looperThruMessages(ticketIdM: Int): List<MessageLinkType> {
                 return instance.Get().getMessageLinkCollection()
-                    .findOne(MessageLinksDocument::ticket_id eq ticketId)!!.messages
+                    .findOne(MessageLinksDocument::ticketId eq ticketIdM)!!.messages
             }
 
-            fun searchMessageLinkById(ticketId: Int): MessageLinksDocument? {
+            fun searchMessageLinkById(ticketIdM: Int): MessageLinksDocument? {
                 return instance.Get().getMessageLinkCollection()
-                    .findOne(MessageLinksDocument::ticket_id eq ticketId)
+                    .findOne(MessageLinksDocument::ticketId eq ticketIdM)
             }
 
             fun searchTgMessageByDiscordMessage(ticketId: Int, dsMessageId: Long): Long {
                 for (mess in looperThruMessages(ticketId)) {
-                    if (mess.ds_message_id == dsMessageId) {
-                        return mess.ds_message_id
+                    if (mess.dsMessageId == dsMessageId) {
+                        return mess.dsMessageId
                     }
                 }
                 return 0L
@@ -184,8 +184,8 @@ class DatabaseManager {
 
             fun searchDsMessageByTelegramMessage(ticketId: Int, tgMessageId: Long): Long {
                 for (mess in looperThruMessages(ticketId)) {
-                    if (mess.tg_message_id == tgMessageId) {
-                        return mess.ds_message_id
+                    if (mess.tgMessageId == tgMessageId) {
+                        return mess.dsMessageId
                     }
                 }
                 return 0L
@@ -215,36 +215,36 @@ class DatabaseManager {
         }
 
         inner class Reasons {
-            fun searchReasonDocumentById(ticketId: Int): ReasonsDocument? {
+            fun searchReasonDocumentById(ticketIdM: Int): ReasonsDocument? {
                 return instance.Get().getReasonsCollection()
-                    .findOne(ReasonsDocument::ticket_id eq ticketId)
+                    .findOne(ReasonsDocument::ticketId eq ticketIdM)
             }
 
-            fun searchReasonDocumentByTelegramId(telegramId: Long): ReasonsDocument? {
+            fun searchReasonDocumentByTelegramId(telegramIdM: Long): ReasonsDocument? {
                 return instance.Get().getReasonsCollection()
-                    .find(ReasonsDocument::telegram_id eq telegramId)
-                    .descendingSort(ReasonsDocument::ticket_id)
+                    .find(ReasonsDocument::telegramId eq telegramIdM)
+                    .descendingSort(ReasonsDocument::ticketId)
                     .first()
             }
 
-            fun searchReasonDocumentsByTelegramId(telegramId: Long): List<ReasonsDocument?> {
+            fun searchReasonDocumentsByTelegramId(telegramIdM: Long): List<ReasonsDocument?> {
                 return instance.Get().getReasonsCollection()
-                    .find(ReasonsDocument::telegram_id eq telegramId)
-                    .descendingSort(ReasonsDocument::ticket_id)
+                    .find(ReasonsDocument::telegramId eq telegramIdM)
+                    .descendingSort(ReasonsDocument::ticketId)
                     .toList()
             }
 
-            fun searchReasonDocumentByReasonId(reasonId: Int): ReasonsDocument? {
+            fun searchReasonDocumentByReasonId(reasonIdM: Int): ReasonsDocument? {
                 return instance.Get().getReasonsCollection()
-                    .find(ReasonsDocument::reason_id eq reasonId)
-                    .descendingSort(ReasonsDocument::ticket_id)
+                    .find(ReasonsDocument::reasonId eq reasonIdM)
+                    .descendingSort(ReasonsDocument::ticketId)
                     .first()
             }
 
-            fun searchReasonDocumentsByReasonId(reasonId: Int): List<ReasonsDocument?> {
+            fun searchReasonDocumentsByReasonId(reasonIdM: Int): List<ReasonsDocument?> {
                 return instance.Get().getReasonsCollection()
-                    .find(ReasonsDocument::reason_id eq reasonId)
-                    .descendingSort(ReasonsDocument::ticket_id)
+                    .find(ReasonsDocument::reasonId eq reasonIdM)
+                    .descendingSort(ReasonsDocument::ticketId)
                     .toList()
             }
         }
@@ -338,12 +338,12 @@ class DatabaseManager {
         }
 
         inner class MessageLinks {
-            fun addMessageToMessageLinks(ticketId: Int, messageLinkType: MessageLinkType) {
-                val messages = Search().MessageLinks().searchMessageLinkById(ticketId)!!.messages.toMutableList()
+            fun addMessageToMessageLinks(ticketIdM: Int, messageLinkType: MessageLinkType) {
+                val messages = Search().MessageLinks().searchMessageLinkById(ticketIdM)!!.messages.toMutableList()
                 messages.add(messageLinkType)
                 instance.Get().getMessageLinkCollection()
                     .updateOne(
-                        MessageLinksDocument::ticket_id eq ticketId,
+                        MessageLinksDocument::ticketId eq ticketIdM,
                         setValue(
                             MessageLinksDocument::messages,
                             messages.toList()
@@ -351,11 +351,11 @@ class DatabaseManager {
                     )
             }
 
-            fun updateMessageId(ticketId: Int, old_id: Long, new_id: Long) {
+            fun updateMessageId(ticketId: Int, oldId: Long, newId: Long) {
                 instance.Get().getMessageLinkCollection()
                     .updateOne(
-                        "{ticket_id: $ticketId, \"messages.tg_message_id\": $old_id}",
-                        "{\$set: {\"messages.\$.tg_message_id\": $new_id}}"
+                        "{ticket_id: $ticketId, \"messages.tg_message_id\": $oldId}",
+                        "{\$set: {\"messages.\$.tg_message_id\": $newId}}"
                     )
 
             }
@@ -373,12 +373,12 @@ class DatabaseManager {
             return ticketId
         }
 
-        fun searchAlreadyOpen(telegram_id: Long): TicketDocument? {
+        fun searchAlreadyOpen(telegramId: Long): TicketDocument? {
             try {
                 for (userTicket in this@DatabaseManager
                     .Get()
                     .getTicketsCollection()
-                    .find(TicketDocument::telegramId eq telegram_id)) {
+                    .find(TicketDocument::telegramId eq telegramId)) {
                     if (userTicket.status["open"] == true) {
                         return userTicket
                     } else {
@@ -391,12 +391,12 @@ class DatabaseManager {
             return null
         }
 
-        fun searchAlreadySuspended(telegram_id: Long): TicketDocument? {
+        fun searchAlreadySuspended(telegramId: Long): TicketDocument? {
             try {
                 for (userTicket in this@DatabaseManager
                     .Get()
                     .getTicketsCollection()
-                    .find(TicketDocument::telegramId eq telegram_id)) {
+                    .find(TicketDocument::telegramId eq telegramId)) {
                     if (userTicket.status["suspended"] == true) {
                         return userTicket
                     } else {
@@ -409,21 +409,21 @@ class DatabaseManager {
             return null
         }
 
-        fun isUserUnderage(telegram_id: Long): Boolean {
-            var found_overage = false
-            var is_underage = false
-            for (reason in Search().Reasons().searchReasonDocumentsByTelegramId(telegram_id)) {
-                if (reason!!.reason_id == ReasonEnum.OVERAGE.ordinal + 1) {
-                    is_underage = false
-                    found_overage = true
+        fun isUserUnderage(telegramId: Long): Boolean {
+            var foundOverage = false
+            var isUnderage = false
+            for (reason in Search().Reasons().searchReasonDocumentsByTelegramId(telegramId)) {
+                if (reason!!.reasonId == ReasonEnum.OVERAGE.ordinal + 1) {
+                    isUnderage = false
+                    foundOverage = true
                 }
-                if (reason.reason_id == ReasonEnum.UNDERAGE.ordinal + 1) {
-                    if (!found_overage) {
-                        is_underage = true
+                if (reason.reasonId == ReasonEnum.UNDERAGE.ordinal + 1) {
+                    if (!foundOverage) {
+                        isUnderage = true
                     }
                 }
             }
-            return is_underage
+            return isUnderage
         }
     }
 }

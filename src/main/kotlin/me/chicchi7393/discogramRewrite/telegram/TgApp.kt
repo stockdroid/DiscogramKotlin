@@ -16,16 +16,8 @@ import java.net.URL
 import java.nio.file.Paths
 
 
-class TgApp private constructor() {
+object TgApp {
     private val settings = JsonReader().readJsonSettings()!!
-
-    private object GetInstance {
-        val INSTANCE = TgApp()
-    }
-
-    companion object {
-        val instance: TgApp by lazy { GetInstance.INSTANCE }
-    }
 
     lateinit var client: SimpleTelegramClient
 
@@ -54,6 +46,31 @@ class TgApp private constructor() {
         return AuthenticationData.user(settings.telegram["phone_number"] as Long)
     }
 
+    fun sendMessage(
+        chatId: Long,
+        message: String,
+        replyId: Long,
+        inputMessageContent: InputMessageContent = InputMessageText(
+            FormattedText(message, null),
+            false,
+            false
+        ),
+        callback: (it.tdlight.client.Result<Message>) -> Unit
+    ) {
+        client.send(
+            SendMessage(
+                chatId,
+                0,
+                replyId,
+                null,
+                null,
+                inputMessageContent
+            )
+        ) {
+            callback(it)
+        }
+    }
+
     fun downloadPic(pfp: ChatPhotoInfo?): FileInputStream {
         java.io.File("session/database/profile_photos").deleteRecursively()
         val pfpId = try {
@@ -63,7 +80,7 @@ class TgApp private constructor() {
         }
         downloadFile(pfpId)
         Thread.sleep(600)
-        return if (pfpId != 69420) DsApp.instance.getLastModified() else FileInputStream("./session/database/5900.jpg")
+        return DsApp.getLastModified()
     }
 
     private fun remoteDownloadFile(url: URL) {
@@ -80,35 +97,21 @@ class TgApp private constructor() {
         }
     }
 
-    private fun downloadFile(file_id: Int) {
-        if (file_id == 69420) {
+    private fun downloadFile(fileId: Int) {
+        if (fileId == 69420) {
             remoteDownloadFile(
                 URL(settings.discord["no_pfp_placeholder"] as String)
             )
         } else {
-            client.send(DownloadFile(file_id, 32, 0, 0, true)) {}
+            client.send(DownloadFile(fileId, 32, 0, 0, true)) {}
         }
     }
 
-    fun alertTicket(chat_title: String, message: String, thread_link: String) {
-        client.send(
-            SendMessage(
-                (settings.telegram["moderatorGroup"] as Number).toLong(),
-                0L,
-                0L,
-                null,
-                null,
-                InputMessageText(
-                    FormattedText(
-                        "Nuovo ticket!\nDa: ${chat_title}\nMessaggio: ${message}\nLink: $thread_link",
-                        null
-                    ),
-                    false,
-                    false
-                )
-            )
-        ) {
-            it.get()
-        }
+    fun alertTicket(chatTitle: String, message: String, threadLink: String) {
+        sendMessage(
+            (settings.telegram["moderatorGroup"] as Number).toLong(),
+            "Nuovo ticket!\nDa: ${chatTitle}\nMessaggio: ${message}\nLink: $threadLink",
+            0
+        ) {}
     }
 }

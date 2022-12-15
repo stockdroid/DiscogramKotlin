@@ -2,41 +2,19 @@ package me.chicchi7393.discogramRewrite.handlers
 
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.discord.EventHandler
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
-import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
-import org.bson.BsonTimestamp
 
 class MessageModifyHandler(val event: GenericMessageEvent) {
     private val settings = JsonReader().readJsonSettings()!!
     private val genStrings = JsonReader().readJsonMessageTable("messageTable")!!.generalStrings
     private val dbMan = DatabaseManager.instance
-    private val tgClient = TgApp.instance.client
-    private fun sendContent(
-        tgId: Long,
-        dsId: Long,
-        content: InputMessageContent,
-        ticket_id: Int,
-        reply_id: Long
-    ) {
-        var tg_reply = 0L
-        if (reply_id != 0L) {
-            tg_reply = dbMan.Search().MessageLinks().searchTgMessageByDiscordMessage(ticket_id, reply_id)
-        }
-        tgClient.send(
-            SendMessage(tgId, 0, tg_reply, null, null, content)
-        ) {
-            dbMan.Update().MessageLinks().addMessageToMessageLinks(
-                ticket_id,
-                MessageLinkType(it.get().id, dsId, BsonTimestamp(System.currentTimeMillis() / 1000))
-            )
-        }
-    }
-
+    private val tgClient = TgApp.client
     fun onMessageDelete(): Boolean {
         val newEvent = event as MessageDeleteEvent
         try {
@@ -52,10 +30,10 @@ class MessageModifyHandler(val event: GenericMessageEvent) {
                 tgClient.send(DeleteMessages(ticket.telegramId, longArrayOf(tgId), true)) {}
                 event.channel.sendMessage(genStrings["messageBeenDeleted"]!!).queue {
                     if ((tgIt.get().senderId as MessageSenderUser).userId != (settings.telegram["userbotID"] as Number).toLong()) {
-                        sendContent(
+                        EventHandler().sendContent(
                             ticket.telegramId,
                             it.idLong,
-                            InputMessageText(FormattedText(genStrings["messageBeenDeleted"]!!, null), false, false),
+                            genStrings["messageBeenDeleted"]!!,
                             ticket.ticketId,
                             0L
                         )

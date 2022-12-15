@@ -8,21 +8,20 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class closeReason(val event: StringSelectInteractionEvent) {
+class CloseReason(val event: StringSelectInteractionEvent) {
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val modalStrs = messTable.modals
-    private val channel_id = try {
+    private val channelId = try {
         event.values[0].split("-")[1].split(":")[0].toLong()
     } catch (e: Exception) {
         0
     }
 
     private fun customReason(rating: Boolean) {
-
         event.replyModal(
             Modal
                 .create(
-                    "close${if (rating) "" else "WR"}Modal-${channel_id}:${event.message.id}",
+                    "close${if (rating) "" else "WR"}Modal-${channelId}:${event.message.id}",
                     if (rating) modalStrs["closeTicket"]!!["title"]!! else modalStrs["closeTicket"]!!["titleWR"]!!
                 )
                 .addActionRow(
@@ -35,17 +34,16 @@ class closeReason(val event: StringSelectInteractionEvent) {
                     ).actionComponents
                 )
                 .build()
-        )
-            .queue()
+        ).queue()
     }
 
     fun handle() {
         when {
-            event.values[0].startsWith("underage") -> underage().handle(event)
-            event.values[0].startsWith("overage") -> overage().handle(event)
-            event.values[0].startsWith("answeredQuestion") -> answeredQuestion().handle(event)
-            event.values[0].startsWith("reported") -> reported().handle(event)
-            event.values[0].startsWith("captcha") -> captcha().handle(event)
+            event.values[0].startsWith("underage") -> Underage().handle(event)
+            event.values[0].startsWith("overage") -> Overage().handle(event)
+            event.values[0].startsWith("answeredQuestion") -> AnsweredQuestion().handle(event)
+            event.values[0].startsWith("reported") -> Reported().handle(event)
+            event.values[0].startsWith("captcha") -> Captcha().handle(event)
             event.values[0].startsWith("custom_no_rating") -> customReason(false)
             event.values[0].startsWith("custom") -> customReason(true)
             else -> {

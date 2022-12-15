@@ -2,9 +2,9 @@ package me.chicchi7393.discogramRewrite.discord
 
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
-import me.chicchi7393.discogramRewrite.discord.utils.reopenTicket
+import me.chicchi7393.discogramRewrite.discord.utils.ReopenTicket
 import me.chicchi7393.discogramRewrite.handlers.*
-import me.chicchi7393.discogramRewrite.handlers.messageMenu.ticketMenu
+import me.chicchi7393.discogramRewrite.handlers.messageMenu.TicketMenu
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
@@ -29,17 +29,25 @@ import java.util.*
 class EventHandler : ListenerAdapter() {
     private val settings = JsonReader().readJsonSettings()!!
     private val dbMan = DatabaseManager.instance
-    private val tgClient = TgApp.instance.client
-    private fun sendContent(tgId: Long, dsId: Long, content: InputMessageContent, ticket_id: Int, reply_id: Long) {
-        var tg_reply = 0L
-        if (reply_id != 0L) {
-            tg_reply = dbMan.Search().MessageLinks().searchTgMessageByDiscordMessage(ticket_id, reply_id)
+    fun sendContent(
+        tgId: Long,
+        dsId: Long,
+        content: String,
+        ticketId: Int,
+        replyId: Long,
+        inputMessageContent: InputMessageContent = InputMessageText(
+            FormattedText(content, null),
+            false,
+            false
+        )
+    ) {
+        var tgReply = 0L
+        if (replyId != 0L) {
+            tgReply = dbMan.Search().MessageLinks().searchTgMessageByDiscordMessage(ticketId, replyId)
         }
-        tgClient.send(
-            SendMessage(tgId, 0, tg_reply, null, null, content)
-        ) {
+        TgApp.sendMessage(tgId, content, tgReply, inputMessageContent) {
             dbMan.Update().MessageLinks().addMessageToMessageLinks(
-                ticket_id,
+                ticketId,
                 MessageLinkType(it.get().id, dsId, BsonTimestamp(System.currentTimeMillis() / 1000))
             )
         }
@@ -58,8 +66,8 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
-        val buttonHandler = buttonHandlers(event)
-        val ticketMenu = ticketMenu(event)
+        val buttonHandler = ButtonHandlers(event)
+        val ticketMenu = TicketMenu(event)
         when {
             event.componentId.startsWith("close") -> buttonHandler.closeButtonTicketHandler()
             event.componentId.startsWith("suspend") -> buttonHandler.suspendButtonTicketHandler()
@@ -72,7 +80,7 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
-        val modalHandlers = modalHandlers(event)
+        val modalHandlers = ModalHandlers(event)
         when {
             event.modalId.startsWith("closeModal") -> modalHandlers.closeTicketModal(true)
             event.modalId.startsWith("closeWRModal") -> modalHandlers.closeTicketModal(false)
@@ -99,20 +107,20 @@ class EventHandler : ListenerAdapter() {
                         event.channel.name.split(settings.discord["idPrefix"] as String)[1].split(
                             " "
                         )[0].toInt()
-                    )!!.modId || DsApp.instance.isHigherRole(event.member!!))
+                    )!!.modId || DsApp.isHigherRole(event.member!!))
                 && ticket.status["open"] == true
             ) {
                 if (ticket.status["suspended"] == true
                 ) {
-                    reopenTicket().reopenTicket(tgId)
+                    ReopenTicket().reopenTicket(tgId)
                 }
                 if (event.message.attachments.isEmpty()) {
                     sendContent(
                         tgId,
                         event.messageIdLong,
-                        InputMessageText(FormattedText(event.message.contentRaw, null), false, true),
+                        event.message.contentRaw,
                         ticket.ticketId,
-                        if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L
+                        if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L,
                     )
                 } else if (event.message.attachments.isNotEmpty()) {
                     var i = 0
@@ -122,14 +130,15 @@ class EventHandler : ListenerAdapter() {
                         sendContent(
                             tgId,
                             event.messageIdLong,
+                            "",
+                            ticket.ticketId,
+                            if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L,
                             InputMessageDocument(
                                 InputFileLocal(path),
                                 null,
                                 false,
                                 FormattedText(if (i == 1) event.message.contentRaw else "", null)
-                            ),
-                            ticket.ticketId,
-                            if (event.message.referencedMessage != null) event.message.referencedMessage!!.idLong else 0L
+                            )
                         )
                     }
                 }
@@ -149,11 +158,11 @@ class EventHandler : ListenerAdapter() {
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        slashCommandHandlers(event).onSlashCommand()
+        SlashCommandHandlers(event).onSlashCommand()
     }
 
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
-        messageCommandHandler(event).handle()
+        MessageCommandHandler(event).handle()
     }
 
     override fun onMessageDelete(event: MessageDeleteEvent) {
