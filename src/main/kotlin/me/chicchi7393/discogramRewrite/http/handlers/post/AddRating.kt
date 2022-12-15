@@ -1,9 +1,6 @@
 package me.chicchi7393.discogramRewrite.http.handlers.post
 
 import io.javalin.http.Context
-import it.tdlight.jni.TdApi
-import it.tdlight.jni.TdApi.InputMessageText
-import it.tdlight.jni.TdApi.SendMessage
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.http.handlers.HTTPHandlerClass
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
@@ -12,7 +9,6 @@ import me.chicchi7393.discogramRewrite.telegram.TgApp
 
 class AddRating : HTTPHandlerClass() {
     private val dbMan = DatabaseManager.instance
-    private val tgClient = TgApp.instance
     private val settings = JsonReader().readJsonSettings()!!
     private val ratMess = JsonReader().readJsonMessageTable("messageTable")!!.ratings
 
@@ -46,13 +42,7 @@ class AddRating : HTTPHandlerClass() {
         if (ctx.formParam("comments")!! != "") {
             messageText += "${ratMess["commentsDesc"]}: ${ctx.formParam("comments")!!}"
         }
-        tgClient.client.send(
-            SendMessage(
-                (settings.telegram["moderatorGroup"] as Number).toLong(), 0, 0, null, null, InputMessageText(
-                    TdApi.FormattedText(messageText, null), false, false
-                )
-            )
-        ) {}
+        TgApp.sendMessage((settings.telegram["moderatorGroup"] as Number).toLong(), messageText, 0) {}
         return ctx.result("Added")
     }
 }

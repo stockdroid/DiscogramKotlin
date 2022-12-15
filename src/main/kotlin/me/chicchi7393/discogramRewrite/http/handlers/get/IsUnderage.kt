@@ -4,7 +4,7 @@ import io.javalin.http.Context
 import me.chicchi7393.discogramRewrite.http.handlers.HTTPHandlerClass
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 
-class isUnderage : HTTPHandlerClass() {
+class IsUnderage : HTTPHandlerClass() {
     override var path = "/api/isUnderage"
     private val dbMan = DatabaseManager.instance
     override fun handle(ctx: Context): Context {

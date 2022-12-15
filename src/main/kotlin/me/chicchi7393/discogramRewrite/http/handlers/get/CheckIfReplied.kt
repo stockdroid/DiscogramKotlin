@@ -18,10 +18,10 @@ class CheckIfReplied : HTTPHandlerClass() {
         if (ctx.body().isEmpty() or !ctx.body().all { char -> char.isDigit() }) return ctx.status(406)
         val ticket = dbMan.Search().Tickets().searchTicketDocumentsByTelegramId(ctx.body().toLong())
         if (ticket.isEmpty()) return return ctx.json(mapOf("result" to false))
-        if (ticket[0]!!.unixSeconds >= (System.currentTimeMillis() / 1000) - time) {
-            return ctx.json(mapOf("result" to true))
+        return if (ticket[0]!!.unixSeconds >= (System.currentTimeMillis() / 1000) - time) {
+            ctx.json(mapOf("result" to true))
         } else {
-            return ctx.json(mapOf("result" to false))
+            ctx.json(mapOf("result" to false))
         }
     }
 }

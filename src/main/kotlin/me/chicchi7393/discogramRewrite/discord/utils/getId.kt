@@ -6,33 +6,32 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-object idTransporter {
+object IdTransporter {
     var value = 0L
 }
 
 private val dbMan = DatabaseManager.instance
 private val settings = JsonReader().readJsonSettings()!!
-private val tgClient = TgApp.instance
 
 fun getId(event: SlashCommandInteractionEvent): Long {
     if (event.options.isEmpty()) {
         try {
-            idTransporter.value =
+            IdTransporter.value =
                 dbMan.Search().Tickets().searchTicketDocumentById(
                     event.channel.name.split(" ")[0].replace(settings.discord["idPrefix"] as String, "").toInt()
                 )!!.telegramId
         } catch (_: Exception) {
-            idTransporter.value = 0L
+            IdTransporter.value = 0L
         }
     } else {
         val username = event.options[0].asString
         try {
-            idTransporter.value = username.toLong()
+            IdTransporter.value = username.toLong()
         } catch (_: Exception) {
-            tgClient.client.send(TdApi.SearchPublicChat(username)) {
-                idTransporter.value = it.get().id
+            TgApp.client.send(TdApi.SearchPublicChat(username)) {
+                IdTransporter.value = it.get().id
             }
         }
     }
-    return idTransporter.value
+    return IdTransporter.value
 }

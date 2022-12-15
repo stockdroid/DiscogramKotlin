@@ -2,7 +2,7 @@ package me.chicchi7393.discogramRewrite.handlers
 
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.handlers.commands.telegram.MessageListCommandTG
-import me.chicchi7393.discogramRewrite.handlers.commands.telegram.ticketListCommandTG
+import me.chicchi7393.discogramRewrite.handlers.commands.telegram.TicketListCommandTG
 
 class TelegramCommandsHandler {
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
@@ -10,7 +10,7 @@ class TelegramCommandsHandler {
     fun onSlashCommand(message: String) {
         if (message.startsWith("/")) {
             when (message.replace("/", "").split(" ")[0]) {
-                commands["tickets"]!!["name"] -> ticketListCommandTG().handle(message.replace("/", "").split(" ")[0])
+                commands["tickets"]!!["name"] -> TicketListCommandTG().handle(message.replace("/", "").split(" ")[0])
                 commands["cronologia"]!!["name"] -> MessageListCommandTG().handle(
                     message.replace("/", "").split(" ")[0]
                 )

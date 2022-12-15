@@ -5,7 +5,7 @@ import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
 import me.chicchi7393.discogramRewrite.handlers.TelegramCommandsHandler
-import me.chicchi7393.discogramRewrite.handlers.ticketHandlers
+import me.chicchi7393.discogramRewrite.handlers.TicketHandlers
 import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.telegram.utils.FindContent
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
@@ -14,9 +14,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 class UpdateHandler(private val tgClient: SimpleTelegramClient) {
     private val settings = JsonReader().readJsonSettings()!!
     private val messageTable = JsonReader().readJsonMessageTable("messageTable")!!
-    private val ticketHandlers = ticketHandlers()
+    private val ticketHandlers = TicketHandlers()
     private val dbMan = DatabaseManager.instance
-    private val dsApp = DsApp.instance
     fun authStateUpdate(update: UpdateAuthorizationState) {
         println(
             when (update.authorizationState) {
@@ -30,7 +29,7 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
 
     private fun ticketIfList(chat: Chat, message: Message): Boolean {
         return (chat.type is ChatTypePrivate
-                && chat.id !in (settings.discord["ignoreTGAuthor"] as List<Number>)
+                && chat.id !in (settings.discord["ignoreTGAuthor"] as List<*>)
                 && (message.senderId as MessageSenderUser).userId != (settings.telegram["userbotID"] as Number).toLong())
     }
 
@@ -39,7 +38,7 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
         if (update.action is ChatActionTyping) {
             val ticket = dbMan.Search().Tickets().searchTicketDocumentByTelegramId(update.chatId)
             if (ticket != null) {
-                val channel = dsApp.dsClient.getChannelById(ThreadChannel::class.java, ticket.channelId)
+                val channel = DsApp.client.getChannelById(ThreadChannel::class.java, ticket.channelId)
                 channel!!.sendTyping().queue()
             }
         }

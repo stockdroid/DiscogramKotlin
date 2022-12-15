@@ -35,24 +35,24 @@ object ModerationAPI {
     }
 
     // funzione ban
-    fun ban(user_id: Long, reason: String = ""): Int {
-        val response = triggerEndpoint("ban", mapOf<String, Any>("userid" to user_id, "reason" to reason))
+    fun ban(userId: Long, reason: String = ""): Int {
+        val response = triggerEndpoint("ban", mapOf<String, Any>("userid" to userId, "reason" to reason))
         return if (response.code == 200) 0 else 1
     }
 
-    fun unban(user_id: Long, reason: String = ""): Int {
-        val response = triggerEndpoint("unban", mapOf<String, Any>("userid" to user_id, "reason" to reason))
+    fun unban(userId: Long, reason: String = ""): Int {
+        val response = triggerEndpoint("unban", mapOf<String, Any>("userid" to userId, "reason" to reason))
         return if (response.code == 200) 0 else 1
     }
 
     // funzione unmute (smuta automaticamente)
-    fun unmute(user_id: Long, reason: String = ""): Int {
-        val response = triggerEndpoint("unmute", mapOf<String, Any>("userid" to user_id, "reason" to reason))
+    fun unmute(userId: Long, reason: String = ""): Int {
+        val response = triggerEndpoint("unmute", mapOf<String, Any>("userid" to userId, "reason" to reason))
         return if (response.code == 200) 0 else 1
     }
 
     // funzione captcha
-    fun captcha(user_id: Long): Response {
-        return triggerEndpoint("captcha", mapOf<String, Any>("userid" to user_id))
+    fun captcha(userId: Long): Response {
+        return triggerEndpoint("captcha", mapOf<String, Any>("userid" to userId))
     }
 }
