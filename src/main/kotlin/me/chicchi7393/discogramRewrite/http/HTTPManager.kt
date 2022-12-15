@@ -9,7 +9,13 @@ object HTTPManager {
     private lateinit var app: Javalin
     private val methods = mapOf("get" to HandlerType.GET, "post" to HandlerType.POST)
     fun createApp(port: Int) {
-        app = Javalin.create().start(port)
+        app = Javalin.create {
+            it.plugins.enableCors { cors ->
+                cors.add { corsConf ->
+                    corsConf.allowHost("crisatici.stockdroid.it", "stockdroid.it")
+                }
+            }
+        }.start(port)
         for (method in methods) {
             for (className in FindClass.findClasses("me.chicchi7393.discogramRewrite.http.handlers.${method.key}")) {
                 val temp = Class.forName(className).getDeclaredConstructor()
