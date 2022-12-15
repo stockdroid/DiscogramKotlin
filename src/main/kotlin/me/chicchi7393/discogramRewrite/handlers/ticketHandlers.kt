@@ -45,7 +45,7 @@ class ticketHandlers {
                 isForced = false,
                 isAssigned = false,
                 "${chat.id}/${if (uname.get().username == null) "Nessun username" else ("@" + uname.get().username)}",
-                footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId()}",
+                footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}",
                 state = TicketState.OPEN
             )
             dsClass.dsClient

@@ -80,7 +80,7 @@ class TgApp private constructor() {
         }
     }
 
-    fun downloadFile(file_id: Int) {
+    private fun downloadFile(file_id: Int) {
         if (file_id == 69420) {
             remoteDownloadFile(
                 URL(settings.discord["no_pfp_placeholder"] as String)

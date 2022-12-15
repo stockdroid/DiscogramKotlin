@@ -29,7 +29,6 @@ import java.io.FileInputStream
 
 
 class DsApp private constructor() {
-
     private val settings = JsonReader().readJsonSettings()!!
     private val messTable = JsonReader().readJsonMessageTable("messageTable")!!
     private val embedStrs = messTable.embed
