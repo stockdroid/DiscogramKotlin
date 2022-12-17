@@ -27,7 +27,7 @@ object ModerationAPI {
         )
 
         val request: Request = Request.Builder()
-            .url("https://crisatici.stockdroid.it:8443/api/v1")
+            .url(apiSettings["url"]!!)
             .method("POST", body)
             .addHeader("Content-Type", "application/json").build()
 
@@ -37,12 +37,14 @@ object ModerationAPI {
     // funzione ban
     fun ban(userId: Long, reason: String = ""): Int {
         val response = triggerEndpoint("ban", mapOf<String, Any>("userid" to userId, "reason" to reason))
+        response.body?.close()
         return if (response.code == 200) 0 else 1
     }
 
     // funzione unmute (smuta automaticamente)
     fun unmute(userId: Long, reason: String = ""): Int {
         val response = triggerEndpoint("unmute", mapOf<String, Any>("userid" to userId, "reason" to reason))
+        response.body?.close()
         return if (response.code == 200) 0 else 1
     }
 

@@ -32,27 +32,27 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
         }
     }
 
-    fun onUpdateNewMessage(update: UpdateNewMessage): Any {
+    fun onUpdateNewMessage(update: UpdateNewMessage) {
         val findContentClass = FindContent(update.message)
         val text = findContentClass.findText()
         val document = findContentClass.findData()
         if (((System.currentTimeMillis() / 1000) - update.message.date) > 30) {
-            return false
+            return
         }
         tgClient.send(GetChat(update.message.chatId)) {
             val chat = it.get()
-            if (update.message.content is MessageText) {
-                // se è messaggio di testo
-                if (chat.id == (settings.telegram["moderatorGroup"] as Number).toLong()) {
-                    // se viene da moderatori
-                    TelegramCommandsHandler().onSlashCommand(update.message.content.toString())
-                }
-                if (ticketIfList(chat, update.message)) {
+            if (chat.id == (settings.telegram["moderatorGroup"] as Number).toLong() && update.message.content is MessageText) {
+                // se viene da moderatori
+                TelegramCommandsHandler().onSlashCommand(update.message.content.toString())
+            }
+            if (ticketIfList(chat, update.message)) {
+                // se è di testo
+                if (update.message.content is MessageText) {
                     // se è privato, non in blacklist e non è se stesso
                     if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
                             .searchAlreadySuspended(chat.id) != null
-                    )
-                    // se c'è già un ticket all'utente
+                    ) {
+                        // se c'è già un ticket all'utente
                         ticketHandlers.sendTextFollowMessage(
                             chat.id,
                             text,
@@ -62,18 +62,17 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                             update.message.id,
                             update.message.replyToMessageId
                         )
-                    else
-                    // avvia nuovo ticket
+                    } else {
+                        // avvia nuovo ticket
                         ticketHandlers.startTicketWithText(chat, text)
-                }
-            } else {
-                // se è documento
-                val file: DownloadFile? = if (document != 0) DownloadFile(document, 1, 0, 0, true) else null
-                if (ticketIfList(chat, update.message)) {
-                    if (dbMan.Utils().searchAlreadyOpen(chat.id) != null && dbMan.Utils()
+                    }
+                } else {
+                    // se è documento
+                    val file: DownloadFile? = if (document != 0) DownloadFile(document, 1, 0, 0, true) else null
+                    if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
                             .searchAlreadySuspended(chat.id) != null
-                    )
-                    // se c'è già un ticket all'utente
+                    ) {
+                        // se c'è già un ticket all'utente
                         ticketHandlers.sendFileFollowMessage(
                             chat.id,
                             file,
@@ -84,13 +83,13 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
                             update.message.id,
                             update.message.replyToMessageId
                         )
-                    else
-                    // avvia nuovo ticket
+                    } else {
+                        // avvia nuovo ticket
                         ticketHandlers.startTicketWithFile(chat, file, text)
+                    }
                 }
             }
         }
-        return true
     }
 
     fun onUpdateMessageSendSucceeded(update: UpdateMessageSendSucceeded) {

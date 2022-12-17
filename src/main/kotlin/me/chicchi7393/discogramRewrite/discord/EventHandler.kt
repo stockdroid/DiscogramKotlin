@@ -46,10 +46,12 @@ class EventHandler : ListenerAdapter() {
             tgReply = dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, replyId, true)
         }
         TgApp.sendMessage(tgId, content, tgReply, inputMessageContent) {
-            dbMan.Update().MessageLinks().addMessageToMessageLinks(
-                ticketId,
-                MessageLinkType(it.get().id, dsId, BsonTimestamp(System.currentTimeMillis() / 1000))
-            )
+            if (!it.isError) {
+                dbMan.Update().MessageLinks().addMessageToMessageLinks(
+                    ticketId,
+                    MessageLinkType(it.get().id, dsId, BsonTimestamp(System.currentTimeMillis() / 1000))
+                )
+            }
         }
     }
 

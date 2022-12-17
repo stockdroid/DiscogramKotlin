@@ -13,6 +13,7 @@ object HTTPManager {
             it.plugins.enableCors { cors ->
                 cors.add { corsConf ->
                     corsConf.allowHost("crisatici.stockdroid.it", "stockdroid.it")
+                    corsConf.anyHost()
                 }
             }
         }.start(port)

@@ -28,3 +28,4 @@ target/
 .cache/
 json/settings.json
 json/settings_dev.json
+json/dev

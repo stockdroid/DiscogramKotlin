@@ -43,17 +43,28 @@ class ModalHandlers(private val event: GenericInteractionCreateEvent) {
     fun closeTicketHandler(channelId: Long, messageId: Long, reason: String, rating: Boolean): String {
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(
             channelId
-        )!!
+        ).let {
+            if (it == null) {
+                return messTable.errors["notFoundTicket"]!!
+            } else {
+                return@let it
+            }
+        }
         ticketHandler.closeTicket(ticket, reason, rating)
-        discordClient.getThreadChannelById(ticket.channelId)!!
-            .sendMessage(messTable.modals["closeTicket"]!!["reply"]!!)
-            .queue()
-        val thread = discordClient
-            .getThreadChannelById(channelId)!!
-        thread.manager
-            .setName(thread.name + messTable.generalStrings["suffix_closedTicket"])
-            .setArchived(true)
-            .queue()
+        discordClient
+            .getThreadChannelById(channelId).let {
+                if (it == null) {
+                    return messTable.errors["notFoundThread"]!!
+                } else {
+                    if (!it.isArchived) {
+                        it.sendMessage(messTable.modals["closeTicket"]!!["reply"]!!).queue()
+                    }
+                    it.manager
+                        .setName(it.name + messTable.generalStrings["suffix_closedTicket"])
+                        .setArchived(true)
+                        .queue()
+                }
+            }
         discordClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
             .retrieveMessageById(messageId).queue { message ->
                 val rows = DsApp.generateRowsEmbedButtons(
@@ -86,15 +97,20 @@ class ModalHandlers(private val event: GenericInteractionCreateEvent) {
             channelId
         )!!
         ticketHandler.suspendTicket(ticket, event.values[0].asString)
-        discordClient.getThreadChannelById(ticket.channelId)!!
-            .sendMessage(messTable.modals["suspendTicket"]!!["reply"]!!)
-            .queue()
-        val thread = discordClient
-            .getThreadChannelById(channelId)!!
-        thread.manager
-            .setName(thread.name + messTable.generalStrings["suffix_suspendedTicket"])
-            .setLocked(true)
-            .queue()
+        discordClient
+            .getThreadChannelById(channelId).let {
+                if (it == null) {
+                    event.reply(messTable.errors["notFoundThread"]!!).setEphemeral(true).queue()
+                } else {
+                    if (!it.isArchived) {
+                        it.sendMessage(messTable.modals["suspendTicket"]!!["reply"]!!).queue()
+                    }
+                    it.manager
+                        .setName(it.name + messTable.generalStrings["suffix_suspendedTicket"])
+                        .setLocked(true)
+                        .queue()
+                }
+            }
         discordClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
             .retrieveMessageById(event.modalId.split(":")[1].toLong()).queue { message ->
                 message.editMessageEmbeds(

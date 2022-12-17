@@ -7,7 +7,6 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import me.chicchi7393.discogramRewrite.telegram.TgApp
-import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -25,6 +24,8 @@ import net.dv8tion.jda.api.utils.FileUpload
 import java.awt.Color
 import java.io.File
 import java.io.FileInputStream
+import java.nio.file.Files
+import kotlin.io.path.Path
 
 
 object DsApp {
@@ -90,7 +91,8 @@ object DsApp {
     }
 
     fun getLastModified(): FileInputStream {
-        val directory = File("session/${if (VariableStorage.isProd) "database" else "database_dev"}/profile_photos")
+        val directory =
+            File("session/${if (!Files.exists(Path("./json/dev"))) "database" else "database_dev"}/profile_photos")
         val files = directory.listFiles { obj: File -> obj.isFile }
         var lastModifiedTime = Long.MIN_VALUE
         var chosenFile: File? = null
