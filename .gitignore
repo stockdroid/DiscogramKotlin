@@ -29,3 +29,7 @@ target/
 json/settings.json
 json/settings_dev.json
 json/dev
+out/artifacts/DiscogramRewrite_jar/json/settings.json
+out/artifacts/DiscogramRewrite_jar/json/settings_dev.json
+out/artifacts/DiscogramRewrite_jar/json/dev
+
