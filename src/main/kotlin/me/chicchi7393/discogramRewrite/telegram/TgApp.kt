@@ -8,12 +8,13 @@ import it.tdlight.common.Init
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
-import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import java.io.BufferedInputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.net.URL
+import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.io.path.Path
 
 
 object TgApp {
@@ -28,7 +29,7 @@ object TgApp {
 
         Init.start()
         tgSettings.databaseDirectoryPath =
-            Paths.get("session").resolve(if (VariableStorage.isProd) "database" else "database_dev")
+            Paths.get("session").resolve(if (!Files.exists(Path("./json/dev"))) "database" else "database_dev")
         tgSettings.downloadedFilesDirectoryPath = Paths.get("session").resolve("downloads")
 
         client = SimpleTelegramClient(tgSettings)
