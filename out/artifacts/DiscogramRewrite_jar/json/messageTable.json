@@ -1,6 +1,5 @@
 {
   "generalStrings": {
-    "log_loggedIn": "Logged in",
     "log_loggingOut": "Logging out...",
     "log_closing": "Closing...",
     "log_closed": "Closed",
@@ -10,17 +9,15 @@
     "ticketState_open": "Aperto",
     "ticketState_suspended": "Sospeso",
     "ticketState_closed": "Chiuso",
-
     "suffix_closedTicket": " (Chiuso)",
     "suffix_suspendedTicket": " (Sospeso)",
-
     "welcome": "👋Benvenuto in assistenza!👋 \n\nTi contatteremo non appena ci sarà possibile",
     "closedTicketTG": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi un messaggio\n\nSe vuoi aiutarci, dacci un feedback su questo ticket!",
     "closedTicketTGWR": "Il tuo ticket è stato chiuso.\n\nPer aprire un nuovo ticket, scrivi un messaggio",
     "suspendedTicketTG": "Il tuo ticket è stato sospeso.\n\nAspetta che un mod ti riscriva oppure scrivi te per riaprire",
     "reopenedTicketTG": "Il tuo ticket è stato riaperto.",
     "errorMessage": "Si è verificato un errore, eccolo qua: ",
-    "feedback_url": "https://crisatici.stockdroid.it:3000/rating?id=",
+    "feedback_url": "http://crisatici.stockdroid.it:3000/rating?id=",
     "messageBeenDeleted": "Un messaggio è stato eliminato"
   },
   "menu": {
@@ -116,11 +113,13 @@
     "button_suspend": "Sospendi",
     "button_close": "Chiudi",
     "tgRedirectPrefixLink": "https://chicchi7393.xyz/redirectTg.html?id=",
-    "embed_idOrUser": "ID"
+    "embed_idOrUser": "ID/Username"
   },
   "errors": {
     "noUserOrThread": "Non hai fornito l'username e non sei in un thread",
-    "user0": "Utente non valido"
+    "user0": "Utente non valido",
+    "notFoundTicket": "Ticket non trovato. Potrebbe non essere stato aggiunto al database",
+    "notFoundThread": "Thread non trovato. Non posso farci nulla purtroppo, devi avvisarmi il prima possibile."
   },
   "ratings": {
     "prefix": "Nuovo rating!",
