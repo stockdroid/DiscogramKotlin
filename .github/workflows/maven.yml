@@ -41,3 +41,5 @@ jobs:
     
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
+      with:
+        path: /home/runner/work/discogramKotlinRewrite/discogramKotlinRewrite/target/discogramRewrite-1.0-SNAPSHOT.jar
