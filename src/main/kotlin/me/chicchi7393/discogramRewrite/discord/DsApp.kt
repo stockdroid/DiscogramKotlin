@@ -127,7 +127,7 @@ object DsApp {
                 .sendMessageEmbeds(
                     generateTicketEmbed(
                         chat.title,
-                        if (uname.get().username == null) embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString() else "https://${(uname.get().username == null)}.t.me",
+                        if (uname.get().username == null) embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString() else "https://${(uname.get().username)}.t.me",
                         message,
                         idOrUser = "${chat.id}/${if (uname.get().username == null) "Nessun username" else ("@" + uname.get().username)}",
                         footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"

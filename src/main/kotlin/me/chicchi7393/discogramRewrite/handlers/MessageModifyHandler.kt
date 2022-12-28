@@ -26,7 +26,9 @@ class MessageModifyHandler(val event: GenericMessageEvent) {
             if (tgId == 0L) {
                 return false
             }
+            print("DEBUG: tgId: $tgId, uId: ${ticket.telegramId}")
             tgClient.send(GetMessage(ticket.telegramId, tgId)) { tgIt ->
+                print("DEBUG: tgIt: $tgIt")
                 tgClient.send(DeleteMessages(ticket.telegramId, longArrayOf(tgId), true)) {}
                 event.channel.sendMessage(genStrings["messageBeenDeleted"]!!).queue {
                     if ((tgIt.get().senderId as MessageSenderUser).userId != (settings.telegram["userbotID"] as Number).toLong()) {

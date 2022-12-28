@@ -37,15 +37,15 @@
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.20" level="project" />
     <orderEntry type="library" name="Maven: com.beust:klaxon:5.6" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.6.0" level="project" />
-    <orderEntry type="library" name="Maven: net.dv8tion:JDA:5.0.0-alpha.22" level="project" />
+    <orderEntry type="library" name="Maven: net.dv8tion:JDA:5.0.0-beta.2" level="project" />
     <orderEntry type="library" name="Maven: com.neovisionaries:nv-websocket-client:2.14" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:4.9.3" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.2.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.2" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.14.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.14.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.14.1" level="project" />
     <orderEntry type="library" name="Maven: it.tdlight:tdlight-java:2.8.4.1" level="project" />
     <orderEntry type="library" name="Maven: it.tdlight:tdlight-api-sealed:4.0.263" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:8.5.8" level="project" />
@@ -58,7 +58,7 @@
     <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-aarch64:4.0.265" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.4.5" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.4.5" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.litote.kmongo:kmongo-core:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-sync:4.8.0" level="project" />
