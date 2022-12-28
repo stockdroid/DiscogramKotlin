@@ -7,8 +7,8 @@
         <compilerArguments>
           <stringArguments>
             <stringArg name="jvmTarget" arg="1.8" />
-            <stringArg name="apiVersion" arg="1.7" />
-            <stringArg name="languageVersion" arg="1.7" />
+            <stringArg name="apiVersion" arg="1.8" />
+            <stringArg name="languageVersion" arg="1.8" />
           </stringArguments>
           <arrayArguments>
             <arrayArg name="pluginClasspaths" />
@@ -30,11 +30,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.7.20" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.7.20" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.20" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0" level="project" />
     <orderEntry type="library" name="Maven: com.beust:klaxon:5.6" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.6.0" level="project" />
     <orderEntry type="library" name="Maven: net.dv8tion:JDA:5.0.0-beta.2" level="project" />
@@ -46,16 +46,16 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.14.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.14.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.14.1" level="project" />
-    <orderEntry type="library" name="Maven: it.tdlight:tdlight-java:2.8.4.1" level="project" />
-    <orderEntry type="library" name="Maven: it.tdlight:tdlight-api-sealed:4.0.263" level="project" />
-    <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:8.5.8" level="project" />
-    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: it.tdlight:tdlight-java:2.8.9.0" level="project" />
+    <orderEntry type="library" name="Maven: it.tdlight:tdlight-api-sealed:4.0.283" level="project" />
+    <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:8.5.9" level="project" />
+    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.4" level="project" />
     <orderEntry type="library" name="Maven: net.harawata:appdirs:1.2.1" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:5.6.0" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:5.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.zxing:core:3.5.0" level="project" />
-    <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-amd64:4.0.265" level="project" />
-    <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-aarch64:4.0.265" level="project" />
+    <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-amd64:4.0.285" level="project" />
+    <orderEntry type="library" name="Maven: it.tdlight:tdlight-natives-linux-aarch64:4.0.285" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.4.5" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.4.5" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.6" level="project" />
