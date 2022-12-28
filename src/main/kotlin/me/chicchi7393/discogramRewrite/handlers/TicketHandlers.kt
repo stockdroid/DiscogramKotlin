@@ -27,9 +27,9 @@ class TicketHandlers {
         tgClient.send(GetUser(chat.id)) { uname ->
             val embed = DsApp.generateTicketEmbed(
                 chat.title,
-                if (uname.get().username == null) embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString() else "https://${(uname.get().username)}.t.me",
+                if (uname.get().usernames.activeUsernames[0] == null) embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString() else "https://${(uname.get().usernames.activeUsernames[0])}.t.me",
                 "Ticket iniziato con file",
-                idOrUser = "${chat.id}/${if (uname.get().username == null) "Nessun username" else ("@" + uname.get().username)}",
+                idOrUser = "${chat.id}/${if (uname.get().usernames.activeUsernames[0] == null) "Nessun username" else ("@" + uname.get().usernames.activeUsernames[0])}",
                 footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
             )
             DsApp.client
