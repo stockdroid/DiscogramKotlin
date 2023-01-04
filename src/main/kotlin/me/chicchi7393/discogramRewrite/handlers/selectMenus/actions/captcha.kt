@@ -19,6 +19,9 @@ class Captcha : ReasonAction() {
                 .split(":")[0]
                 .toLong()
         )!!
+        /*
+            This file is for the IVDC's Moderation api, it's not relevant, it's just for automating some tasks
+        */
         val response = ModerationAPI.captcha(
             ticket.telegramId
         )

@@ -10,19 +10,23 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.lang.Exception
 
-
+/*
+    This file is for the IVDC's Moderation api, it's not relevant, it's just for automating some tasks
+ */
 object ModerationAPI {
     private var canModApi: Boolean = true
     private val apiSettings = try {
         JsonReader().readJsonSettings()!!.moderationApi
     } catch (_: Exception) {
         canModApi = false
+        println("Moderation API not present in the settings, must not be the main bot.")
         mapOf()
     }
 
     private fun triggerEndpoint(endpoint: String, arguments: Map<String, Any>): Response {
         val client = OkHttpClient().newBuilder().build()
         val apiToken = if (canModApi) apiSettings["apiToken"] else ""
+
         val body: RequestBody = ("""
             {
                 "apikey": $apiToken,

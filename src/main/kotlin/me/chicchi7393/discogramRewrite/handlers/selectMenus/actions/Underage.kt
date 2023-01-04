@@ -24,6 +24,9 @@ class Underage : ReasonAction() {
         event.reply(response).setEphemeral(true).queue()
 
         // cerca nel database per userID
+        /*
+            This file is for the IVDC's Moderation api, it's not relevant, it's just for automating some tasks
+        */
         ModerationAPI.ban(
             dbman.Search().Tickets().searchTicketDocumentByChannelId(
                 event
