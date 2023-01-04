@@ -8,17 +8,24 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import java.lang.Exception
 
 
 object ModerationAPI {
-    private val apiSettings = JsonReader().readJsonSettings()!!.moderationApi
+    private var canModApi: Boolean = true
+    private val apiSettings = try {
+        JsonReader().readJsonSettings()!!.moderationApi
+    } catch (_: Exception) {
+        canModApi = false
+        mapOf()
+    }
 
     private fun triggerEndpoint(endpoint: String, arguments: Map<String, Any>): Response {
         val client = OkHttpClient().newBuilder().build()
-
+        val apiToken = if (canModApi) apiSettings["apiToken"] else ""
         val body: RequestBody = ("""
             {
-                "apikey": "${apiSettings["apiToken"]}",
+                "apikey": $apiToken,
                 "name": "$endpoint",
                 "arguments": ${JsonObject(arguments).toJsonString(true)}
             }
@@ -31,7 +38,7 @@ object ModerationAPI {
             .method("POST", body)
             .addHeader("Content-Type", "application/json").build()
 
-        return client.newCall(request).execute()
+        return if (canModApi) client.newCall(request).execute() else Response.Builder().code(420).build()
     }
 
     // funzione ban
