@@ -16,7 +16,7 @@ object Main {
         VariableStorage.init_timestamp = (System.currentTimeMillis() / 1000)
 
         val tgClient = TgApp.createApp()
-        tgClient.send(SetLogVerbosityLevel(2)) {}
+
         val updateHandlers = UpdateHandler(tgClient)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
         tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
@@ -26,6 +26,7 @@ object Main {
         HTTPManager.createApp(4763)
         Thread {
             tgClient.start(TgApp.generateAuth())
+            tgClient.send(SetLogVerbosityLevel(2)) {}
             tgClient.waitForExit()
         }.start()
 
