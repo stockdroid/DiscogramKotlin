@@ -104,6 +104,7 @@ object DsApp {
                 }
             }
         }
+        TgApp.downloadPlaceholder()
         return FileInputStream(chosenFile ?: File("./session/database/5900.jpg"))
     }
 
@@ -112,7 +113,7 @@ object DsApp {
             channel
         )!!.sendMessage(text).setMessageReference(
             if (replyId != 0L) {
-                dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, 0, false, replyId)
+                dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, 0, true, replyId)
             } else 0L
         )
     }

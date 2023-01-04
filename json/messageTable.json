@@ -17,7 +17,6 @@
     "suspendedTicketTG": "Il tuo ticket è stato sospeso.\n\nAspetta che un mod ti riscriva oppure scrivi te per riaprire",
     "reopenedTicketTG": "Il tuo ticket è stato riaperto.",
     "errorMessage": "Si è verificato un errore, eccolo qua: ",
-    "feedback_url": "http://crisatici.stockdroid.it:3000/rating?id=",
     "messageBeenDeleted": "Un messaggio è stato eliminato"
   },
   "menu": {

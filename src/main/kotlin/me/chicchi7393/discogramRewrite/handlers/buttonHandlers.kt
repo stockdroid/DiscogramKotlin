@@ -70,7 +70,7 @@ class ButtonHandlers(private val event: ButtonInteractionEvent) {
     }
 
     fun suspendButtonTicketHandler() {
-        if (event.message.embeds[0].fields[2].value == messTable.generalStrings["ticketState_open"]) {
+        if (event.message.embeds[0].fields[1].value == messTable.generalStrings["ticketState_open"]) {
             event.replyModal(
                 Modal
                     .create("suspendModal-${channelId}:${event.message.id}", modalStrs["suspendTicket"]!!["title"]!!)

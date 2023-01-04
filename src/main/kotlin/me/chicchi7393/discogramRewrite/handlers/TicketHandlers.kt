@@ -139,12 +139,17 @@ class TicketHandlers {
 
 
     fun closeTicket(ticket: TicketDocument, text: String, rating: Boolean) {
+        val newrating = if (settings.telegram["enable_ratings"]!! as Boolean) {
+            rating
+        } else {
+            false
+        }
         dbMan.Update().Tickets().closeTicket(
             ticket
         )
         TgApp.sendMessage(
             ticket.telegramId,
-            "${if (rating) messTable.generalStrings["closedTicketTG"] else messTable.generalStrings["closedTicketTGWR"]} ${if (rating) messTable.generalStrings["feedback_url"] + ticket.ticketId.toString() else ""} ${if (text != "") "\nMotivazione: $text" else ""}",
+            "${if (newrating) messTable.generalStrings["closedTicketTG"] else messTable.generalStrings["closedTicketTGWR"]} ${if (newrating) settings.telegram["feedback_url"]!! as String + ticket.ticketId.toString() else ""} ${if (text != "") "\nMotivazione: $text" else ""}",
             0
         ) {}
     }
@@ -160,9 +165,5 @@ class TicketHandlers {
             0
         ) {}
     }
-
-    fun reOpenTicket(ticket: TicketDocument) {
-        dbMan.Update().Tickets().reopenTicket(ticket)
-        TgApp.sendMessage(ticket.telegramId, messTable.generalStrings["reopenedTicketTG"]!!, 0) {}
-    }
+    
 }

@@ -2,13 +2,12 @@ package me.chicchi7393.discogramRewrite.moderationapi
 
 import com.beust.klaxon.JsonObject
 import me.chicchi7393.discogramRewrite.JsonReader
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import java.lang.Exception
+import okhttp3.ResponseBody.Companion.toResponseBody
+
 
 /*
     This file is for the IVDC's Moderation api, it's not relevant, it's just for automating some tasks
@@ -38,11 +37,16 @@ object ModerationAPI {
         )
 
         val request: Request = Request.Builder()
-            .url(apiSettings["url"]!!)
+            .url(if (canModApi) apiSettings["url"]!! else "https://example.org")
             .method("POST", body)
             .addHeader("Content-Type", "application/json").build()
 
-        return if (canModApi) client.newCall(request).execute() else Response.Builder().code(420).build()
+        return if (canModApi) client.newCall(request).execute() else Response.Builder()
+            .request(Request.Builder().url("https://some-url.com").build())
+            .protocol(Protocol.HTTP_2).code(420).message("")
+            .body("{}".toResponseBody("application/json; charset=utf-8".toMediaType()))
+            .build()
+
     }
 
     // funzione ban

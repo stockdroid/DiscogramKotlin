@@ -33,10 +33,10 @@ class Captcha : ReasonAction() {
                     .split("-")[1]
                     .split(":")[0]
                     .toLong(), event.values[0].split(":")[1].toLong(),
-                "Captcha richiesto di nuovo, link al messaggio: ${
+                "Captcha richiesto di nuovo${if (response.code != 420) ", link al messaggio: ${
                     (Parser.default()
                         .parse(StringBuilder(response.body!!.string())) as com.beust.klaxon.JsonObject).obj("response")!!["link"]
-                }", // in
+                }" else ""}",
                 true
             )
         ).setEphemeral(true).queue()
