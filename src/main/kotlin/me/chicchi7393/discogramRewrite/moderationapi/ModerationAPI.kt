@@ -16,7 +16,7 @@ import java.lang.Exception
 object ModerationAPI {
     private var canModApi: Boolean = true
     private val apiSettings = try {
-        JsonReader().readJsonSettings()!!.moderationApi
+        JsonReader().readJsonSettings()!!.moderationApi!!
     } catch (_: Exception) {
         canModApi = false
         println("Moderation API not present in the settings, must not be the main bot.")

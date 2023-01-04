@@ -19,7 +19,8 @@ object Main {
         val updateHandlers = UpdateHandler(tgClient)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
         tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
-        tgClient.addUpdateHandler(UpdateChatAction::class.java, updateHandlers::onUpdateChatAction)
+        //tgClient.addUpdateHandler(UpdateChatAction::class.java, updateHandlers::onUpdateChatAction)
+
         DatabaseManager().createClient()
         HTTPManager.createApp(4763)
         Thread {
