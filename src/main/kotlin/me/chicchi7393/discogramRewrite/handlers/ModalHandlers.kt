@@ -9,6 +9,7 @@ import me.chicchi7393.discogramRewrite.objects.enums.ReasonEnum
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import java.lang.Exception
 
 class ModalHandlers(private val event: GenericInteractionCreateEvent) {
     private val ticketHandler = TicketHandlers()
@@ -65,29 +66,32 @@ class ModalHandlers(private val event: GenericInteractionCreateEvent) {
                         .queue()
                 }
             }
-        discordClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
-            .retrieveMessageById(messageId).queue { message ->
-                val rows = DsApp.generateRowsEmbedButtons(
-                    messTable.embed["tgRedirectPrefixLink"] + ticket.telegramId,
-                    channelId, "", true
-                )
-                message.editMessageComponents(
-                    rows[0],
-                    rows[1],
-                    rows[2]
-                ).setEmbeds(
-                    DsApp.generateTicketEmbed(
-                        message.embeds[0].author!!.name!!,
-                        message.embeds[0].author!!.url!!,
-                        message.embeds[0].description!!,
-                        message.embeds[0].fields[0].value != messTable.embed["embed_noOne"]!!,
-                        message.embeds[0].fields[2].value!!,
-                        message.embeds[0].fields[0].value!!,
-                        message.embeds[0].footer!!.text!!,
-                        TicketState.CLOSED
+
+        try {
+            discordClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
+                .retrieveMessageById(messageId).queue { message ->
+                    val rows = DsApp.generateRowsEmbedButtons(
+                        messTable.embed["tgRedirectPrefixLink"] + ticket.telegramId,
+                        channelId, "", true
                     )
-                ).queue()
-            }
+                    message.editMessageComponents(
+                        rows[0],
+                        rows[1],
+                        rows[2]
+                    ).setEmbeds(
+                        DsApp.generateTicketEmbed(
+                            message.embeds[0].author!!.name!!,
+                            message.embeds[0].author!!.url!!,
+                            message.embeds[0].description!!,
+                            message.embeds[0].fields[0].value != messTable.embed["embed_noOne"]!!,
+                            message.embeds[0].fields[2].value!!,
+                            message.embeds[0].fields[0].value!!,
+                            message.embeds[0].footer!!.text!!,
+                            TicketState.CLOSED
+                        )
+                    ).queue()
+                }
+        } catch(_: Exception) { }
         return messTable.modals["closeTicket"]!!["reply"]!!
     }
 
