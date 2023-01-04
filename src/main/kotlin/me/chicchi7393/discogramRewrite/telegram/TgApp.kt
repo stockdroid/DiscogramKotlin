@@ -5,11 +5,9 @@ import it.tdlight.client.AuthenticationData
 import it.tdlight.client.SimpleTelegramClient
 import it.tdlight.client.TDLibSettings
 import it.tdlight.common.Init
-import it.tdlight.common.TelegramClient
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
 import me.chicchi7393.discogramRewrite.discord.DsApp
-import org.slf4j.Marker
 import java.io.BufferedInputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream

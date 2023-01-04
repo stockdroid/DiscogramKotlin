@@ -16,6 +16,7 @@ object Main {
         VariableStorage.init_timestamp = (System.currentTimeMillis() / 1000)
 
         val tgClient = TgApp.createApp()
+        tgClient.send(SetLogVerbosityLevel(2)) {}
         val updateHandlers = UpdateHandler(tgClient)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
         tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
