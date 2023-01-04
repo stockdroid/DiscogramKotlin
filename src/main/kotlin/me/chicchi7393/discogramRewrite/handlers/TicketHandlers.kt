@@ -139,7 +139,7 @@ class TicketHandlers {
 
 
     fun closeTicket(ticket: TicketDocument, text: String, rating: Boolean) {
-        val newrating = if (settings.telegram["enable_ratings"]!! as Boolean) {
+        val newrating = if (settings.discord["enable_ratings"]!! as Boolean) {
             rating
         } else {
             false
@@ -165,5 +165,5 @@ class TicketHandlers {
             0
         ) {}
     }
-    
+
 }
