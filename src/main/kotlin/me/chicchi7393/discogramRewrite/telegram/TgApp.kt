@@ -72,7 +72,7 @@ object TgApp {
         return DsApp.getLastModified()
     }
 
-    private fun downloadPlaceholder() = URL(settings.discord["no_pfp_placeholder"] as String).openStream().use { inp ->
+    fun downloadPlaceholder() = URL(settings.discord["no_pfp_placeholder"] as String).openStream().use { inp ->
         BufferedInputStream(inp).use { bis ->
             FileOutputStream("./session/database/5900.jpg").use { fos ->
                 val data = ByteArray(1024)

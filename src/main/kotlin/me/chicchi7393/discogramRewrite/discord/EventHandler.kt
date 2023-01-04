@@ -43,7 +43,7 @@ class EventHandler : ListenerAdapter() {
     ) {
         var tgReply = 0L
         if (replyId != 0L) {
-            tgReply = dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, replyId, true)
+            tgReply = dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, replyId, false)
         }
         TgApp.sendMessage(tgId, content, tgReply, inputMessageContent) {
             if (!it.isError) {

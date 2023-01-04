@@ -22,7 +22,7 @@ class MessageModifyHandler(val event: GenericMessageEvent) {
                 dbMan.Search().Tickets().searchTicketDocumentByChannelId(event.channel.idLong)
                     ?: return false
             val tgId =
-                dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticket.ticketId, newEvent.messageIdLong, true)
+                dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticket.ticketId, newEvent.messageIdLong, false)
             if (tgId == 0L) {
                 return false
             }
@@ -56,7 +56,7 @@ class MessageModifyHandler(val event: GenericMessageEvent) {
             val ticket: TicketDocument =
                 dbMan.Search().Tickets().searchTicketDocumentByChannelId(event.channel.idLong) ?: return false
             val tgId =
-                dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticket.ticketId, newEvent.messageIdLong, true)
+                dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticket.ticketId, newEvent.messageIdLong, false)
             if (tgId == 0L) {
                 return false
             }

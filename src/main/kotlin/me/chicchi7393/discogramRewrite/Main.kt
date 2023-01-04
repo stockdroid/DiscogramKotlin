@@ -9,7 +9,6 @@ import me.chicchi7393.discogramRewrite.telegram.UpdateHandler
 import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 
 object Main {
-    private val settings = JsonReader().readJsonSettings()!!
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -20,7 +19,7 @@ object Main {
         val updateHandlers = UpdateHandler(tgClient)
         tgClient.addUpdateHandler(UpdateNewMessage::class.java, updateHandlers::onUpdateNewMessage)
         tgClient.addUpdateHandler(UpdateMessageSendSucceeded::class.java, updateHandlers::onUpdateMessageSendSucceeded)
-        //tgClient.addUpdateHandler(UpdateChatAction::class.java, updateHandlers::onUpdateChatAction)
+        tgClient.addUpdateHandler(UpdateChatAction::class.java, updateHandlers::onUpdateChatAction)
 
         DatabaseManager().createClient()
         HTTPManager.createApp(4763)

@@ -1,0 +1,29 @@
+{
+  "telegram": {
+    "api_id": 1234567,
+    "api_hash": "placeholder",
+    "phone_number": 391234567890,
+    "userbotID": 704625262,
+    "moderatorGroup": -1001672836789
+  },
+  "discord": {
+    "token": "your discord token",
+    "guild_id": 881189162622021663,
+    "channel_id": 1042730215408943145,
+    "higher_roles": [
+      1042730204541485056
+    ],
+    "ignoreTGAuthor": [
+      777000
+    ],
+    "no_pfp_placeholder": "https://secure.gravatar.com/avatar/332e21525f60fc83790eb080845905e3?default=mm&rating=G&size=160",
+    "ignore_message_prefix": "###",
+    "idPrefix": "TCK-",
+    "enable_ratings": false,
+    "feedback_url": ""
+  },
+  "mongodb": {
+    "connection_string": "your mongodb connection url",
+    "database": "discogramTickets"
+  }
+}

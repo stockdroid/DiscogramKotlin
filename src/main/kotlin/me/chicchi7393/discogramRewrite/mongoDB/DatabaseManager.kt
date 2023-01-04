@@ -34,7 +34,7 @@ class DatabaseManager {
             return if (this@DatabaseManager::mongoClient.isInitialized) {
                 mongoClient.getDatabase(settings.mongodb["database"]!!)
             } else {
-                createClient().getDatabase(settings.mongodb["database"])
+                createClient().getDatabase(settings.mongodb["database"]!!)
             }
         }
 
@@ -180,10 +180,10 @@ class DatabaseManager {
                 tgMessageId: Long = 0
             ): Long {
                 for (mess in looperThruMessages(ticketId)) {
-                    if (mess.dsMessageId == dsMessageId && returnsDs) {
+                    if (mess.tgMessageId == tgMessageId && returnsDs) {
                         return mess.dsMessageId
-                    } else if (mess.tgMessageId == tgMessageId && !returnsDs) {
-                        return mess.dsMessageId
+                    } else if (mess.dsMessageId == dsMessageId && !returnsDs) {
+                        return mess.tgMessageId
                     }
                 }
                 return 0L
@@ -262,7 +262,7 @@ class DatabaseManager {
                 val previousAssignees = assigneeDocument.previousAssignees.toMutableList()
                 if (assigneeDocument.previousAssignees.isNotEmpty()) previousAssignees.add(
                     assigneeDocument.modId
-                ) else null
+                )
                 instance.Get().getAssigneesCollection()
                     .updateOne(
                         AssigneeDocument::ticketId eq ticketId,
@@ -294,12 +294,10 @@ class DatabaseManager {
             }
 
             fun updateMessageId(ticketId: Int, oldId: Long, newId: Long) {
-                instance.Get().getMessageLinkCollection()
-                    .updateOne(
-                        "{ticket_id: $ticketId, \"messages.tg_message_id\": $oldId}",
-                        "{\$set: {\"messages.\$.tg_message_id\": $newId}}"
-                    )
-
+                instance.Get().getMessageLinkCollection().updateOne(
+                    "{ \"ticketId\": $ticketId, \"messages.tgMessageId\": $oldId }",
+                    "{\$set: {\"messages.$.tgMessageId\": $newId}}"
+                )
             }
         }
     }
