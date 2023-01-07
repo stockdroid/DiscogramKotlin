@@ -38,6 +38,7 @@ class TicketHandlers {
                     embed
                 ).addFiles(FileUpload.fromData(filePath, "pic.png"))
                 .queue {
+                    Thread.sleep(200)
                     val rows = DsApp.generateRowsEmbedButtons(
                         embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(), it.idLong, it.id
                     )

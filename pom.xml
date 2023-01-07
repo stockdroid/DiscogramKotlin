@@ -55,7 +55,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>unpack-dependencies</id>
@@ -72,7 +72,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>shade</id>
@@ -144,10 +144,10 @@
             <groupId>it.tdlight</groupId>
             <artifactId>tdlight-natives-linux-amd64</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>it.tdlight</groupId>
             <artifactId>tdlight-natives-windows-amd64</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>it.tdlight</groupId>
             <artifactId>tdlight-natives-linux-aarch64</artifactId>

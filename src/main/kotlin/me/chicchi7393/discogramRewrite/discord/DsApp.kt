@@ -135,6 +135,7 @@ object DsApp {
                     )
 
                 ).addFiles(FileUpload.fromData(filePath, "pic.png")).map {
+                    Thread.sleep(200)
                     val rows = generateRowsEmbedButtons(
                         embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
                         it.idLong, it.id
