@@ -136,11 +136,6 @@ object DsApp {
 
                 ).addFiles(FileUpload.fromData(filePath, "pic.png")).map {
                     Thread.sleep(200)
-                    val rows = generateRowsEmbedButtons(
-                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
-                        it.idLong, it.id
-                    )
-                    it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
                     it.createThreadChannel(
                         "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                     ).queue { itThread ->
@@ -154,6 +149,12 @@ object DsApp {
                             )
                         )
                     }
+                    val rows = generateRowsEmbedButtons(
+                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
+                        it.idLong, it.id
+                    )
+                    it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
+
                     TgApp.alertTicket(
                         chat.title,
                         message,

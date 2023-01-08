@@ -39,10 +39,6 @@ class TicketHandlers {
                 ).addFiles(FileUpload.fromData(filePath, "pic.png"))
                 .queue {
                     Thread.sleep(200)
-                    val rows = DsApp.generateRowsEmbedButtons(
-                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(), it.idLong, it.id
-                    )
-                    it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
                     it.createThreadChannel(
                         "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                     ).queue { threaad ->
@@ -66,6 +62,11 @@ class TicketHandlers {
                             "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${settings.discord["channel_id"].toString()}"
                         )
                     }
+                    val rows = DsApp.generateRowsEmbedButtons(
+                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(), it.idLong, it.id
+                    )
+                    it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
+
                 }
 
         }
