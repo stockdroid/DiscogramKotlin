@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Java CD with Maven (commit)
 
 on:
   push:
@@ -27,9 +27,13 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        
     - name: Build with Maven
-      run: mvn assembly:assembly -DdescriptorId=jar-with-dependencies -B package --file pom.xml
+      run: mvn compile
 
+    - name: Package the JAR
+      run: mvn package
+      
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@2ecce44ccb44fd4b52f43468d3644e2d3e2b3cf2
@@ -37,7 +41,11 @@ jobs:
       with:
         token: ${{ secrets.GH_TOKEN }}
     
+    - name: Rename the file
+      run: mv /home/runner/work/discogramKotlinRewrite/discogramKotlinRewrite/target/discogramRewrite-1.0-SNAPSHOT.jar /home/runner/work/discogramKotlinRewrite/discogramKotlinRewrite/target/DiscogramRewrite.jar
+    
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:
-        path: /home/runner/work/discogramKotlinRewrite/discogramKotlinRewrite/target/discogramRewrite-1.0-SNAPSHOT.jar
+        name: Prebuilt JAR
+        path: /home/runner/work/discogramKotlinRewrite/discogramKotlinRewrite/target/DiscogramRewrite.jar
