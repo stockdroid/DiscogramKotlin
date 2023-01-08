@@ -32,7 +32,7 @@ Per eseguire questo progetto, devi copiare [settings.json.example](https://githu
 
 - Compila il progetto
 ```bash
-  mvn package
+  mvn compile && mvn package
 ```
 
 - Avvia il progetto
@@ -49,7 +49,7 @@ Per eseguire questo progetto, devi copiare [settings.json.example](https://githu
 ```
 - Installa [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) 
 
-- Scarica il jar [ dalle actions](https://github.com/Chicchi7393/discogramKotlinRewrite/actions)
+- Scarica il jar [ dalle actions](https://github.com/Chicchi7393/discogramKotlinRewrite/actions) e scompatta lo zip
 
 - Scarica [la cartella json](https://github.com/Chicchi7393/discogramKotlinRewrite/tree/master/json) e mettila nella tree del progetto
 
@@ -57,5 +57,5 @@ Per eseguire questo progetto, devi copiare [settings.json.example](https://githu
 
 - Avvia il progetto
 ```bash
-  java -jar discogramRewrite-1.0-SNAPSHOT.jar
+  java -jar DiscogramRewrite.jar
 ```
