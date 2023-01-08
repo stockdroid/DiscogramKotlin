@@ -29,13 +29,13 @@ jobs:
         cache: maven
         
     - name: Clean output
-      run: mvn clean
+      run: mvn clean -f pom.xml
       
     - name: Build with Maven
-      run: mvn compile
+      run: mvn clean compile -f pom.xml
 
     - name: Package the JAR
-      run: mvn package
+      run: mvn package -f pom.xml
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
