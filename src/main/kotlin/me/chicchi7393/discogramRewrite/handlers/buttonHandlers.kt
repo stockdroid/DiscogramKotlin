@@ -99,7 +99,7 @@ class ButtonHandlers(private val event: ButtonInteractionEvent) {
         val ticket = dbMan.Search().Tickets().searchTicketDocumentByChannelId(channelId)!!
         if (dbMan.Search().Assignee().searchAssigneeDocumentById(
                 ticket.ticketId
-            )!!.modId == 0L || DsApp.isHigherRole(event.member!!)
+            )!!.modId == 0L
         ) {
             dbMan.Update().Assignees().editAssignee(
                 ticket.ticketId,

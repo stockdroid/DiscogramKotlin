@@ -145,12 +145,13 @@ class TicketHandlers {
         } else {
             false
         }
+        println("DEBUG: Rating = $newrating")
         dbMan.Update().Tickets().closeTicket(
             ticket
         )
         TgApp.sendMessage(
             ticket.telegramId,
-            "${if (newrating) messTable.generalStrings["closedTicketTG"] else messTable.generalStrings["closedTicketTGWR"]} ${if (newrating) settings.telegram["feedback_url"]!! as String + ticket.ticketId.toString() else ""} ${if (text != "") "\nMotivazione: $text" else ""}",
+            "${if (newrating) messTable.generalStrings["closedTicketTG"] else messTable.generalStrings["closedTicketTGWR"]} ${if (newrating) settings.discord["feedback_url"]!! as String + ticket.ticketId.toString() else ""} ${if (text != "") "\nMotivazione: $text" else ""}",
             0
         ) {}
     }
