@@ -38,7 +38,7 @@ class TicketHandlers {
                     embed
                 ).addFiles(FileUpload.fromData(filePath, "pic.png"))
                 .queue {
-                    Thread.sleep(200)
+                    Thread.sleep(350)
                     it.createThreadChannel(
                         "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                     ).queue { threaad ->
