@@ -108,9 +108,12 @@ object DsApp {
         return FileInputStream(chosenFile ?: File("./session/database/5900.jpg"))
     }
 
-    fun sendTextMessageToChannel(channel: Long, text: String, replyId: Long, ticketId: Int): MessageCreateAction {
+    fun sendTextMessageToChannel(channel: Long?, text: String, replyId: Long, ticketId: Int): MessageCreateAction {
+        if (channel == null) {
+            println("debug: text $text replyid $replyId ticketid $ticketId")
+        }
         return client.getThreadChannelById(
-            channel
+            channel!!
         )!!.sendMessage(text).setMessageReference(
             if (replyId != 0L) {
                 dbMan.Search().MessageLinks().searchMessageByOtherMessage(ticketId, 0, true, replyId)
@@ -122,16 +125,19 @@ object DsApp {
         TgApp.sendMessage(chat.id, messTable.generalStrings["welcome"] as String, 0) {}
 
         val filePath = TgApp.downloadPic(chat.photo)
+        Thread.sleep(1000)
         TgApp.client.send(TdApi.GetUser(chat.id)) { uname ->
             val usernames = uname.get().usernames
             val hasUsername = usernames != null
+            val url: String? = if (!hasUsername) "${embedStrs["tgRedirectPrefixLink"]!!}${chat.id}" else "https://${(usernames.activeUsernames[0])}.t.me"
+            print("DEBUG: $url")
 
             client
                 .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .sendMessageEmbeds(
                     generateTicketEmbed(
                         chat.title,
-                        if (!hasUsername) embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString() else "https://${(usernames.activeUsernames[0])}.t.me",
+                        if (url == null) "https://google.com" else url,
                         message,
                         idOrUser = "${chat.id}/${if (!hasUsername) "Nessun username" else ("@" + usernames.activeUsernames[0])}",
                         footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
@@ -142,6 +148,7 @@ object DsApp {
                     it.createThreadChannel(
                         "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                     ).queue { itThread ->
+                        print(itThread)
                         dbMan.Create().Tickets().createTicketDocument(
                             TicketDocument(
                                 chat.id,

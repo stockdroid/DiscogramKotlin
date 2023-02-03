@@ -42,6 +42,7 @@ class TicketHandlers {
                     it.createThreadChannel(
                         "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                     ).queue { threaad ->
+                        println(threaad)
                         dbMan.Create().Tickets().createTicketDocument(
                             TicketDocument(
                                 chat.id,

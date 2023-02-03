@@ -68,6 +68,7 @@ class ModalHandlers(private val event: GenericInteractionCreateEvent) {
             }
 
         try {
+            print(messageId)
             discordClient.getChannelById(TextChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .retrieveMessageById(messageId).queue { message ->
                     val rows = DsApp.generateRowsEmbedButtons(
