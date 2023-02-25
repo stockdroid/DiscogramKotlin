@@ -129,7 +129,7 @@ object DsApp {
         TgApp.client.send(TdApi.GetUser(chat.id)) { uname ->
             val usernames = uname.get().usernames
             val hasUsername = usernames != null
-            val url: String? = if (!hasUsername) "${embedStrs["tgRedirectPrefixLink"]!!}${chat.id}" else "https://${(usernames.activeUsernames[0])}.t.me"
+            val url: String = if (!hasUsername) "${embedStrs["tgRedirectPrefixLink"]!!}${chat.id}" else "https://t.me/${(usernames.activeUsernames[0]).lowercase()}"
             print("DEBUG: $url")
 
             client
@@ -137,7 +137,7 @@ object DsApp {
                 .sendMessageEmbeds(
                     generateTicketEmbed(
                         chat.title,
-                        if (url == null) "https://google.com" else url,
+                        url,
                         message,
                         idOrUser = "${chat.id}/${if (!hasUsername) "Nessun username" else ("@" + usernames.activeUsernames[0])}",
                         footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"

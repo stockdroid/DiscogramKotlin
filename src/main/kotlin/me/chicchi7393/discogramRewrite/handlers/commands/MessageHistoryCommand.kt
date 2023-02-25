@@ -2,10 +2,10 @@ package me.chicchi7393.discogramRewrite.handlers.commands
 
 import it.tdlight.jni.TdApi.*
 import me.chicchi7393.discogramRewrite.JsonReader
+import me.chicchi7393.discogramRewrite.discord.utils.dAndSendMess
 import me.chicchi7393.discogramRewrite.discord.utils.getId
 import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import kotlin.math.min
 
 
 class MessageHistoryCommand(val event: SlashCommandInteractionEvent) {
@@ -32,19 +32,7 @@ class MessageHistoryCommand(val event: SlashCommandInteractionEvent) {
                 for (mess in messages) {
                     message += "${if ((mess.senderId as MessageSenderUser).userId == (settings.telegram["userbotID"] as Number).toLong()) commStrs["cronologia"]!!["assistance"] else commStrs["cronologia"]!!["user"]}: ${(mess.content as MessageText).text.text}\n"
                 }
-                val messParts = mutableListOf<String>()
-                var index = 0
-                while (index < message.length) {
-                    messParts.add(message.substring(index, min(index + 2000, message.length)))
-                    index += 2000
-                }
-                for (part in messParts.reversed()) {
-                    if (messParts.last() == part) {
-                        event.reply(part).queue()
-                    } else {
-                        event.channel.sendMessage(part).queue()
-                    }
-                }
+                dAndSendMess(message, event)
             }
         }
     }
