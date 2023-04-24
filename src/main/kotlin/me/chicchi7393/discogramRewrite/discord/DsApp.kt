@@ -148,7 +148,7 @@ object DsApp {
                     it.createThreadChannel(
                         "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                     ).queue { itThread ->
-                        print(itThread)
+                        println("========\n$itThread\n========")
                         dbMan.Create().Tickets().createTicketDocument(
                             TicketDocument(
                                 chat.id,
