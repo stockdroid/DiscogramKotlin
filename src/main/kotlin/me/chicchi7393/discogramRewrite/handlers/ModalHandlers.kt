@@ -9,7 +9,7 @@ import me.chicchi7393.discogramRewrite.objects.enums.ReasonEnum
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import java.lang.Exception
+import net.dv8tion.jda.api.exceptions.ContextException
 
 class ModalHandlers(private val event: GenericInteractionCreateEvent) {
     private val ticketHandler = TicketHandlers()
@@ -92,7 +92,7 @@ class ModalHandlers(private val event: GenericInteractionCreateEvent) {
                         )
                     ).queue()
                 }
-        } catch(_: Exception) { }
+        } catch(_: ContextException) { }
         return messTable.modals["closeTicket"]!!["reply"]!!
     }
 
