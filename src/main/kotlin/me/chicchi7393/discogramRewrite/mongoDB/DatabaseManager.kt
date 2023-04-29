@@ -20,6 +20,7 @@ class DatabaseManager {
 
     companion object {
         val instance: DatabaseManager by lazy { GetInstance.INSTANCE }
+        var newTick = -1
     }
 
     lateinit var mongoClient: MongoClient
@@ -83,6 +84,7 @@ class DatabaseManager {
                         listOf()
                     )
                 )
+                newTick = ticketDocument.ticketId
                 return instance.Get().getTicketsCollection()
                     .insertOne(ticketDocument)
                     .insertedId
@@ -304,13 +306,18 @@ class DatabaseManager {
 
     inner class Utils {
         fun getLastUsedTicketId(): Int {
-            val ticketId = try {
-                FindLatest().findLatestTicket()!!
-                    .ticketId
+
+            newTick = try {
+                if (newTick == -1) {
+                    FindLatest().findLatestTicket()!!
+                        .ticketId
+                } else {
+                    newTick
+                }
             } catch (e: java.lang.NullPointerException) {
                 0
             }
-            return ticketId
+            return newTick
         }
 
         fun searchAlreadyOpen(telegramId: Long): TicketDocument? {

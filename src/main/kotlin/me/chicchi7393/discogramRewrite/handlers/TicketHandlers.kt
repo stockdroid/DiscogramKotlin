@@ -11,6 +11,7 @@ import me.chicchi7393.discogramRewrite.telegram.TgApp
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.utils.FileUpload
 import org.bson.BsonTimestamp
+import java.lang.NullPointerException
 
 class TicketHandlers {
     private val settings = JsonReader().readJsonSettings()!!
@@ -142,9 +143,13 @@ class TicketHandlers {
 
 
     fun closeTicket(ticket: TicketDocument, text: String, rating: Boolean) {
-        val newrating = if (settings.discord["enable_ratings"]!! as Boolean) {
-            rating
-        } else {
+        val newrating = try {
+            if (settings.discord["enable_ratings"]!! as Boolean) {
+                rating
+            } else {
+                false
+            }
+        } catch (e: NullPointerException) {
             false
         }
         println("DEBUG: Rating = $newrating")
