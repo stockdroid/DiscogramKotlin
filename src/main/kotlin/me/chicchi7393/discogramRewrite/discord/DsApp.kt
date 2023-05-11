@@ -7,6 +7,7 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketState
 import me.chicchi7393.discogramRewrite.telegram.TgApp
+import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -122,16 +123,16 @@ object DsApp {
     }
 
     fun createTicket(chat: Chat, message: String) {
+        VariableStorage.isLocked = true
         TgApp.sendMessage(chat.id, messTable.generalStrings["welcome"] as String, 0) {}
 
         val filePath = TgApp.downloadPic(chat.photo)
-        Thread.sleep(1000)
+        //Thread.sleep(1000)
         TgApp.client.send(TdApi.GetUser(chat.id)) { uname ->
             val usernames = uname.get().usernames
             val hasUsername = usernames != null
             val url: String = if (!hasUsername) "${embedStrs["tgRedirectPrefixLink"]!!}${chat.id}" else "https://t.me/${(usernames.activeUsernames[0]).lowercase()}"
             print("DEBUG: $url")
-
             client
                 .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
                 .sendMessageEmbeds(
@@ -143,34 +144,38 @@ object DsApp {
                         footerStr = "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
                     )
 
-                ).addFiles(FileUpload.fromData(filePath, "pic.png")).queue {
-                    Thread.sleep(350)
-                    it.createThreadChannel(
-                        "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
-                    ).queue { itThread ->
-                        println("\n========\n$itThread\n========")
-                        dbMan.Create().Tickets().createTicketDocument(
-                            TicketDocument(
-                                chat.id,
-                                itThread.idLong,
-                                dbMan.Utils().getLastUsedTicketId() + 1,
-                                mapOf("open" to true, "suspended" to false, "closed" to false),
-                                System.currentTimeMillis() / 1000
-                            )
-                        )
-                    }
-                    val rows = generateRowsEmbedButtons(
-                        embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
-                        it.idLong, it.id
-                    )
-                    it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
+                ).addFiles(FileUpload.fromData(filePath, "pic.png")).queue { it2 ->
+                    //Thread.sleep(350)
+                    client
+                        .getChannelById(MessageChannel::class.java, settings.discord["channel_id"] as Long)!!
+                        .retrieveMessageById(it2.idLong)
+                        .queue {
 
-                    TgApp.alertTicket(
-                        chat.title,
-                        message,
-                        "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${settings.discord["channel_id"].toString()}"
-                    )
+
+                            it.createThreadChannel(
+                                "${settings.discord["idPrefix"]}${dbMan.Utils().getLastUsedTicketId() + 1}"
+                            ).queue { itThread ->
+                                println("\n========\n$itThread\n========")
+                                dbMan.Create().Tickets().createTicketDocument(
+                                    TicketDocument(
+                                        chat.id,
+                                        itThread.idLong,
+                                        dbMan.Utils().getLastUsedTicketId() + 1,
+                                        mapOf("open" to true, "suspended" to false, "closed" to false),
+                                        System.currentTimeMillis() / 1000
+                                    )
+                                )
+                                val rows = generateRowsEmbedButtons(
+                                    embedStrs["tgRedirectPrefixLink"]!! + chat.id.toString(),
+                                    itThread.idLong, it.id
+                                )
+                                it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
+                            }
+                            TgApp.alertTicket(chat.title, message, "https://discordapp.com/channels/${settings.discord["guild_id"].toString()}/${settings.discord["channel_id"].toString()}")
+                        }
                 }
+
+            VariableStorage.isLocked = false
         }
     }
 

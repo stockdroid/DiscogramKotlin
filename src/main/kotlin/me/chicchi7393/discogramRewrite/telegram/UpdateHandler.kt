@@ -39,55 +39,57 @@ class UpdateHandler(private val tgClient: SimpleTelegramClient) {
         if (((System.currentTimeMillis() / 1000) - update.message.date) > 30) {
             return
         }
-        tgClient.send(GetChat(update.message.chatId)) {
-            val chat = it.get()
-            if (chat.id == (settings.telegram["moderatorGroup"] as Number).toLong() && update.message.content is MessageText) {
-                // se viene da moderatori
-                TelegramCommandsHandler().onSlashCommand(update.message.content.toString())
-            }
-            if (ticketIfList(chat, update.message)) {
-                // se è di testo
-                if (update.message.content is MessageText) {
-                    // se è privato, non in blacklist e non è se stesso
-                    if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
-                            .searchAlreadySuspended(chat.id) != null
-                    ) {
-                        // se c'è già un ticket all'utente
-                        ticketHandlers.sendTextFollowMessage(
-                            chat.id,
-                            text,
-                            dbMan.Utils().searchAlreadySuspended(chat.id) != null,
-                            dbMan.Search().Tickets()
-                                .searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
-                            update.message.id,
-                            update.message.replyToMessageId
-                        )
-                    } else {
-                        // avvia nuovo ticket
-                        ticketHandlers.startTicketWithText(chat, text)
+
+
+                tgClient.send(GetChat(update.message.chatId)) {
+                    val chat = it.get()
+                    if (chat.id == (settings.telegram["moderatorGroup"] as Number).toLong() && update.message.content is MessageText) {
+                        // se viene da moderatori
+                        TelegramCommandsHandler().onSlashCommand(update.message.content.toString())
                     }
-                } else {
-                    // se è documento
-                    val file: DownloadFile? = if (document != 0) DownloadFile(document, 1, 0, 0, true) else null
-                    if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
-                            .searchAlreadySuspended(chat.id) != null
-                    ) {
-                        // se c'è già un ticket all'utente
-                        ticketHandlers.sendFileFollowMessage(
-                            chat.id,
-                            file,
-                            text,
-                            dbMan.Utils().searchAlreadySuspended(chat.id) != null,
-                            dbMan.Search().Tickets()
-                                .searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
-                            update.message.id,
-                            update.message.replyToMessageId
-                        )
-                    } else {
-                        // avvia nuovo ticket
-                        ticketHandlers.startTicketWithFile(chat, file, text)
-                    }
-                }
+                    if (ticketIfList(chat, update.message)) {
+                        // se è di testo
+                        if (update.message.content is MessageText) {
+                            // se è privato, non in blacklist e non è se stesso
+                            if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
+                                    .searchAlreadySuspended(chat.id) != null
+                            ) {
+                                // se c'è già un ticket all'utente
+                                ticketHandlers.sendTextFollowMessage(
+                                    chat.id,
+                                    text,
+                                    dbMan.Utils().searchAlreadySuspended(chat.id) != null,
+                                    dbMan.Search().Tickets()
+                                        .searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
+                                    update.message.id,
+                                    update.message.replyToMessageId
+                                )
+                            } else {
+                                // avvia nuovo ticket
+                                ticketHandlers.startTicketWithText(chat, text)
+                            }
+                        } else {
+                            // se è documento
+                            val file: DownloadFile? = if (document != 0) DownloadFile(document, 1, 0, 0, true) else null
+                            if (dbMan.Utils().searchAlreadyOpen(chat.id) != null || dbMan.Utils()
+                                    .searchAlreadySuspended(chat.id) != null
+                            ) {
+                                // se c'è già un ticket all'utente
+                                ticketHandlers.sendFileFollowMessage(
+                                    chat.id,
+                                    file,
+                                    text,
+                                    dbMan.Utils().searchAlreadySuspended(chat.id) != null,
+                                    dbMan.Search().Tickets()
+                                        .searchTicketDocumentByTelegramId((update.message.senderId as MessageSenderUser).userId)!!.ticketId,
+                                    update.message.id,
+                                    update.message.replyToMessageId
+                                )
+                            } else {
+                                // avvia nuovo ticket
+                                ticketHandlers.startTicketWithFile(chat, file, text)
+                            }
+                        }
             }
         }
     }

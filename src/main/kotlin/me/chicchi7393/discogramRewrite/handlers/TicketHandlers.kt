@@ -8,6 +8,7 @@ import me.chicchi7393.discogramRewrite.mongoDB.DatabaseManager
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.MessageLinkType
 import me.chicchi7393.discogramRewrite.objects.databaseObjects.TicketDocument
 import me.chicchi7393.discogramRewrite.telegram.TgApp
+import me.chicchi7393.discogramRewrite.utilities.VariableStorage
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.utils.FileUpload
 import org.bson.BsonTimestamp
@@ -21,6 +22,7 @@ class TicketHandlers {
     private val tgClient = TgApp.client
 
     fun startTicketWithFile(chat: Chat, file: DownloadFile?, text: String) {
+        VariableStorage.isLocked = true
         TgApp.sendMessage(chat.id, messTable.generalStrings["welcome"]!!, 0) {}
 
         val filePath = TgApp.downloadPic(chat.photo)
@@ -70,7 +72,7 @@ class TicketHandlers {
                     it.editMessageComponents(rows[0], rows[1], rows[2]).queue()
 
                 }
-
+            VariableStorage.isLocked = false
         }
 
     }
