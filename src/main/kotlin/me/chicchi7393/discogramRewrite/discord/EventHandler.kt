@@ -151,9 +151,9 @@ class EventHandler : ListenerAdapter() {
                             " "
                         )[0].toInt()
                     )!!.modId &&
-                        !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)) || (ticket.status["open"] == false && !event.message.contentRaw.startsWith(
+                        !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)) && !event.message.contentRaw.startsWith("//")) || (ticket.status["open"] == false && !event.message.contentRaw.startsWith(
                     settings.discord["ignore_message_prefix"] as String
-                ))
+                ) && !event.message.contentRaw.startsWith("//")))
             ) {
                 event.message.delete().queue()
             }
