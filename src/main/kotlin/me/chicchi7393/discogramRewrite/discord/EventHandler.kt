@@ -102,7 +102,8 @@ class EventHandler : ListenerAdapter() {
             !event.isFromType(ChannelType.PRIVATE) &&
             event.channel.name.startsWith(settings.discord["idPrefix"] as String, true) &&
             !event.author.isBot &&
-            !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String)
+            !event.message.contentRaw.startsWith(settings.discord["ignore_message_prefix"] as String) &&
+            !event.message.contentRaw.startsWith("//")
         ) {
             if ((event.author.idLong == dbMan.Search().Assignee()
                     .searchAssigneeDocumentById(
