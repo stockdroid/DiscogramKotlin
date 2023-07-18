@@ -1,4 +1,4 @@
-# DiscogramKotlinRewrite
+# DiscogramKotlin
 
 Assistenza Telegram per il gruppo Il Villaggio Dei Crisatici, si interfaccia con discord dalla parte dei mod, per una gestione del ticket completa e facile (thread, embed ecc.).
 
@@ -15,7 +15,7 @@ Assistenza Telegram per il gruppo Il Villaggio Dei Crisatici, si interfaccia con
 
 ## Variabili d'ambiente
 
-Per eseguire questo progetto, devi copiare [settings.json.example](https://github.com/Chicchi7393/discogramKotlinRewrite/blob/master/json/settings.json.example) a settings.json e modificarlo seguendo [la Wiki](https://github.com/Chicchi7393/discogramKotlinRewrite/wiki)
+Per eseguire questo progetto, devi copiare [settings.json.example](https://github.com/stockdroidcommunity/DiscogramKotlin/blob/master/json/settings.json.example) a settings.json e modificarlo seguendo [la Wiki](https://github.com/stockdroidcommunity/DiscogramKotlin/wiki)
 
 
 ## Eseguire in locale - primo metodo
@@ -26,7 +26,7 @@ Per eseguire questo progetto, devi copiare [settings.json.example](https://githu
   git clone https://github.com/Chicchi7393/discogramKotlinRewrite.git
 ```
 
-- Segui [Variabili di Ambiente](https://github.com/Chicchi7393/discogramKotlinRewrite/master/README.md#variabili-dambiente)
+- Segui [Variabili di Ambiente](https://github.com/stockdroidcommunity/DiscogramKotlin/master/README.md#variabili-dambiente)
 
 - Installa [maven](https://maven.apache.org/install.html) e [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) 
 
@@ -49,11 +49,11 @@ Per eseguire questo progetto, devi copiare [settings.json.example](https://githu
 ```
 - Installa [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) 
 
-- Scarica il jar [ dalle actions](https://github.com/Chicchi7393/discogramKotlinRewrite/actions) e scompatta lo zip
+- Scarica il jar [ dalle actions](https://github.com/stockdroidcommunity/DiscogramKotlin/actions) e scompatta lo zip
 
-- Scarica [la cartella json](https://github.com/Chicchi7393/discogramKotlinRewrite/tree/master/json) e mettila nella tree del progetto
+- Scarica [la cartella json](https://github.com/stockdroidcommunity/DiscogramKotlin/tree/master/json) e mettila nella tree del progetto
 
-- Segui [Variabili di Ambiente](https://github.com/Chicchi7393/discogramKotlinRewrite/master/README.md#variabili-dambiente)
+- Segui [Variabili di Ambiente](https://github.com/stockdroidcommunity/DiscogramKotlin/master/README.md#variabili-dambiente)
 
 - Avvia il progetto
 ```bash
