@@ -1,6 +1,8 @@
 # DiscogramKotlin
 
-Assistenza Telegram per il gruppo Il Villaggio Dei Crisatici, si interfaccia con discord dalla parte dei mod, per una gestione del ticket completa e facile (thread, embed ecc.).
+Assistenza Telegram per il gruppo Il Villaggio Dei Crisatici, si interfaccia con discord dalla parte dei mod, per una gestione del ticket completa e facile (thread, embed ecc.)  
+Per eventuali problemi, dubbi o domande contattare **[@stockdroidassistance](https://t.me/stockdroidassistance)** o **[@chicchi7393](https://t.me/chicchi7393)** su **Telegram**
+
 
 # Autori
 
