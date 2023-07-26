@@ -17,7 +17,7 @@ Per eventuali problemi, dubbi o domande contattare **[@stockdroidassistance](htt
 
 ## Variabili d'ambiente
 
-Per eseguire questo progetto, devi copiare [settings.json.example](https://github.com/stockdroidcommunity/DiscogramKotlin/blob/master/json/settings.json.example) a settings.json e modificarlo seguendo [la Wiki](https://github.com/stockdroidcommunity/DiscogramKotlin/wiki)
+Per eseguire questo progetto, devi copiare [settings.json.example](https://github.com/stockdroid/DiscogramKotlin/blob/master/json/settings.json.example) a settings.json e modificarlo seguendo [la Wiki](https://github.com/stockdroid/DiscogramKotlin/wiki)
 
 
 ## Eseguire in locale - primo metodo
@@ -25,10 +25,10 @@ Per eseguire questo progetto, devi copiare [settings.json.example](https://githu
 - Clona il progetto
 
 ```bash
-  git clone https://github.com/Chicchi7393/discogramKotlinRewrite.git
+  git clone https://github.com/stockdroid/DiscogramKotlin.git
 ```
 
-- Segui [Variabili di Ambiente](https://github.com/stockdroidcommunity/DiscogramKotlin/master/README.md#variabili-dambiente)
+- Segui [Variabili di Ambiente](https://github.com/stockdroid/DiscogramKotlin/master/README.md#variabili-dambiente)
 
 - Installa [maven](https://maven.apache.org/install.html) e [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) 
 
@@ -51,11 +51,11 @@ Per eseguire questo progetto, devi copiare [settings.json.example](https://githu
 ```
 - Installa [Java 17](https://www.oracle.com/java/technologies/downloads/#java17) 
 
-- Scarica il jar [ dalle actions](https://github.com/stockdroidcommunity/DiscogramKotlin/actions) e scompatta lo zip
+- Scarica il jar [ dalle actions](https://github.com/stockdroid/DiscogramKotlin/actions) e scompatta lo zip
 
-- Scarica [la cartella json](https://github.com/stockdroidcommunity/DiscogramKotlin/tree/master/json) e mettila nella tree del progetto
+- Scarica [la cartella json](https://github.com/stockdroid/DiscogramKotlin/tree/master/json) e mettila nella tree del progetto
 
-- Segui [Variabili di Ambiente](https://github.com/stockdroidcommunity/DiscogramKotlin/master/README.md#variabili-dambiente)
+- Segui [Variabili di Ambiente](https://github.com/stockdroid/DiscogramKotlin/master/README.md#variabili-dambiente)
 
 - Avvia il progetto
 ```bash
